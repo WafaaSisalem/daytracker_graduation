@@ -1,0 +1,211 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../svgs/svgs.dart';
+
+enum NoteShape {
+  rectangle,
+  square,
+}
+
+class NoteWidget extends StatelessWidget {
+  const NoteWidget({
+    Key? key,
+    required this.title,
+    required this.date,
+    required this.content,
+    required this.id,
+    required this.onNoteTap,
+    required this.onPasswordIconTap,
+    required this.onDeleteIconTap,
+    required this.shape,
+    required this.onLongPress,
+    required this.isSelected,
+    required this.isSelectionMode,
+  }) : super(key: key);
+
+  final String title;
+  final String date;
+  final String content;
+  final String id;
+  final bool isLocked = false;
+  final NoteShape shape;
+  final Function() onNoteTap;
+  final Function() onPasswordIconTap;
+  final Function() onDeleteIconTap;
+  final Function() onLongPress;
+  final bool isSelectionMode;
+  final bool isSelected;
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return GestureDetector(
+      onTap: () => onNoteTap(),
+      onLongPress: () => onLongPress(),
+      child: Stack(
+        children: [
+          noteBackground(),
+          Container(
+            width: 324.w,
+            height: 140.8.h,
+            padding: EdgeInsets.only(
+                left: 13.w,
+                right: 13.w,
+                top: 13.h,
+                bottom: shape == NoteShape.rectangle ? 13.h : 0),
+            child: Column(
+              children: [
+                noteHead(theme, context),
+                noteBody(theme, context),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Row noteHead(ThemeData theme, BuildContext context) => Row(
+        children: [
+          SizedBox(
+            width: 30.w,
+          ),
+          shape == NoteShape.rectangle
+              ? titlePlace(theme)
+              : const Expanded(child: SizedBox()),
+          if (isSelectionMode)
+            Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_off_outlined,
+              color: theme.primaryColor,
+            )
+          else ...[
+            deleteIcon(context, theme),
+            SizedBox(
+              width: 15.w,
+            ),
+            passwordIcon(context),
+          ]
+        ],
+      );
+
+  GestureDetector passwordIcon(BuildContext context) => GestureDetector(
+        onTap: () {
+          onPasswordIconTap();
+        },
+        child: SizedBox(
+          child: svgLock,
+          width: 17.w,
+          height: 17.h,
+        ),
+      );
+
+  GestureDetector deleteIcon(BuildContext context, ThemeData theme) =>
+      GestureDetector(
+        onTap: () {
+          onDeleteIconTap();
+        },
+        child: SizedBox(
+          child: svgDelete,
+          width: 17.w,
+          height: 17.h,
+        ),
+      );
+
+  Expanded titlePlace(ThemeData theme) => Expanded(
+        child: isLocked
+            ? Text(
+                date,
+                style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: theme.colorScheme.secondary,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w500),
+              )
+            : Text(
+                title,
+                style: theme.textTheme.subtitle1!.copyWith(
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
+      );
+
+  SizedBox noteBackground() => shape == NoteShape.rectangle
+      ? SizedBox(
+          width: 324.w,
+          height: 140.8.h,
+          child: Image.asset(
+            'assets/images/rect_note_item.png',
+            fit: BoxFit.fill,
+          ),
+        )
+      : SizedBox(
+          width: 167.w,
+          height: 180.h,
+          child: Image.asset(
+            'assets/images/square_note_item.png',
+            fit: BoxFit.fill,
+          ),
+        );
+
+  Expanded noteBody(ThemeData theme, BuildContext context) => Expanded(
+        child: isLocked ? lockedBody(theme) : unLockedBody(context, theme),
+      );
+
+  Column unLockedBody(BuildContext context, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Expanded(child: SizedBox()),
+        Text(
+          content,
+          maxLines: shape == NoteShape.rectangle ? 3 : 4,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.subtitle2!.copyWith(height: 1.7.h),
+        ),
+        const Expanded(child: SizedBox()),
+        dateWidget(theme)
+      ],
+    );
+  }
+
+  Align dateWidget(ThemeData theme) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        date,
+        style: TextStyle(
+            fontFamily: 'Poppins',
+            color: theme.colorScheme.secondary,
+            fontSize: shape == NoteShape.rectangle ? 10.sp : 7.sp,
+            fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Column lockedBody(ThemeData theme) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Expanded(child: SizedBox()),
+        SizedBox(
+          width: 30.w,
+          height: 30.h,
+          child: svgGreyLock,
+        ),
+        SizedBox(
+          height: 3.h,
+        ),
+        Text(
+          title,
+          style: theme.textTheme.subtitle2!
+              .copyWith(color: const Color(0xFFC4C4C4)), //TODO: color
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const Expanded(child: SizedBox()),
+        shape == NoteShape.rectangle ? SizedBox() : dateWidget(theme),
+      ],
+    );
+  }
+}

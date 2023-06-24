@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "801406978291",
+    "project_id": "graduation-project-adedc",
+    "storage_bucket": "graduation-project-adedc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801406978291:android:04ce7772d43228f2eacf86",
+        "android_client_info": {
+          "package_name": "com.example.day_tracker_graduation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801406978291-nng96rd8icqq2hl7svfhci5uv6a7ogei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMXQzhTtaep9sHTu5CMIGMLlMYc-VtLBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801406978291-nng96rd8icqq2hl7svfhci5uv6a7ogei.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
