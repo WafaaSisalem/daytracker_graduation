@@ -1,6 +1,10 @@
+import 'package:day_tracker_graduation/models/note_model.dart';
+import 'package:day_tracker_graduation/services/auth_helper.dart';
+import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:day_tracker_graduation/widgets/notes/appbar_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 import '../../router/app_router.dart';
 import '../../widgets/common/appbar_widget.dart';
@@ -88,8 +92,22 @@ class NoteHandlingScreen extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10),
               child: IconButton(
                   onPressed: () {
-                    AppRouter.router
-                        .pushWithReplacementFunction(NoteHomeScreen());
+                    if (type == NoteHandlingType.display) {
+                      AppRouter.router
+                          .pushWithReplacementFunction(const NoteHomeScreen());
+                    } else {
+                      FirestoreHelper.firestoreHelper.addNoteToUser(
+                          note: NoteModel(
+                                  id: 1,
+                                  content:
+                                      'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece It is a long established fact that a readera piece It is...',
+                                  date: DateFormat('MMMM d, y. EEE. hh:mm a')
+                                      .format(DateTime.now()),
+                                  title: 'First note')
+                              .toMap(),
+                          userId: AuthHelper
+                              .authHelper.firebaseAuth.currentUser!.uid);
+                    }
                   },
                   icon: const Icon(
                     Icons.check,

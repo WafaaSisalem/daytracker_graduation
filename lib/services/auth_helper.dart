@@ -43,9 +43,11 @@ class AuthHelper {
     try {
       await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+
       if (!firebaseAuth.currentUser!.emailVerified) {
         await sendEmailVerification(context);
       }
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showToast('No user found for that email.', context: context);

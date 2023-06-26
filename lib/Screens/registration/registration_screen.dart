@@ -71,11 +71,16 @@ class RegistrationScreen extends StatelessWidget {
             .signUpWithEmailAndPassword(email, password, context);
         UserModel user =
             UserModel(email: email, userName: userName, id: userId);
-        await FirestoreHelper.firestoreHelper.addUserToFirestore(user.toMap());
+        await FirestoreHelper.firestoreHelper.addUser(user: user);
       } else {
-        await AuthHelper.authHelper
-            .signInWithEmailAndPassword(email, password, context);
-        AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+        AuthHelper.authHelper
+            .signInWithEmailAndPassword(email, password, context)
+            .then((value) async {
+       
+          if (value != null) {
+            AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+          }
+        });
       }
     }
   }
