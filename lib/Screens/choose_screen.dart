@@ -1,4 +1,6 @@
 import 'package:day_tracker_graduation/Screens/pomos/pomo_home_screen.dart';
+import 'package:day_tracker_graduation/Screens/registration/registration_screen.dart';
+import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -38,15 +40,29 @@ class ChooseCardScreen extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       //  TODO:SET THE COLOR
                       itemBuilder: (context) => [
-                        //  const  PopupMenuItem<int>(
-                        //     value: 0,
-                        //     child: Text(
-                        //       "Setting",
-                        //       style: TextStyle(color: Colors.black),
-                        //     ),
-                        //   ),
+                        const PopupMenuItem<int>(
+                          value: 0,
+                          child: Text(
+                            "Setting",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        const PopupMenuItem<int>(
+                          value: 1,
+                          child: Text(
+                            "Sign out",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
                       ],
-                      onSelected: (item) => {print(item)},
+                      onSelected: (item) {
+                        if (item == 1) {
+                          AuthHelper.authHelper.signOut();
+                          AppRouter.router.pushWithReplacementFunction(
+                              RegistrationScreen(
+                                  type: RegistrationType.signIn));
+                        }
+                      },
                     ),
                   ],
                 ),

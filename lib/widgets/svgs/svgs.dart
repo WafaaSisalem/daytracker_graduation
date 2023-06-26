@@ -9,6 +9,7 @@ const String deleteIcon = 'assets/images/delete_icon.svg';
 final SvgPicture svgDelete = SvgPicture.asset(
   deleteIcon,
 );
+
 // const String itemShape = 'assets/images/item_shape.svg';
 // final SvgPicture svgItem = SvgPicture.asset(
 //   itemShape,
