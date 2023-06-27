@@ -65,7 +65,9 @@ class AuthHelper {
   //     print(e.toString() + 'resetPassword');
   //   }
   // }
-
+  User? getCurrentUser(){
+    return firebaseAuth.currentUser;
+  }
   Future signOut() async {
     try {
       await firebaseAuth.signOut();

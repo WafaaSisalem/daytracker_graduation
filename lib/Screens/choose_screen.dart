@@ -113,7 +113,7 @@ class ChooseCardScreen extends StatelessWidget {
                   imagePath: 'assets/images/pomo_card.png',
                   onPressed: () {
                     AppRouter.router
-                        .pushWithReplacementFunction(PomoHomeScreen());
+                        .pushWithReplacementFunction(const PomoHomeScreen());
                   },
                   textDirection: MyDirection.right),
               SizedBox(

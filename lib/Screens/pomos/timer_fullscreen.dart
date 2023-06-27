@@ -1,7 +1,5 @@
 import 'package:custom_timer/custom_timer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:simple_timer/simple_timer.dart';
 
@@ -20,6 +18,7 @@ class _TimerFullscreenState extends State<TimerFullscreen>
     begin: const Duration(minutes: 25),
     end: const Duration(),
   );
+
   @override
   void initState() {
     _controller.start();

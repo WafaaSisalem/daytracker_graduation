@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/Screens/registration/registration_screen.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../router/app_router.dart';
 
@@ -18,10 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      AppRouter.router.pushWithReplacementFunction(RegistrationScreen(
-        type: RegistrationType.signIn,
-      ));
-      // AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+      Provider.of<AuthProvider>(context,listen: false).checkIsLogin();
     });
   }
 

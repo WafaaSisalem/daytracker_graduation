@@ -1,32 +1,46 @@
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
+import 'package:day_tracker_graduation/provider/note_providerr.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import 'Screens/registration/registration_screen.dart';
 import 'Screens/splash_screen.dart';
+import 'helpers/shared_preference_helper.dart';
 import 'router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    ScreenUtilInit(
-      builder: (context, child) => const MyApp(),
-      designSize: const Size(375, 812),
+  await SharedPreferenceHelper.sharedHelper.initSharedPreferences();
+  runApp(ScreenUtilInit(
+    builder: (context, child) => MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+            create: (context) => AuthProvider()),
+        ChangeNotifierProvider<NoteProvider>(
+            create: (context) => NoteProvider()),
+      ],
+      child: const MyApp(),
     ),
-  );
+    designSize: const Size(375, 812),
+  ));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   static const primaryColor = Color(0xFF9A5DBA);
   static const secondaryColor = Color(0xFF892BB9);
   static const scaffoldBackgroundColor = Color(0xFFFBFBFB);
   static const shadowColor = Color(0x28000000);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: AppRouter.router.routerKey,
+      debugShowCheckedModeBanner: false,
       theme: appThemeData(),
       routes: {
         '/': (context) => const SplashScreen(),
