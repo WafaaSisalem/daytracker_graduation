@@ -1,6 +1,7 @@
 
 import 'package:day_tracker_graduation/Screens/pomos/widgets/pomo_app_bar.dart';
 import 'package:day_tracker_graduation/Screens/pomos/widgets/timer_resume_widget..dart';
+import 'package:day_tracker_graduation/main.dart';
 import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,12 +27,10 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   TimerController? _timerController;
 
-  // bool started = false;
-  // TimerStatus status = TimerStatus.stoped;
-
   @override
   void initState() {
     // initialize timercontroller
+    audioPlayer.stop();
     _timerController = TimerController(this);
     super.initState();
   }

@@ -40,9 +40,9 @@ class TimerWidget extends StatelessWidget {
           alignment: Alignment(0, 0.4),
           children: [
             SimpleTimer(
-              status: minutes==5 || minutes == 15 ?TimerStatus.start:null,
+              status: minutes==1 || minutes == 15 ?TimerStatus.start:null,
               duration: Duration(minutes: minutes),
-              controller: minutes==5 || minutes == 15 ?null:timerController,
+              controller: minutes==1 || minutes == 15 ?null:timerController,
               timerStyle: TimerStyle.ring,
               onStart: handleTimerOnStart,
               onEnd: () {
@@ -97,12 +97,14 @@ class TimerWidget extends StatelessWidget {
   }
 
   void handleTimerOnEnd(PomoProvider provider) {
-    if(minutes==5){
-      AppRouter.router.pushNamedFunction(Constants.goOn);
+    if(minutes==1){
+      Constants.playSound();
+      AppRouter.router.pushNamedWithReplacementFunction(Constants.goOn);
     }
     else if(minutes==15){
+      Constants.playSound();
       provider.setNumOfPomo();
-      AppRouter.router.pushNamedFunction(Constants.homeScreen);
+      AppRouter.router.pushNamedWithReplacementFunction(Constants.homeScreen);
     }
     else{
       timerController!.reset();

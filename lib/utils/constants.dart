@@ -1,3 +1,7 @@
+import 'package:audioplayers/audioplayers.dart';
+
+import '../main.dart';
+
 class Constants{
   static const defQuot = "Small steps lead to big accomplishments!";
   static const quotKey ="Quot";
@@ -24,4 +28,14 @@ class Constants{
   static const longBreak = "Take a long break,you worth it";
   static const relaxLongMess = "Take along break,\n Relax for 15 mins";
   static const goOnMess = "Let's go on to the next pomo";
+
+
+  // static Methods
+  static void playSound() async {
+    String audioPath = 'audios/break.wav';
+    await audioPlayer.play(AssetSource(audioPath),);
+  }
+
+
+
 }

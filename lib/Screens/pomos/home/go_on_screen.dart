@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ class _GgOnScreenState extends State<GgOnScreen>  with SingleTickerProviderState
   @override
   void initState() {
     // initialize timercontroller
+    audioPlayer.stop();
     _timerController = TimerController(this);
     super.initState();
   }

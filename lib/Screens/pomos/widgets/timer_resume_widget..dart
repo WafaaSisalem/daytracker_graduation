@@ -49,7 +49,7 @@ class TimerResumeWidget extends StatelessWidget {
                           timerController!.reset();
                           pomoProvider.setTimerStatus(TimerStatuss.stopped);
                           Navigator.pop(context);
-                          AppRouter.router.pushNamedFunction(Constants.gotPomoScreen);
+                          AppRouter.router.pushNamedWithReplacementFunction(Constants.gotPomoScreen);
                         }
                         else{
                           timerController!.reset();
@@ -73,7 +73,7 @@ class TimerResumeWidget extends StatelessWidget {
           height: 15.h,
         ),
         Expanded(
-          child: Image.asset('assets/images/continue.png',fit: BoxFit.none,),
+          child: Image.asset('assets/images/continue.png'),
         ),
       ],
     );

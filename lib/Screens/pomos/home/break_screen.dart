@@ -50,7 +50,7 @@ class _BreakScreenState extends State<BreakScreen>
                 ),
                 TimerWidget(
                   timerController: _timerController,
-                  minutes: widget.isLong ? 15 : 5,
+                  minutes: widget.isLong ? 15 : 1,
                 ),
                 SizedBox(
                   height: 30.h,
