@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Screens/choose_screen.dart';
+import '../Screens/pomos/home/got_pomo_screen.dart';
 import '../Screens/registration/registration_screen.dart';
 import '../router/app_router.dart';
 import '../services/auth_helper.dart';
@@ -19,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
             type: RegistrationType.signIn,
           )
         : const ChooseCardScreen());
+    //ChooseCardScreen()
   }
 
   getCurrentUser() {

@@ -1,10 +1,15 @@
+import 'package:day_tracker_graduation/Screens/pomos/home/break_screen.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/go_on_screen.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/got_pomo_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
-import 'package:day_tracker_graduation/provider/note_providerr.dart';
+import 'package:day_tracker_graduation/provider/pomo_provider.dart';
+import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import 'Screens/pomos/home/home_screen.dart';
 import 'Screens/registration/registration_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'helpers/shared_preference_helper.dart';
@@ -19,8 +24,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider<AuthProvider>(
             create: (context) => AuthProvider()),
-        ChangeNotifierProvider<NoteProvider>(
-            create: (context) => NoteProvider()),
+        ChangeNotifierProvider<PomoProvider>(
+            create: (context) => PomoProvider()),
       ],
       child: const MyApp(),
     ),
@@ -44,6 +49,10 @@ class MyApp extends StatelessWidget {
       theme: appThemeData(),
       routes: {
         '/': (context) => const SplashScreen(),
+        Constants.gotPomoScreen: (context) => const GotPomoScreen(),
+        Constants.breakScreen: (context) => BreakScreen(),
+        Constants.goOn: (context) => const GgOnScreen(),
+        Constants.homeScreen: (context) => const HomeScreen(),
       },
       onGenerateRoute: (routeSettings) {
         String? name = routeSettings.name;
