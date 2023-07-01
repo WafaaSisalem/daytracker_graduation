@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../helpers/shared_preference_helper.dart';
 import '../utils/constants.dart';
 
-class NoteProvider extends ChangeNotifier {
-  NoteProvider() {
+class PomoProvider extends ChangeNotifier {
+  PomoProvider() {
     getString(Constants.quotKey);
   }
 
   String? currentQuote;
 
-  saveString(String key, String value) async{
-    bool isSave  = await SharedPreferenceHelper.sharedHelper
+  saveString(String key, String value) async {
+    bool isSave = await SharedPreferenceHelper.sharedHelper
         .saveStringToSharedPreferences(key, value);
 
-    print(isSave?"save string is ok ":"There is a wrong");
+    print(isSave ? "save string is ok " : "There is a wrong");
     getString(key);
   }
 

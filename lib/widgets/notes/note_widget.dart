@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/models/note_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -9,12 +10,9 @@ enum NoteShape {
 }
 
 class NoteWidget extends StatelessWidget {
-  const NoteWidget({
+  NoteWidget({
     Key? key,
-    required this.title,
-    required this.date,
-    required this.content,
-    required this.id,
+    required this.note,
     required this.onNoteTap,
     required this.onPasswordIconTap,
     required this.onDeleteIconTap,
@@ -24,11 +22,7 @@ class NoteWidget extends StatelessWidget {
     required this.isSelectionMode,
   }) : super(key: key);
 
-  final String title;
-  final String date;
-  final String content;
-  final String id;
-  final bool isLocked = false;
+  final NoteModel note;
   final NoteShape shape;
   final Function() onNoteTap;
   final Function() onPasswordIconTap;
@@ -93,9 +87,9 @@ class NoteWidget extends StatelessWidget {
           onPasswordIconTap();
         },
         child: SizedBox(
-          child: svgLock,
           width: 17.w,
           height: 17.h,
+          child: svgLock,
         ),
       );
 
@@ -112,9 +106,9 @@ class NoteWidget extends StatelessWidget {
       );
 
   Expanded titlePlace(ThemeData theme) => Expanded(
-        child: isLocked
+        child: note.isLocked
             ? Text(
-                date,
+                note.formatedDate,
                 style: TextStyle(
                     fontFamily: 'Poppins',
                     color: theme.colorScheme.secondary,
@@ -122,7 +116,9 @@ class NoteWidget extends StatelessWidget {
                     fontWeight: FontWeight.w500),
               )
             : Text(
-                title,
+                note.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.subtitle1!.copyWith(
                   color: theme.colorScheme.secondary,
                 ),
@@ -148,7 +144,7 @@ class NoteWidget extends StatelessWidget {
         );
 
   Expanded noteBody(ThemeData theme, BuildContext context) => Expanded(
-        child: isLocked ? lockedBody(theme) : unLockedBody(context, theme),
+        child: note.isLocked ? lockedBody(theme) : unLockedBody(context, theme),
       );
 
   Column unLockedBody(BuildContext context, ThemeData theme) {
@@ -157,7 +153,7 @@ class NoteWidget extends StatelessWidget {
       children: [
         const Expanded(child: SizedBox()),
         Text(
-          content,
+          note.content,
           maxLines: shape == NoteShape.rectangle ? 3 : 4,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.subtitle2!.copyWith(height: 1.7.h),
@@ -172,7 +168,7 @@ class NoteWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Text(
-        date,
+        note.formatedDate,
         style: TextStyle(
             fontFamily: 'Poppins',
             color: theme.colorScheme.secondary,
@@ -197,7 +193,7 @@ class NoteWidget extends StatelessWidget {
           height: 3.h,
         ),
         Text(
-          title,
+          note.title,
           style: theme.textTheme.subtitle2!
               .copyWith(color: const Color(0xFFC4C4C4)), //TODO: color
           maxLines: 1,

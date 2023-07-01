@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../utils/constants.dart';
+
 class NoteModel {
   NoteModel(
       {required this.id,
@@ -8,31 +10,38 @@ class NoteModel {
       required this.title,
       this.password = ''});
 
-  final int id;
+  final String id;
   final String content;
-  final String date;
+  final DateTime date;
   final String title;
   final String password;
+
   get isLocked {
     bool isLocked = password == '' ? false : true;
     return isLocked;
   }
 
+  get formatedDate {
+    return DateFormat(Constants.dateFormat).format(date);
+  }
+
   toMap() {
     return {
-      'content': content,
-      'date': DateFormat('MMMM d, y. EEE. hh:mm a')
-          .format(DateTime.now()), //February 11, 2021. Thu. 03:30 PM
-      'isLocked': isLocked ? 1 : 0, //February 11, 2022. Wed. 6:17 PM
-      'title': title,
-      'password': password,
+      Constants.idKey: id,
+      Constants.contentKey: content == '' ? title : content,
+      Constants.formatedDateKey:
+          formatedDate, //February 11, 2021. Thu. 03:30 PM
+      Constants.dateKey: date,
+      Constants.isLockedKey: isLocked ? 1 : 0, //February 11, 2022. Wed. 6:17 PM
+      Constants.titleKey: title == '' ? content : title,
+      Constants.passwordKey: password,
     };
   }
 
   NoteModel.fromMap(Map<String, dynamic> map)
-      : id = map['id'],
-        content = map['content'],
-        date = map['date'],
-        title = map['title'],
-        password = map['password'];
+      : id = map[Constants.idKey],
+        content = map[Constants.contentKey],
+        title = map[Constants.titleKey],
+        password = map[Constants.passwordKey],
+        date = map[Constants.dateKey];
 }

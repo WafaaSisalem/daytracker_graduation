@@ -1,5 +1,5 @@
 import 'package:day_tracker_graduation/Screens/pomos/timer_fullscreen.dart';
-import 'package:day_tracker_graduation/provider/note_providerr.dart';
+import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +12,7 @@ import '../../widgets/common/button_widget.dart';
 import '../../widgets/common/dialog_widget.dart';
 import '../choose_screen.dart';
 import 'package:provider/provider.dart';
+
 enum TimerStatus { started, paused, continued, stoped }
 
 class PomoHomeScreen extends StatefulWidget {
@@ -47,47 +48,46 @@ class _PomoHomeScreenState extends State<PomoHomeScreen>
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: _buildAppbar(theme),
-        body: Center(
-            child: Column(
-          children: [
-            SizedBox(
-              height: 30.h,
-            ),
-            _buildTitle(theme),
+      resizeToAvoidBottomInset: false,
+      appBar: _buildAppbar(theme),
+      body: Center(
+          child: Column(
+        children: [
+          SizedBox(
+            height: 30.h,
+          ),
+          _buildTitle(theme),
+          SizedBox(
+            height: 20.h,
+          ),
+          _buildQuoteContainer(theme),
+          const SizedBox(
+            height: 30,
+          ),
+          _buildTimer(theme),
+          SizedBox(
+            height: 30.h,
+          ),
+          _buildFirstButton(),
+          SizedBox(
+            height: 10.h,
+          ),
+          if (status == TimerStatus.stoped) ...[
+            _buildSecondButton(context),
             SizedBox(
               height: 20.h,
             ),
-            _buildQuoteContainer(theme),
-            const SizedBox(
-              height: 30,
-            ),
-            _buildTimer(theme),
-            SizedBox(
-              height: 30.h,
-            ),
-            _buildFirstButton(),
-            SizedBox(
-              height: 10.h,
-            ),
-            if (status == TimerStatus.stoped) ...[
-              _buildSecondButton(context),
-              SizedBox(
-                height: 20.h,
-              ),
-              _buildRemainingPomoText(theme),
-            ],
-            if (status == TimerStatus.started) ...[
-              Expanded(child: SizedBox()),
-              _buildMotivationText(theme),
-              Expanded(child: SizedBox()),
-              Image.asset('assets/images/timer_isworking.png')
-            ]
+            _buildRemainingPomoText(theme),
           ],
-        )),
-      )
-    ;
+          if (status == TimerStatus.started) ...[
+            Expanded(child: SizedBox()),
+            _buildMotivationText(theme),
+            Expanded(child: SizedBox()),
+            Image.asset('assets/images/timer_isworking.png')
+          ]
+        ],
+      )),
+    );
   }
 
   Text _buildMotivationText(ThemeData theme) {
@@ -115,7 +115,8 @@ class _PomoHomeScreenState extends State<PomoHomeScreen>
                   dialogType: DialogType.quote,
                   entryType: 'quote',
                   onOkPressed: (value) {
-                    Provider.of<NoteProvider>(context,listen: false).saveString(Constants.quotKey, value);
+                    Provider.of<PomoProvider>(context, listen: false)
+                        .saveString(Constants.quotKey, value);
                     Navigator.pop(context);
                     print(value);
                   });
@@ -201,7 +202,7 @@ class _PomoHomeScreenState extends State<PomoHomeScreen>
     );
   }
 
-  Container _buildQuoteContainer(ThemeData theme)  {
+  Container _buildQuoteContainer(ThemeData theme) {
     return Container(
       width: 256.w,
       height: 80.h,
@@ -216,7 +217,7 @@ class _PomoHomeScreenState extends State<PomoHomeScreen>
         ],
       ),
       child: Text(
-        Provider.of<NoteProvider>(context,listen: true).currentQuote!,
+        Provider.of<PomoProvider>(context, listen: true).currentQuote!,
         style: theme.textTheme.headline4,
         textAlign: TextAlign.center,
         overflow: TextOverflow.visible,

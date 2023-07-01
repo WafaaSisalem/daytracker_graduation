@@ -1,5 +1,6 @@
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
-import 'package:day_tracker_graduation/provider/note_providerr.dart';
+import 'package:day_tracker_graduation/provider/note_provider.dart';
+import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,6 +20,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider<AuthProvider>(
             create: (context) => AuthProvider()),
+        ChangeNotifierProvider<PomoProvider>(
+            create: (context) => PomoProvider()),
         ChangeNotifierProvider<NoteProvider>(
             create: (context) => NoteProvider()),
       ],
