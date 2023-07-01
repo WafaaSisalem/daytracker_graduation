@@ -17,7 +17,6 @@ class Constants {
   static const String passwordKey = 'password';
   static const String isLockedKey = 'isLocked';
   static const String dateFormat = 'MMMM d, y. EEE. hh:mm a';
-  static const quotKey ="Quot";
   static const totalPomoKey ="totalPomo";
   static const numPomoKey ="numPomo";
   static const minutesKey ="Minutes";
