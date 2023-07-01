@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../provider/pomo_provider.dart';
+import '../../utils/constants.dart';
 import 'dialog_textfield.dart';
 
 enum DialogType {
@@ -8,6 +11,7 @@ enum DialogType {
   delete,
   password,
   quote,
+  end
 }
 
 class DialogWidget extends StatefulWidget {
@@ -30,7 +34,9 @@ class _DialogWidgetState extends State<DialogWidget> {
   String? dialogTitle;
   Widget? dialogContent;
   String value = '';
+  late PomoProvider pomoProvider ;
   initValues() {
+    //final pomoProvider = Provider.of<PomoProvider>(context);
     switch (widget.dialogType) {
       case DialogType.delete:
         dialogTitle = 'Delete';
@@ -61,15 +67,22 @@ class _DialogWidgetState extends State<DialogWidget> {
           },
         );
         break;
+      case DialogType.end:
+        dialogTitle = 'End this pomo?';
+        dialogContent = Text(pomoProvider.duration.inMinutes>=1?Constants.doEnd:Constants.notSaved);
     }
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    pomoProvider = Provider.of<PomoProvider>(context);
+    initValues();
   }
 
   @override
   void initState() {
-    initValues();
     super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);

@@ -13,6 +13,14 @@ class SharedPreferenceHelper {
     return  sharedPreferences!.setString(key, value);
 
   }
+  Future<bool> saveIntToSharedPreferences(String key, int value) async{
+    return  sharedPreferences!.setInt(key, value);
+
+  }
+  Future<int?> getIntFromSharedPreferences(String key) async{
+    return sharedPreferences!.getInt(key);
+
+  }
   Future<String?> getStringFromSharedPreferences(String key) async{
     return sharedPreferences!.getString(key);
 

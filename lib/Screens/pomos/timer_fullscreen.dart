@@ -1,10 +1,10 @@
 import 'package:custom_timer/custom_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:simple_timer/simple_timer.dart';
 
 class TimerFullscreen extends StatefulWidget {
-  const TimerFullscreen({Key? key}) : super(key: key);
+  TimerFullscreen({Key? key, required this.duration}) : super(key: key);
+  Duration? duration;
 
   @override
   State<TimerFullscreen> createState() => _TimerFullscreenState();
@@ -12,10 +12,12 @@ class TimerFullscreen extends StatefulWidget {
 
 class _TimerFullscreenState extends State<TimerFullscreen>
     with SingleTickerProviderStateMixin {
-  TimerController? _timerController;
-  late CustomTimerController _controller = CustomTimerController(
+  late final CustomTimerController _controller = CustomTimerController(
     vsync: this,
-    begin: const Duration(minutes: 25),
+    initialState: CustomTimerState.counting,
+    begin: Duration(
+        minutes:  24-(widget.duration!.inMinutes),
+        seconds: 60 - widget.duration!.inSeconds),
     end: const Duration(),
   );
 
@@ -58,7 +60,7 @@ class _TimerFullscreenState extends State<TimerFullscreen>
               width: 250.w,
               child: TextButton(
                   onPressed: () {
-                    _timerController!.start();
+                    //widget.timerController!.start();
                   },
                   child: Text(
                     'Small steps lead to big accomplishments!',

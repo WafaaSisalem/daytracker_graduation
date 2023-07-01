@@ -1,34 +1,52 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/break_screen.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/go_on_screen.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/got_pomo_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/provider/pomo_provider.dart';
+import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import 'Screens/pomos/home/home_screen.dart';
 import 'Screens/registration/registration_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'helpers/shared_preference_helper.dart';
 import 'router/app_router.dart';
-
+late AudioPlayer audioPlayer;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  audioPlayer= AudioPlayer();
   await Firebase.initializeApp();
   await SharedPreferenceHelper.sharedHelper.initSharedPreferences();
-  runApp(ScreenUtilInit(
-    builder: (context, child) => MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthProvider>(
-            create: (context) => AuthProvider()),
-        ChangeNotifierProvider<PomoProvider>(
-            create: (context) => PomoProvider()),
-        ChangeNotifierProvider<NoteProvider>(
-            create: (context) => NoteProvider()),
-      ],
-      child: const MyApp(),
-    ),
-    designSize: const Size(375, 812),
-  ));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    loadAudioFile().then((value) {
+      runApp(ScreenUtilInit(
+        builder: (context, child) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<AuthProvider>(
+                create: (context) => AuthProvider()),
+            ChangeNotifierProvider<PomoProvider>(
+                create: (context) => PomoProvider()),
+            ChangeNotifierProvider<NoteProvider>(
+                create: (context) => NoteProvider()),
+          ],
+          child: const MyApp(),
+        ),
+        designSize: const Size(375, 812),
+      ));
+    });
+  });
+
+}
+Future<void> loadAudioFile() async {
+  await audioPlayer.setReleaseMode(ReleaseMode.stop);
+  await audioPlayer.setSourceAsset('audios/break.wav');
 }
 
 class MyApp extends StatelessWidget {
@@ -47,6 +65,10 @@ class MyApp extends StatelessWidget {
       theme: appThemeData(),
       routes: {
         '/': (context) => const SplashScreen(),
+        Constants.gotPomoScreen: (context) => const GotPomoScreen(),
+        Constants.breakScreen: (context) => BreakScreen(),
+        Constants.goOn: (context) => const GgOnScreen(),
+        Constants.homeScreen: (context) => const HomeScreen(),
       },
       onGenerateRoute: (routeSettings) {
         String? name = routeSettings.name;
