@@ -1,8 +1,10 @@
 import 'package:day_tracker_graduation/Screens/choose_screen.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:provider/provider.dart';
 
 import '../../main.dart';
 import '../../models/user_model.dart';
@@ -64,23 +66,20 @@ class RegistrationScreen extends StatelessWidget {
   String userName = '';
   String email = '';
   String password = '';
-  save(context) async {
+  save(context, AuthProvider authProvider) async {
     if (formKey.currentState!.validate()) {
       if (type == RegistrationType.signUp) {
-        String userId = await AuthHelper.authHelper
-            .signUpWithEmailAndPassword(email, password, context);
-        UserModel user =
-            UserModel(email: email, userName: userName, id: userId);
-        await FirestoreHelper.firestoreHelper.addUser(user: user);
+        authProvider.signUpWithEmailAndPassword(
+            email: email,
+            password: password,
+            userName: userName,
+            context: context);
       } else {
-        AuthHelper.authHelper
-            .signInWithEmailAndPassword(email, password, context)
-            .then((value) async {
-       
-          if (value != null) {
-            AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
-          }
-        });
+        bool isSigned = await authProvider.signInWithEmailAndPassword(
+            email: email, password: password, context: context);
+        if (isSigned) {
+          AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+        }
       }
     }
   }
@@ -89,53 +88,55 @@ class RegistrationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 48.w),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  myHeadtitle(),
-                  SizedBox(height: 5.h),
-                  mySubtitle(theme),
-                  SizedBox(height: 30.h),
-                  image,
-                  SizedBox(height: 25.h),
-                  myForm(context),
-                  type == RegistrationType.forgetPassword
-                      ? const SizedBox()
-                      : myButtonTextUnderForm(theme),
-                  SizedBox(height: 30.h),
-                  myButton(context),
-                  SizedBox(
-                    height: 30.h,
-                  ),
-                  type == RegistrationType.forgetPassword
-                      ? const SizedBox()
-                      : Column(
-                          children: [
-                            myDevider(theme),
-                            SizedBox(height: 17.h),
-                            registerWithFaceOrGoogle(),
-                            type == RegistrationType.signIn
-                                ? SizedBox(
-                                    height: 20.h,
-                                  )
-                                : const SizedBox(),
-                            type == RegistrationType.signIn
-                                ? createAccount(theme)
-                                : const SizedBox()
-                          ],
-                        ),
-                ],
+    return Consumer<AuthProvider>(builder: (context, authProvider, x) {
+      return Scaffold(
+        body: SafeArea(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 48.w),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    myHeadtitle(),
+                    SizedBox(height: 5.h),
+                    mySubtitle(theme),
+                    SizedBox(height: 30.h),
+                    image,
+                    SizedBox(height: 25.h),
+                    myForm(context),
+                    type == RegistrationType.forgetPassword
+                        ? const SizedBox()
+                        : myButtonTextUnderForm(theme),
+                    SizedBox(height: 30.h),
+                    myButton(context, authProvider),
+                    SizedBox(
+                      height: 30.h,
+                    ),
+                    type == RegistrationType.forgetPassword
+                        ? const SizedBox()
+                        : Column(
+                            children: [
+                              myDevider(theme),
+                              SizedBox(height: 17.h),
+                              registerWithFaceOrGoogle(),
+                              type == RegistrationType.signIn
+                                  ? SizedBox(
+                                      height: 20.h,
+                                    )
+                                  : const SizedBox(),
+                              type == RegistrationType.signIn
+                                  ? createAccount(theme)
+                                  : const SizedBox()
+                            ],
+                          ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   GestureDetector createAccount(ThemeData theme) {
@@ -199,22 +200,15 @@ class RegistrationScreen extends StatelessWidget {
     );
   }
 
-  myButton(BuildContext context) {
+  myButton(BuildContext context, authProvider) {
     return ButtonWidget(
         text: buttonText,
         onPressed: () async {
           formKey.currentState!.validate();
-          // if (type == RegistrationType.signUp) {
-          //   save(context);
-          //   // AuthHelper.authHelper
-          //   //     .signUpWithEmailAndPassword(email, password, context);
-          // } else if (type == RegistrationType.signIn) {
-          //   AuthHelper.authHelper
-          //       .signInWithEmailAndPassword(email, password, context);
-          // } else {}
+
           if (type == RegistrationType.forgetPassword) {
           } else {
-            save(context);
+            save(context, authProvider);
           }
         },
         height: 48.h,

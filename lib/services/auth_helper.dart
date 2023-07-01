@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
-import '../models/user_model.dart';
-
 class AuthHelper {
   AuthHelper._();
   static AuthHelper authHelper = AuthHelper._();
@@ -16,8 +14,7 @@ class AuthHelper {
           .createUserWithEmailAndPassword(email: email, password: password);
 
       sendEmailVerification(context);
-
-      return userCredential.user!.uid;
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         showToast('You enterd a too weak password please change it',
@@ -65,9 +62,10 @@ class AuthHelper {
   //     print(e.toString() + 'resetPassword');
   //   }
   // }
-  User? getCurrentUser(){
+  User? getCurrentUser() {
     return firebaseAuth.currentUser;
   }
+
   Future signOut() async {
     try {
       await firebaseAuth.signOut();

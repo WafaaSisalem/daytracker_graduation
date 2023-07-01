@@ -3,6 +3,7 @@ import 'package:day_tracker_graduation/Screens/pomos/home/break_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/home/go_on_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/home/got_pomo_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
+import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,6 +33,8 @@ void main() async {
                 create: (context) => AuthProvider()),
             ChangeNotifierProvider<PomoProvider>(
                 create: (context) => PomoProvider()),
+            ChangeNotifierProvider<NoteProvider>(
+                create: (context) => NoteProvider()),
           ],
           child: const MyApp(),
         ),
