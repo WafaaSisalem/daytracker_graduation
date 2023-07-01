@@ -76,7 +76,7 @@ class ChooseCardScreen extends StatelessWidget {
                     textDirection: MyDirection.left,
                     title: 'TASKS',
                     description:
-                        'Lorem Ipsum is simply dummy text of the printing and typesetting industry', //TODO: EDIT THE DESCRIPTION
+                        'Write your tasks and what are you going to do, TRACK your tasks and progress',
                     imagePath: 'assets/images/tasks_card.png',
                     onPressed: () {}),
                 SizedBox(
@@ -85,7 +85,7 @@ class ChooseCardScreen extends StatelessWidget {
                 ChooseCardWidget(
                     title: 'Journal',
                     description:
-                        'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                        'What are you thinking about? write your journal to TRACK your habits',
                     imagePath: 'assets/images/journal_card.png',
                     onPressed: () {
                       AppRouter.router
@@ -98,7 +98,7 @@ class ChooseCardScreen extends StatelessWidget {
                 ChooseCardWidget(
                     title: 'notes',
                     description:
-                        'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                        'You do not have to remember everythings, just write notes.',
                     imagePath: 'assets/images/note_card.png',
                     onPressed: () {
                       AppRouter.router
@@ -111,7 +111,7 @@ class ChooseCardScreen extends StatelessWidget {
                 ChooseCardWidget(
                     title: 'pomos',
                     description:
-                        'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+                        'devide your task and Manage your time by setting pomos',
                     imagePath: 'assets/images/pomo_card.png',
                     onPressed: () {
                       AppRouter.router
