@@ -1,8 +1,11 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:day_tracker_graduation/Screens/master_password_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/home/break_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/home/go_on_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/home/got_pomo_screen.dart';
+import 'package:day_tracker_graduation/models/note_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
+import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
@@ -17,10 +20,11 @@ import 'Screens/registration/registration_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'helpers/shared_preference_helper.dart';
 import 'router/app_router.dart';
+
 late AudioPlayer audioPlayer;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  audioPlayer= AudioPlayer();
+  audioPlayer = AudioPlayer();
   await Firebase.initializeApp();
   await SharedPreferenceHelper.sharedHelper.initSharedPreferences();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -35,6 +39,8 @@ void main() async {
                 create: (context) => PomoProvider()),
             ChangeNotifierProvider<NoteProvider>(
                 create: (context) => NoteProvider()),
+            ChangeNotifierProvider<JournalProvider>(
+                create: (context) => JournalProvider()),
           ],
           child: const MyApp(),
         ),
@@ -42,8 +48,8 @@ void main() async {
       ));
     });
   });
-
 }
+
 Future<void> loadAudioFile() async {
   await audioPlayer.setReleaseMode(ReleaseMode.stop);
   await audioPlayer.setSourceAsset('audios/break.wav');
@@ -77,6 +83,8 @@ class MyApp extends StatelessWidget {
           if (name == RegistrationScreen.routeName) {
             return RegistrationScreen(
                 type: (arguments as List)[0] as RegistrationType);
+          } else if (name == MasterPassScreen.routeName) {
+            return MasterPassScreen(note: (arguments as List)[0] as NoteModel);
           } else {
             return const Scaffold(
               body: Text('ERROR 404!'),

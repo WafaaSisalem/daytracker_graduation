@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../main.dart';
+import '../main.dart';
 
 class ButtonWidget extends StatelessWidget {
   const ButtonWidget({

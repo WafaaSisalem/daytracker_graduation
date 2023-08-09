@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../router/app_router.dart';
-import '../../widgets/common/appbar_widget.dart';
-import '../../widgets/common/dialog_widget.dart';
-import '../../widgets/notes/writing_place.dart';
-import '../../widgets/svgs/svgs.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/dialog_widget.dart';
+import '../notes/widgets/writing_place.dart';
+import '../../utils/svgs/svgs.dart';
 import 'journal_add_screen.dart';
 import 'journal_home_screen.dart';
 

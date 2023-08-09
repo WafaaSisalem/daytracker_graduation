@@ -2,9 +2,9 @@ import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../widgets/common/no_entries_widget.dart';
-import '../../../widgets/common/static_calendar.dart';
-import '../../../widgets/svgs/svgs.dart';
+import '../../../widgets/no_entries_widget.dart';
+import '../../../widgets/static_calendar.dart';
+import '../../../utils/svgs/svgs.dart';
 import 'notes_tab.dart';
 
 class CalendarTab extends StatelessWidget {
@@ -22,6 +22,7 @@ class CalendarTab extends StatelessWidget {
           ),
           Expanded(
               child: NotesTab(
+            longPressActivated: false,
             notes: noteProvider.selectedDayNotes,
             noEntriesWidget: NoEntriesWidget(
               image: svgNoCalendarEntry,

@@ -7,19 +7,26 @@ class Constants {
   static const quotKey = "Quot";
   static const String userCollectionName = 'users';
   static const String noteCollectionName = 'notes';
+  static const String journalCollectionName = 'journals';
+
   static const String formatedDateKey = 'formatedDate';
+  static const String emailKey = 'email';
+  static const String masterPassKey = 'masterPassword';
+  static const String userNameKey = 'userName';
 
   static const String dateKey = 'date';
 
   static const String contentKey = 'content';
+  static const String locationKey = 'location';
   static const String titleKey = 'title';
   static const String idKey = 'id';
   static const String passwordKey = 'password';
   static const String isLockedKey = 'isLocked';
   static const String dateFormat = 'MMMM d, y. EEE. hh:mm a';
-  static const totalPomoKey ="totalPomo";
-  static const numPomoKey ="numPomo";
-  static const minutesKey ="Minutes";
+
+  static const totalPomoKey = "totalPomo";
+  static const numPomoKey = "numPomo";
+  static const minutesKey = "Minutes";
   static const start = "Start";
   static const pause = "Pause";
   static const relax = "Relax";
@@ -31,7 +38,8 @@ class Constants {
   static const homeScreen = 'HomeScreen';
   static const continued = "Continue";
   static const doEnd = "Do you want to End the Pomo?";
-  static const notSaved = "this record can't be saved because the focus duration is shorter than 20 mins.";
+  static const notSaved =
+      "this record can't be saved because the focus duration is shorter than 20 mins.";
   static const gotPomoScreen = "GotPomoScreen";
   static const getMess = "You've got a pomo.";
   static const get4Mess = "You've got 4 pomos.";
@@ -41,13 +49,13 @@ class Constants {
   static const relaxLongMess = "Take along break,\n Relax for 15 mins";
   static const goOnMess = "Let's go on to the next pomo";
 
+  static const mylocation = 'AlRemal st, Gaza, Palestine';
 
   // static Methods
   static void playSound() async {
     String audioPath = 'audios/break.wav';
-    await audioPlayer.play(AssetSource(audioPath),);
+    await audioPlayer.play(
+      AssetSource(audioPath),
+    );
   }
-
-
-
 }

@@ -5,23 +5,24 @@ import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
+import '../models/journal_model.dart';
 import '../models/note_model.dart';
 import '../models/user_model.dart';
 
-class NoteProvider extends ChangeNotifier {
-  List<NoteModel> allNotes = [];
-  List<NoteModel> selectedDayNotes = []; //important
+class JournalProvider extends ChangeNotifier {
+  List<JournalModel> allJournals = [];
+  List<JournalModel> selectedDayJournals = []; //important
   bool isSelectionMode = false;
   Map<int, bool> selectedFlag = {};
   DateTime selectedDay =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   EventList<Event> eventList = EventList<Event>(events: {});
   UserModel? userModel;
-  List<NoteModel> searchResult = [];
+  List<JournalModel> searchResult = [];
 
-  NoteProvider() {
+  JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
-      getAllNote();
+      getAllJournals();
       getUserModel();
     }
   }
@@ -37,86 +38,81 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addNote({
-    required NoteModel note,
+  addJournal({
+    required JournalModel journal,
   }) async {
-    await FirestoreHelper.firestoreHelper.addNote(
-      note: note,
+    await FirestoreHelper.firestoreHelper.addJournal(
+      journal: journal,
     );
-    getAllNote();
+    getAllJournals();
   }
 
-  deleteNote({required String noteId}) async {
-    await FirestoreHelper.firestoreHelper.deleteNote(noteId: noteId);
-    getAllNote();
+  deleteJournal({required String journalId}) async {
+    await FirestoreHelper.firestoreHelper.deleteJournal(journalId: journalId);
+    getAllJournals();
   }
 
-  getAllNote() async {
-    allNotes.clear();
-    QuerySnapshot noteQuery =
-        await FirestoreHelper.firestoreHelper.getAllNotes();
-    allNotes = noteQuery.docs
-        .map((note) => NoteModel(
-            id: note[Constants.idKey],
-            content: note[Constants.contentKey],
-            date: (note[Constants.dateKey] as Timestamp).toDate(),
-            title: note[Constants.titleKey],
-            isLocked: note[Constants.isLockedKey] == 0 ? false : true))
+  getAllJournals() async {
+    allJournals.clear();
+    QuerySnapshot journalQuery =
+        await FirestoreHelper.firestoreHelper.getAllJournals();
+    allJournals = journalQuery.docs
+        .map((journal) => JournalModel(
+            location: journal[Constants.locationKey],
+            id: journal[Constants.idKey],
+            content: journal[Constants.contentKey],
+            date: (journal[Constants.dateKey] as Timestamp).toDate(),
+            isLocked: journal[Constants.isLockedKey] == 0 ? false : true))
         .toList();
     eventList.clear();
     addEvents();
-    setSelectedDayNotes();
+    setSelectedDayJournals();
 
     notifyListeners();
   }
 
-  void updateNote(NoteModel note) async {
-    await FirestoreHelper.firestoreHelper.updateNote(note);
-    getAllNote();
+  void updateJournal(JournalModel journal) async {
+    await FirestoreHelper.firestoreHelper.updateJournal(journal);
+    getAllJournals();
   }
 
   void setSelectedDay(DateTime date) {
     //important
     selectedDay = date;
-    setSelectedDayNotes();
+    setSelectedDayJournals();
     notifyListeners();
   }
 
-  void setSelectedDayNotes() {
+  void setSelectedDayJournals() {
     List<Event> events = eventList.getEvents(selectedDay);
-
-    print(events.toString() + 'evetnttts');
-    selectedDayNotes = events.map((e) {
-      print(e.title.toString() + 'title');
-      return getNoteById(e.title);
+    selectedDayJournals = events.map((e) {
+      return getJournalById(e.title);
     }).toList();
   }
 
   void addEvents() {
-    for (int i = 0; i < allNotes.length; i++) {
-      DateTime date = DateTime(
-          allNotes[i].date.year, allNotes[i].date.month, allNotes[i].date.day);
+    for (int i = 0; i < allJournals.length; i++) {
+      DateTime date = DateTime(allJournals[i].date.year,
+          allJournals[i].date.month, allJournals[i].date.day);
       eventList.add(
         date,
-        Event(date: date, title: allNotes[i].id),
+        Event(date: date, title: allJournals[i].id),
       );
     }
   }
 
-  NoteModel getNoteById(String? title) {
-    print(allNotes.where((element) => element.id == title).toList()[0]);
-    return allNotes.where((element) => element.id == title).toList()[0];
+  JournalModel getJournalById(String? title) {
+    return allJournals.where((element) => element.id == title).toList()[0];
   }
 
   void search(String value) {
-    searchResult = allNotes.where((note) {
-      String content = note.content.toLowerCase();
-      String title = note.title.toLowerCase();
+    searchResult = allJournals.where((journal) {
+      String content = journal.content.toLowerCase();
       String input = value.toLowerCase();
       if (input == '') {
         return false;
       }
-      return content.contains(input) || title.contains(input);
+      return content.contains(input);
     }).toList();
     notifyListeners();
   }
@@ -131,10 +127,10 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSelectedNotes() {
+  void deleteSelectedJournals() {
     selectedFlag.forEach((key, value) {
       if (value) {
-        deleteNote(noteId: allNotes[key].id);
+        deleteJournal(journalId: allJournals[key].id);
       }
     });
     selectedFlag = {};

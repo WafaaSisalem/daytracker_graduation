@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/pomo_provider.dart';
-import '../../../widgets/common/button_widget.dart';
+import '../../../widgets/button_widget.dart';
 
 class GotPomoScreen extends StatelessWidget {
   const GotPomoScreen({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class GotPomoScreen extends StatelessWidget {
     return Scaffold(
       appBar: const PomoAppBar(),
       body: Consumer<PomoProvider>(
-        builder: (context, provider, x) =>SafeArea(
+        builder: (context, provider, x) => SafeArea(
           child: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -30,15 +30,25 @@ class GotPomoScreen extends StatelessWidget {
                   SizedBox(
                     height: 30.h,
                   ),
-                  _buildFirstText(provider.numOfPomo<4?Constants.getMess:Constants.get4Mess,context),
-                  _buildSecText(provider.numOfPomo<4?Constants.relaxMess:Constants.relaxLongMess,context),
+                  _buildFirstText(
+                      provider.numOfPomo < 4
+                          ? Constants.getMess
+                          : Constants.get4Mess,
+                      context),
+                  _buildSecText(
+                      provider.numOfPomo < 4
+                          ? Constants.relaxMess
+                          : Constants.relaxLongMess,
+                      context),
                   SizedBox(
                     height: 30.h,
                   ),
                   ButtonWidget(
                       text: Constants.relax,
                       onPressed: () {
-                       AppRouter.router.pushWithReplacementFunction(BreakScreen(isLong:provider.numOfPomo<4?false:true));
+                        AppRouter.router.pushWithReplacementFunction(
+                            BreakScreen(
+                                isLong: provider.numOfPomo < 4 ? false : true));
                       },
                       width: 176.w,
                       height: 40.h),
@@ -46,11 +56,12 @@ class GotPomoScreen extends StatelessWidget {
                     height: 10.h,
                   ),
                   Visibility(
-                    visible: provider.numOfPomo<4,
+                    visible: provider.numOfPomo < 4,
                     child: ButtonWidget(
                       text: Constants.skip,
                       onPressed: () {
-                        AppRouter.router.pushNamedWithReplacementFunction(Constants.goOn);
+                        AppRouter.router
+                            .pushNamedWithReplacementFunction(Constants.goOn);
                       },
                       width: 176.w,
                       height: 40.h,
@@ -63,7 +74,8 @@ class GotPomoScreen extends StatelessWidget {
                   ButtonWidget(
                     text: Constants.exit,
                     onPressed: () {
-                      AppRouter.router.pushNamedWithReplacementFunction(Constants.homeScreen);
+                      AppRouter.router.pushNamedWithReplacementFunction(
+                          Constants.homeScreen);
                     },
                     width: 176.w,
                     height: 40.h,
@@ -77,17 +89,21 @@ class GotPomoScreen extends StatelessWidget {
       ),
     );
   }
-  Widget _buildFirstText(String text,BuildContext context){
+
+  Widget _buildFirstText(String text, BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.headline1!.copyWith(fontWeight: FontWeight.w600),
+      style: Theme.of(context)
+          .textTheme
+          .headline1!
+          .copyWith(fontWeight: FontWeight.w600),
     );
   }
-  Widget _buildSecText(String text,BuildContext context){
+
+  Widget _buildSecText(String text, BuildContext context) {
     return Text(
       text,
       style: Theme.of(context).textTheme.headline4!.copyWith(fontSize: 15.sp),
     );
   }
 }
-

@@ -1,19 +1,20 @@
+import 'package:day_tracker_graduation/widgets/dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/note_model.dart';
 import '../../models/tab_model.dart';
 import '../../provider/note_provider.dart';
 import '../../router/app_router.dart';
-import '../../widgets/common/appbar_widget.dart';
-import '../../widgets/common/bottombar_widget.dart';
-import '../../widgets/common/fab_widget.dart';
-import '../../widgets/common/no_entries_widget.dart';
-import '../../widgets/notes/appbar_textfield.dart';
-import '../../widgets/svgs/svgs.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/bottombar_widget.dart';
+import '../../widgets/fab_widget.dart';
+import '../../widgets/no_entries_widget.dart';
+import 'widgets/appbar_textfield.dart';
+import '../../utils/svgs/svgs.dart';
 import '../choose_screen.dart';
-import 'package:intl/intl.dart';
 
 import 'note_handling_screen.dart';
 import 'tabs/calendar_tab.dart';
@@ -47,6 +48,7 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
       List<TabModel> tabs = [
         TabModel(
             content: NotesTab(
+              longPressActivated: true,
               notes: notes,
               noEntriesWidget: NoEntriesWidget(
                 image: svgNoNote,
@@ -63,11 +65,30 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
             content: SearchTab(
               type: HomeScreenType.note,
             ),
-            title: AppbarTextFieldWidget(
-                onChanged: (value) {},
-                hintText: 'Search your notes...',
-                text: null,
-                autofocus: true),
+            title: SizedBox(
+              width: 200.w,
+              child: TextField(
+                cursorColor: Colors.grey,
+                onChanged: (value) {
+                  noteProvider.search(value);
+                },
+                autofocus: true,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.all(0),
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .headline3!
+                      .copyWith(color: const Color(0x73C4C4C4)), //TODO: color
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  hintText: 'Search your notes...',
+                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline3!
+                    .copyWith(color: Colors.white), //TODO: color
+              ),
+            ),
             iconPath: 'assets/images/search.svg'),
         TabModel(
             content: SettingsTab(),
@@ -78,23 +99,82 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
           resizeToAvoidBottomInset: false,
           appBar: AppbarWidget(
             actions: [
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  AppRouter.router
-                      .pushWithReplacementFunction(ChooseCardScreen());
-                },
-                itemBuilder: (BuildContext context) {
-                  return {
-                    'Back Home',
-                  }.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              ),
-              // IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+              noteProvider.isSelectionMode
+                  ? IconButton(
+                      icon: svgWhiteDelete,
+                      onPressed: () {
+                        bool isLockedExist = false;
+                        Iterable<int> keys = noteProvider.selectedFlag.keys;
+                        for (int key in keys) {
+                          if (noteProvider.allNotes[key].isLocked) {
+                            isLockedExist = true;
+                          }
+                        }
+                        if (isLockedExist) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => DialogWidget(
+                                  dialogType: DialogType.password,
+                                  entryType: 'note',
+                                  onOkPressed: (value) {
+                                    if (value.isEmpty) {
+                                      showToast('Password can not be empty!',
+                                          context: context);
+                                    } else {
+                                      if (noteProvider
+                                              .userModel!.masterPassword ==
+                                          value) {
+                                        AppRouter.router.pop();
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return DialogWidget(
+                                                  dialogType: DialogType.delete,
+                                                  entryType: 'note',
+                                                  onOkPressed: (value) {
+                                                    noteProvider
+                                                        .deleteSelectedNotes();
+                                                    AppRouter.router.pop();
+                                                  });
+                                            });
+                                      } else {
+                                        showToast('Wrong Password!',
+                                            context: context,
+                                            position: StyledToastPosition.top);
+                                      }
+                                    }
+                                  }));
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DialogWidget(
+                                    dialogType: DialogType.delete,
+                                    entryType: 'note',
+                                    onOkPressed: (value) {
+                                      noteProvider.deleteSelectedNotes();
+                                      AppRouter.router.pop();
+                                    });
+                              });
+                        }
+                      },
+                    )
+                  : PopupMenuButton<String>(
+                      onSelected: (value) {
+                        AppRouter.router
+                            .pushWithReplacementFunction(ChooseCardScreen());
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return {
+                          'Back Home',
+                        }.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(choice),
+                          );
+                        }).toList();
+                      },
+                    ),
             ],
             titlePlace: Row(
               children: [
@@ -117,10 +197,6 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
               tabs[1].iconPath,
               tabs[2].iconPath,
               tabs[3].iconPath,
-              // assetsImages + 'allnote.svg',
-              // assetsImages + 'calendar.svg',
-              // assetsImages + 'search.svg',
-              // assetsImages + 'theme.svg'
             ],
             onTap: (index) {
               currentIndex = index;

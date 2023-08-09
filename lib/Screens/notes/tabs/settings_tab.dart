@@ -1,4 +1,5 @@
-import 'package:day_tracker_graduation/widgets/notes/settings_widget.dart';
+import 'package:day_tracker_graduation/helpers/shared_preference_helper.dart';
+import 'package:day_tracker_graduation/Screens/notes/widgets/settings_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,8 +9,13 @@ class SettingsTab extends StatefulWidget {
 }
 
 class _SettingsTabState extends State<SettingsTab> {
-  int themeChoice = 1;
-  int viewChoice = 1;
+  int themeChoice = SharedPreferenceHelper.sharedHelper.getTheme() == null
+      ? 0
+      : SharedPreferenceHelper.sharedHelper.getTheme();
+  int viewChoice = SharedPreferenceHelper.sharedHelper.getView() == null
+      ? 1
+      : SharedPreferenceHelper.sharedHelper.getView();
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -43,6 +49,7 @@ class _SettingsTabState extends State<SettingsTab> {
                     ),
                     onTap: (choice) {
                       themeChoice = choice;
+                      SharedPreferenceHelper.sharedHelper.setTheme(choice);
                       setState(() {});
                     }),
                 NoteSettingsWidget(
@@ -55,7 +62,9 @@ class _SettingsTabState extends State<SettingsTab> {
                     ),
                     onTap: (choice) {
                       themeChoice = choice;
-                      setState(() {});
+                      setState(() {
+                        SharedPreferenceHelper.sharedHelper.setTheme(choice);
+                      });
                     }),
               ],
             ),
@@ -76,19 +85,21 @@ class _SettingsTabState extends State<SettingsTab> {
                     radioValue: 1,
                     groupValue: viewChoice,
                     containerColor: const Color(0xFFF3F3F3),
-                    containerChild:
-                        Image.asset('assets/images/square_view.png'),
+                    containerChild: Image.asset('assets/images/rect_view.png'),
                     onTap: (choice) {
                       viewChoice = choice;
+                      SharedPreferenceHelper.sharedHelper.setView(choice);
                       setState(() {});
                     }),
                 NoteSettingsWidget(
                     radioValue: 2,
                     groupValue: viewChoice,
                     containerColor: const Color(0xFFF3F3F3),
-                    containerChild: Image.asset('assets/images/rect_view.png'),
+                    containerChild:
+                        Image.asset('assets/images/square_view.png'),
                     onTap: (choice) {
                       viewChoice = choice;
+                      SharedPreferenceHelper.sharedHelper.setView(choice);
                       setState(() {});
                     })
               ],

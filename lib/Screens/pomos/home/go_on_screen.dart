@@ -7,7 +7,7 @@ import 'package:simple_timer/simple_timer.dart';
 import '../../../provider/pomo_provider.dart';
 import '../../../router/app_router.dart';
 import '../../../utils/constants.dart';
-import '../../../widgets/common/button_widget.dart';
+import '../../../widgets/button_widget.dart';
 import '../widgets/pomo_app_bar.dart';
 import '../widgets/quote_container.dart';
 import '../widgets/timer_resume_widget..dart';
@@ -23,8 +23,8 @@ class GgOnScreen extends StatefulWidget {
   State<GgOnScreen> createState() => _GgOnScreenState();
 }
 
-
-class _GgOnScreenState extends State<GgOnScreen>  with SingleTickerProviderStateMixin{
+class _GgOnScreenState extends State<GgOnScreen>
+    with SingleTickerProviderStateMixin {
   TimerController? _timerController;
 
   @override
@@ -57,15 +57,16 @@ class _GgOnScreenState extends State<GgOnScreen>  with SingleTickerProviderState
               const SizedBox(
                 height: 30,
               ),
-              TimerWidget(timerController: _timerController,),
+              TimerWidget(
+                timerController: _timerController,
+              ),
               SizedBox(
                 height: 30.h,
               ),
-              _buildFirstText(Constants.goOnMess,context),
+              _buildFirstText(Constants.goOnMess, context),
               SizedBox(
                 height: 30.h,
               ),
-
               if (provider.currentStatus == TimerStatuss.stopped)
                 Expanded(
                   child: TimerStopWidget(
@@ -99,7 +100,8 @@ class _GgOnScreenState extends State<GgOnScreen>  with SingleTickerProviderState
       style: theme.textTheme.headline1!.copyWith(letterSpacing: 5),
     );
   }
-  Widget _buildFirstText(String text,BuildContext context){
+
+  Widget _buildFirstText(String text, BuildContext context) {
     return Text(
       text,
       style: Theme.of(context).textTheme.headline4!,

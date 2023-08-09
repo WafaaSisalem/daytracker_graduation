@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Screens/choose_screen.dart';
-import '../Screens/pomos/home/got_pomo_screen.dart';
 import '../Screens/registration/registration_screen.dart';
 import '../models/user_model.dart';
 import '../router/app_router.dart';
@@ -26,6 +25,7 @@ class AuthProvider extends ChangeNotifier {
 
   getCurrentUser() {
     currentUser = AuthHelper.authHelper.getCurrentUser();
+
     notifyListeners();
   }
 
@@ -35,16 +35,18 @@ class AuthProvider extends ChangeNotifier {
       required userName,
       required context}) async {
     print('signUpwithemailandpassword');
-    UserCredential userCredential = await AuthHelper.authHelper
+    UserCredential? userCredential = await AuthHelper.authHelper
         .signUpWithEmailAndPassword(email, password, context);
-    String userId = userCredential.user!.uid;
+    if (userCredential != null) {
+      String userId = userCredential.user!.uid;
 
-    UserModel user = UserModel(email: email, userName: userName, id: userId);
-    addUserToFirestore(user: user);
+      UserModel user = UserModel(email: email, userName: userName, id: userId);
+      addUserToFirestore(user: user);
+    }
     getCurrentUser();
   }
 
-  signInWithEmailAndPassword(
+  Future<bool> signInWithEmailAndPassword(
       {required email, required password, required context}) async {
     bool isSigned = await AuthHelper.authHelper
         .signInWithEmailAndPassword(email, password, context);

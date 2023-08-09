@@ -2,7 +2,7 @@ import 'package:day_tracker_graduation/models/note_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../svgs/svgs.dart';
+import '../../../utils/svgs/svgs.dart';
 
 enum NoteShape {
   rectangle,
@@ -89,7 +89,7 @@ class NoteWidget extends StatelessWidget {
         child: SizedBox(
           width: 17.w,
           height: 17.h,
-          child: svgLock,
+          child: note.isLocked ? svgUnlock : svgLock,
         ),
       );
 
@@ -99,9 +99,9 @@ class NoteWidget extends StatelessWidget {
           onDeleteIconTap();
         },
         child: SizedBox(
-          child: svgDelete,
           width: 17.w,
           height: 17.h,
+          child: svgDelete,
         ),
       );
 

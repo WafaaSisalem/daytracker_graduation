@@ -2,17 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/pomo_provider.dart';
-import '../../utils/constants.dart';
+import '../provider/pomo_provider.dart';
+import '../utils/constants.dart';
 import 'dialog_textfield.dart';
 
-enum DialogType {
-  discard,
-  delete,
-  password,
-  quote,
-  end
-}
+enum DialogType { discard, delete, password, quote, end }
 
 class DialogWidget extends StatefulWidget {
   const DialogWidget(
@@ -34,7 +28,7 @@ class _DialogWidgetState extends State<DialogWidget> {
   String? dialogTitle;
   Widget? dialogContent;
   String value = '';
-  late PomoProvider pomoProvider ;
+  late PomoProvider pomoProvider;
   initValues() {
     //final pomoProvider = Provider.of<PomoProvider>(context);
     switch (widget.dialogType) {
@@ -69,9 +63,12 @@ class _DialogWidgetState extends State<DialogWidget> {
         break;
       case DialogType.end:
         dialogTitle = 'End this pomo?';
-        dialogContent = Text(pomoProvider.duration.inMinutes>=1?Constants.doEnd:Constants.notSaved);
+        dialogContent = Text(pomoProvider.duration.inMinutes >= 1
+            ? Constants.doEnd
+            : Constants.notSaved);
     }
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -83,6 +80,7 @@ class _DialogWidgetState extends State<DialogWidget> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);

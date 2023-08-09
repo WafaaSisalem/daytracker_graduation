@@ -6,13 +6,14 @@ import 'package:simple_timer/simple_timer.dart' as timer;
 
 import '../../../provider/pomo_provider.dart';
 import '../../../utils/constants.dart';
-import '../../../widgets/common/button_widget.dart';
-import '../../../widgets/common/dialog_widget.dart';
+import '../../../widgets/button_widget.dart';
+import '../../../widgets/dialog_widget.dart';
 import '../home/home_screen.dart';
 import 'motivation_text.dart';
 
 class TimerResumeWidget extends StatelessWidget {
-  TimerResumeWidget({Key? key, required this.timerController}) : super(key: key);
+  TimerResumeWidget({Key? key, required this.timerController})
+      : super(key: key);
   timer.TimerController? timerController;
   @override
   Widget build(BuildContext context) {
@@ -41,17 +42,16 @@ class TimerResumeWidget extends StatelessWidget {
                       dialogType: DialogType.end,
                       entryType: 'end',
                       onOkPressed: (value) {
-
-                        if(pomoProvider.duration.inMinutes>=1){
+                        if (pomoProvider.duration.inMinutes >= 1) {
                           pomoProvider.setTotalPomo();
                           pomoProvider.setNumOfPomo();
                           pomoProvider.setTotalMinutes();
                           timerController!.reset();
                           pomoProvider.setTimerStatus(TimerStatuss.stopped);
                           Navigator.pop(context);
-                          AppRouter.router.pushNamedWithReplacementFunction(Constants.gotPomoScreen);
-                        }
-                        else{
+                          AppRouter.router.pushNamedWithReplacementFunction(
+                              Constants.gotPomoScreen);
+                        } else {
                           timerController!.reset();
                           pomoProvider.setTimerStatus(TimerStatuss.stopped);
                           Navigator.pop(context);
@@ -68,7 +68,7 @@ class TimerResumeWidget extends StatelessWidget {
         SizedBox(
           height: 40.h,
         ),
-        MotivationText(text:'KEEP GOING!!'),
+        MotivationText(text: 'KEEP GOING!!'),
         SizedBox(
           height: 15.h,
         ),

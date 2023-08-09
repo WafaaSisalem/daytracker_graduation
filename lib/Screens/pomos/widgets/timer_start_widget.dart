@@ -5,7 +5,7 @@ import 'package:simple_timer/simple_timer.dart' as timer;
 
 import '../../../provider/pomo_provider.dart';
 import '../../../utils/constants.dart';
-import '../../../widgets/common/button_widget.dart';
+import '../../../widgets/button_widget.dart';
 import '../home/home_screen.dart';
 import 'motivation_text.dart';
 
@@ -29,12 +29,14 @@ class TimerStartWidget extends StatelessWidget {
         SizedBox(
           height: 50.h,
         ),
-        MotivationText(text:'KEEP DOING HARD WORK'),
+        MotivationText(text: 'KEEP DOING HARD WORK'),
         SizedBox(
           height: 20.h,
         ),
-        Expanded(child: Image.asset('assets/images/timer_isworking.png',))
-
+        Expanded(
+            child: Image.asset(
+          'assets/images/timer_isworking.png',
+        ))
       ],
     );
   }

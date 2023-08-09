@@ -1,7 +1,9 @@
+import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import 'floating_calendar.dart';
 
@@ -53,14 +55,8 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
       dayPadding: 5,
       showHeader: true,
       headerTitleTouchable: true,
-      markedDatesMap: EventList<Event>(events: {
-        DateTime(2022, 3, 28): [
-          Event(
-            date: DateTime(2022, 3, 28),
-            title: 'Event 1',
-          ),
-        ]
-      }),
+      markedDatesMap:
+          Provider.of<NoteProvider>(context, listen: false).eventList,
       onHeaderTitlePressed: () async {
         var value = await floatingCalendarWidget(context);
         dateTime = value;

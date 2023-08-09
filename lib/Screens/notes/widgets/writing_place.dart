@@ -19,7 +19,7 @@ class WritingPlaceWidget extends StatelessWidget {
       controller: TextEditingController(text: contentText),
       cursorColor: Colors.grey, //TODO: color
       onChanged: onChanged,
-      style: theme.textTheme.headline4!.copyWith(height: 1.5.h),
+      style: theme.textTheme.headline4!.copyWith(height: 1.5.h, fontSize: 18),
       keyboardType: TextInputType.multiline,
       maxLines: 99999,
       decoration: InputDecoration(

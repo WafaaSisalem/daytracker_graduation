@@ -1,5 +1,7 @@
 import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
+import 'package:day_tracker_graduation/provider/journal_provider.dart';
+import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,9 +12,9 @@ import '../../main.dart';
 import '../../models/user_model.dart';
 import '../../router/app_router.dart';
 import '../../services/firestore_helper.dart';
-import '../../widgets/common/button_widget.dart';
-import '../../widgets/registration/textfield_widget.dart';
-import '../../widgets/svgs/svgs.dart';
+import '../../widgets/button_widget.dart';
+import 'widgets/textfield_widget.dart';
+import '../../utils/svgs/svgs.dart';
 
 enum RegistrationType {
   signUp,
@@ -66,8 +68,22 @@ class RegistrationScreen extends StatelessWidget {
   String userName = '';
   String email = '';
   String password = '';
-  save(context, AuthProvider authProvider) async {
-    if (formKey.currentState!.validate()) {
+  save(context, AuthProvider authProvider, NoteProvider noteProvider,
+      JournalProvider journalProvider) async {
+    if (type == RegistrationType.signUp && userName.length < 3) {
+      toastWidget(
+          message: 'User Name should be more than 2 characters!',
+          context: context);
+    } else if (!RegExp(
+            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$",
+            caseSensitive: false)
+        .hasMatch(email)) {
+      toastWidget(message: 'Please enter a valid email!', context: context);
+    } else if (password.length < 7) {
+      toastWidget(
+          context: context,
+          message: 'Password should be more than 6 characters');
+    } else {
       if (type == RegistrationType.signUp) {
         authProvider.signUpWithEmailAndPassword(
             email: email,
@@ -78,25 +94,47 @@ class RegistrationScreen extends StatelessWidget {
         bool isSigned = await authProvider.signInWithEmailAndPassword(
             email: email, password: password, context: context);
         if (isSigned) {
-          AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+          await noteProvider.getAllNote();
+          await journalProvider.getAllJournals();
+          await AppRouter.router
+              .pushWithReplacementFunction(ChooseCardScreen());
         }
       }
     }
+    // if (formKey.currentState!.validate()) {
+    //   if (type == RegistrationType.signUp) {
+    //     authProvider.signUpWithEmailAndPassword(
+    //         email: email,
+    //         password: password,
+    //         userName: userName,
+    //         context: context);
+    //   } else {
+    //     bool isSigned = await authProvider.signInWithEmailAndPassword(
+    //         email: email, password: password, context: context);
+    //     if (isSigned) {
+    //       await noteProvider.getAllNote();
+    //       AppRouter.router.pushWithReplacementFunction(ChooseCardScreen());
+    //     }
+    //   }
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return Consumer<AuthProvider>(builder: (context, authProvider, x) {
+    return Consumer3<AuthProvider, NoteProvider, JournalProvider>(
+        builder: (context, authProvider, noteProvider, journalProvider, x) {
       return Scaffold(
         body: SafeArea(
           child: Container(
+            height: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 48.w),
-            child: Center(
-              child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: Center(
                 child: Column(
                   children: [
+                    SizedBox(height: 30.h),
                     myHeadtitle(),
                     SizedBox(height: 5.h),
                     mySubtitle(theme),
@@ -108,7 +146,8 @@ class RegistrationScreen extends StatelessWidget {
                         ? const SizedBox()
                         : myButtonTextUnderForm(theme),
                     SizedBox(height: 30.h),
-                    myButton(context, authProvider),
+                    myButton(
+                        context, authProvider, noteProvider, journalProvider),
                     SizedBox(
                       height: 30.h,
                     ),
@@ -200,15 +239,14 @@ class RegistrationScreen extends StatelessWidget {
     );
   }
 
-  myButton(BuildContext context, authProvider) {
+  myButton(BuildContext context, AuthProvider authProvider,
+      NoteProvider noteProvider, JournalProvider journalProvider) {
     return ButtonWidget(
         text: buttonText,
         onPressed: () async {
-          formKey.currentState!.validate();
-
           if (type == RegistrationType.forgetPassword) {
           } else {
-            save(context, authProvider);
+            save(context, authProvider, noteProvider, journalProvider);
           }
         },
         height: 48.h,

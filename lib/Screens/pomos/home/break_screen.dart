@@ -6,7 +6,7 @@ import 'package:simple_timer/simple_timer.dart';
 
 import '../../../provider/pomo_provider.dart';
 import '../../../utils/constants.dart';
-import '../../../widgets/common/button_widget.dart';
+import '../../../widgets/button_widget.dart';
 import '../widgets/pomo_app_bar.dart';
 import '../widgets/timer_widget.dart';
 
@@ -65,9 +65,11 @@ class _BreakScreenState extends State<BreakScreen>
                     text: Constants.finish,
                     onPressed: () {
                       _timerController!.reset();
-                      widget.isLong? provider.setNumOfPomo():null;
+                      widget.isLong ? provider.setNumOfPomo() : null;
                       AppRouter.router.pushNamedWithReplacementFunction(
-                          widget.isLong ? Constants.homeScreen : Constants.goOn);
+                          widget.isLong
+                              ? Constants.homeScreen
+                              : Constants.goOn);
                     },
                     width: 176.w,
                     height: 40.h),
@@ -77,7 +79,8 @@ class _BreakScreenState extends State<BreakScreen>
                 ButtonWidget(
                   text: Constants.exit,
                   onPressed: () {
-                    AppRouter.router.pushNamedWithReplacementFunction(Constants.homeScreen);
+                    AppRouter.router
+                        .pushNamedWithReplacementFunction(Constants.homeScreen);
                   },
                   width: 176.w,
                   height: 40.h,

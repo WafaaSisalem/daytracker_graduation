@@ -1,20 +1,19 @@
 import 'package:day_tracker_graduation/models/note_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
-import 'package:day_tracker_graduation/services/auth_helper.dart';
-import 'package:day_tracker_graduation/services/firestore_helper.dart';
-import 'package:day_tracker_graduation/widgets/notes/appbar_textfield.dart';
+import 'package:day_tracker_graduation/Screens/notes/widgets/appbar_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:provider/provider.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/constants.dart';
-import '../../widgets/common/appbar_widget.dart';
-import '../../widgets/common/dialog_widget.dart';
-import '../../widgets/notes/writing_place.dart';
-import '../../widgets/svgs/svgs.dart';
+import '../../widgets/appbar_widget.dart';
+import '../../widgets/dialog_widget.dart';
+import 'widgets/writing_place.dart';
+import '../../utils/svgs/svgs.dart';
+import '../master_password_screen.dart';
 import 'note_home_screen.dart';
 
 enum NoteHandlingType { add, display }
@@ -45,18 +44,45 @@ class NoteHandlingScreen extends StatelessWidget {
                     color: Colors.white, //TODO: COLOR
                   ),
                   onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return DialogWidget(
-                              dialogType: DialogType.discard,
-                              entryType: 'note',
-                              onOkPressed: (value) {
-                                AppRouter.router.pop();
-                                AppRouter.router.pushWithReplacementFunction(
-                                    NoteHomeScreen());
-                              });
-                        });
+                    if (type == NoteHandlingType.add) {
+                      if (content == '' && title == '') {
+                        AppRouter.router
+                            .pushWithReplacementFunction(NoteHomeScreen());
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DialogWidget(
+                                  dialogType: DialogType.discard,
+                                  entryType: 'note',
+                                  onOkPressed: (value) {
+                                    AppRouter.router.pop();
+                                    AppRouter.router
+                                        .pushWithReplacementFunction(
+                                            NoteHomeScreen());
+                                  });
+                            });
+                      }
+                    } else {
+                      if (content == note!.content && title == note!.title) {
+                        AppRouter.router
+                            .pushWithReplacementFunction(NoteHomeScreen());
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DialogWidget(
+                                  dialogType: DialogType.discard,
+                                  entryType: 'note',
+                                  onOkPressed: (value) {
+                                    AppRouter.router.pop();
+                                    AppRouter.router
+                                        .pushWithReplacementFunction(
+                                            NoteHomeScreen());
+                                  });
+                            });
+                      }
+                    }
                   },
                 ),
                 AppbarTextFieldWidget(
@@ -93,27 +119,53 @@ class NoteHandlingScreen extends StatelessWidget {
                   ),
                   InkWell(
                     // splashColor: Colors.transparent,
-                    child:
-                        svgWhiteLock, //TODO: CHANGE IT TO SVGPICTURE AND CHAGE THE COLOR AND DELETE THE SVG IF YOU WANT !
+                    child: note!.isLocked ? svgWhiteUnlock : svgWhiteLock,
                     onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DialogWidget(
-                                dialogType: DialogType.password,
-                                entryType: 'note',
-                                onOkPressed: (value) {
-                                  noteProvider.deleteNote(noteId: note!.id);
-                                  noteProvider.addNote(
-                                      note: NoteModel(
-                                          id: note!.id,
-                                          content: content,
-                                          date: note!.date,
-                                          title: title,
-                                          password: value));
-                                  AppRouter.router.pop();
-                                });
-                          });
+                      if (noteProvider.userModel!.masterPassword.isEmpty) {
+                        AppRouter.router.pushNamedFunction(
+                            MasterPassScreen.routeName, [note]);
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DialogWidget(
+                                  dialogType: DialogType.password,
+                                  entryType: 'note',
+                                  onOkPressed: (value) {
+                                    if (value.isEmpty) {
+                                      showToast('Password can not be empty!',
+                                          context: context);
+                                    } else {
+                                      if (noteProvider
+                                              .userModel!.masterPassword ==
+                                          value) {
+                                        if (note!.isLocked) {
+                                          noteProvider
+                                              .updateNote(NoteModel.fromMap({
+                                            ...note!.toMap(),
+                                            Constants.isLockedKey: 0,
+                                          }));
+                                        } else {
+                                          noteProvider
+                                              .updateNote(NoteModel.fromMap({
+                                            ...note!.toMap(),
+                                            Constants.isLockedKey: 1,
+                                          }));
+                                        }
+
+                                        AppRouter.router.pop();
+                                        // AppRouter.router
+                                        //     .pushWithReplacementFunction(
+                                        //         NoteHomeScreen());
+                                      } else {
+                                        showToast('Wrong Password!',
+                                            context: context,
+                                            position: StyledToastPosition.top);
+                                      }
+                                    }
+                                  });
+                            });
+                      }
                     },
                   ),
                 ],
@@ -135,7 +187,7 @@ class NoteHandlingScreen extends StatelessWidget {
                                     content: content,
                                     date: DateTime.now(),
                                     title: title,
-                                    password: note!.password));
+                                    isLocked: note!.isLocked));
                           }
                           AppRouter.router
                               .pushWithReplacementFunction(NoteHomeScreen());
@@ -146,7 +198,8 @@ class NoteHandlingScreen extends StatelessWidget {
                                     id: DateTime.now().toString(),
                                     content: content,
                                     date: DateTime.now(),
-                                    title: title));
+                                    title: title,
+                                    isLocked: false));
                           }
                           AppRouter.router
                               .pushWithReplacementFunction(NoteHomeScreen());

@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
@@ -36,21 +37,22 @@ class AuthHelper {
     }
   }
 
-  Future signInWithEmailAndPassword(email, password, context) async {
+  Future<bool> signInWithEmailAndPassword(email, password, context) async {
     try {
-      await firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
 
       if (!firebaseAuth.currentUser!.emailVerified) {
         await sendEmailVerification(context);
       }
-      return true;
+      return userCredential.user == null ? false : true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showToast('No user found for that email.', context: context);
       } else if (e.code == 'wrong-password') {
         showToast('Wrong password provided for that user.', context: context);
       }
+      return false;
     }
   }
 

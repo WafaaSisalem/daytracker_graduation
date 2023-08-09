@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../router/app_router.dart';
-import '../../../widgets/common/appbar_widget.dart';
+import '../../../widgets/appbar_widget.dart';
 import '../../choose_screen.dart';
 
-class PomoAppBar extends StatelessWidget implements PreferredSizeWidget{
+class PomoAppBar extends StatelessWidget implements PreferredSizeWidget {
   const PomoAppBar({Key? key}) : super(key: key);
 
   @override
@@ -25,7 +25,8 @@ class PomoAppBar extends StatelessWidget implements PreferredSizeWidget{
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
-              AppRouter.router.pushWithReplacementFunction(const ChooseCardScreen());
+              AppRouter.router
+                  .pushWithReplacementFunction(const ChooseCardScreen());
             },
             itemBuilder: (BuildContext context) {
               return {
@@ -40,6 +41,7 @@ class PomoAppBar extends StatelessWidget implements PreferredSizeWidget{
           ),
         ]);
   }
+
   @override
   Size get preferredSize => Size.fromHeight(58.h);
 }
