@@ -2,16 +2,13 @@ import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
-import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:provider/provider.dart';
 
 import '../../main.dart';
-import '../../models/user_model.dart';
 import '../../router/app_router.dart';
-import '../../services/firestore_helper.dart';
 import '../../widgets/button_widget.dart';
 import 'widgets/textfield_widget.dart';
 import '../../utils/svgs/svgs.dart';

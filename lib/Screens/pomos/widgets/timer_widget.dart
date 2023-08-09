@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_timer/simple_timer.dart' ;
 import 'package:simple_timer/simple_timer.dart';
-
 import '../../../provider/pomo_provider.dart';
 import '../../../router/app_router.dart';
 import '../../../utils/constants.dart';
@@ -20,7 +18,7 @@ class TimerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<PomoProvider>(
-      builder: (context, provider, x) =>  Container(
+      builder: (context, provider, x) => Container(
         width: 256.w,
         height: 256.h,
         decoration: const BoxDecoration(
@@ -40,9 +38,10 @@ class TimerWidget extends StatelessWidget {
           alignment: Alignment(0, 0.4),
           children: [
             SimpleTimer(
-              status: minutes==1 || minutes == 15 ?TimerStatus.start:null,
+              status: minutes == 1 || minutes == 15 ? TimerStatus.start : null,
               duration: Duration(minutes: minutes),
-              controller: minutes==1 || minutes == 15 ?null:timerController,
+              controller:
+                  minutes == 1 || minutes == 15 ? null : timerController,
               timerStyle: TimerStyle.ring,
               onStart: handleTimerOnStart,
               onEnd: () {
@@ -87,7 +86,8 @@ class TimerWidget extends StatelessWidget {
       ),
     );
   }
-  void timerValueChangeListener(Duration timeElapsed,PomoProvider provider) {
+
+  void timerValueChangeListener(Duration timeElapsed, PomoProvider provider) {
     provider.setDuration(timeElapsed);
     print('Current Time ${minutes - timeElapsed.inMinutes}');
   }
@@ -97,24 +97,22 @@ class TimerWidget extends StatelessWidget {
   }
 
   void handleTimerOnEnd(PomoProvider provider) {
-    if(minutes==1){
+    if (minutes == 1) {
       Constants.playSound();
       AppRouter.router.pushNamedWithReplacementFunction(Constants.goOn);
-    }
-    else if(minutes==15){
+    } else if (minutes == 15) {
       Constants.playSound();
       provider.setNumOfPomo();
       AppRouter.router.pushNamedWithReplacementFunction(Constants.homeScreen);
-    }
-    else{
+    } else {
       timerController!.reset();
       provider.setTimerStatus(TimerStatuss.stopped);
       provider.setTotalPomo();
       provider.setNumOfPomo();
       provider.setTotalMinutes();
-      AppRouter.router.pushNamedWithReplacementFunction(Constants.gotPomoScreen);
+      AppRouter.router
+          .pushNamedWithReplacementFunction(Constants.gotPomoScreen);
     }
-
 
     print("timer has ended");
   }

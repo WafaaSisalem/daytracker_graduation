@@ -1,9 +1,6 @@
-import 'package:day_tracker_graduation/Screens/notes/note_home_screen.dart';
 import 'package:day_tracker_graduation/models/note_model.dart';
-import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/router/app_router.dart';
-import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/widgets/appbar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

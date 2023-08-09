@@ -9,6 +9,7 @@ import 'notes_tab.dart';
 
 class NoteCalendarTab extends StatelessWidget {
   const NoteCalendarTab({Key? key}) : super(key: key);
+  @override
   Widget build(BuildContext context) {
     return Consumer<NoteProvider>(builder: (context, noteProvider, x) {
       return Column(

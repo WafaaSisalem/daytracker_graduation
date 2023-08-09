@@ -28,7 +28,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer2<AuthProvider, JournalProvider>(
-        builder: (context, authProvider, JournalProvider, child) {
+        builder: (context, authProvider, journalProvider, child) {
       return Scaffold(
         appBar: AppbarWidget(
             titlePlace: Row(children: [
@@ -111,7 +111,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 child: IconButton(
                     onPressed: () {
                       if (content != '') {
-                        JournalProvider.addJournal(
+                        journalProvider.addJournal(
                             journal: JournalModel(
                                 location: Constants.mylocation,
                                 id: DateTime.now().toString(),

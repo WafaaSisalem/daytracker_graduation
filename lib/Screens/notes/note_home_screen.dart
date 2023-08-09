@@ -12,17 +12,14 @@ import '../../widgets/appbar_widget.dart';
 import '../../widgets/bottombar_widget.dart';
 import '../../widgets/fab_widget.dart';
 import '../../widgets/no_entries_widget.dart';
-import 'widgets/appbar_textfield.dart';
 import '../../utils/svgs/svgs.dart';
 import '../choose_screen.dart';
 
 import 'note_handling_screen.dart';
 import 'tabs/note_calendar_tab.dart';
 import 'tabs/notes_tab.dart';
-import 'tabs/search_tab.dart';
+import 'tabs/note_search_tab.dart';
 import 'tabs/settings_tab.dart';
-
-enum HomeScreenType { note, journal, pomo, task }
 
 class NoteHomeScreen extends StatefulWidget {
   const NoteHomeScreen({
@@ -58,13 +55,11 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
             title: 'Home Page',
             iconPath: 'assets/images/allnote.svg'),
         TabModel(
-            content: NoteCalendarTab(),
+            content: const NoteCalendarTab(),
             title: 'Calendar',
             iconPath: 'assets/images/calendar.svg'),
         TabModel(
-            content: SearchTab(
-              type: HomeScreenType.note,
-            ),
+            content: const NoteSearchTab(),
             title: SizedBox(
               width: 200.w,
               child: TextField(

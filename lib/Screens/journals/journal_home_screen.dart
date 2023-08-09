@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/Screens/journals/journal_search_screen.dart.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/gallary_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
@@ -19,9 +20,6 @@ import '../../widgets/fab_widget.dart';
 import '../../widgets/no_entries_widget.dart';
 import '../../utils/svgs/svgs.dart';
 import '../choose_screen.dart';
-import '../notes/note_home_screen.dart';
-import '../notes/tabs/note_calendar_tab.dart';
-import '../notes/tabs/search_tab.dart';
 import 'journal_add_screen.dart';
 
 class JournalHomeScreen extends StatefulWidget {
@@ -68,7 +66,7 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
             title: 'Gallery',
             iconPath: 'assets/images/gallery.svg'),
         TabModel(
-            content: SearchTab(type: HomeScreenType.journal),
+            content: JournalSearchScreen(),
             title: AppbarTextFieldWidget(
                 onChanged: (value) {},
                 hintText: 'Search your memories...',

@@ -1,4 +1,3 @@
-import 'package:day_tracker_graduation/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
