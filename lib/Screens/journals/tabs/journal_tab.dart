@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:day_tracker_graduation/Screens/master_password_screen.dart';
-import 'package:day_tracker_graduation/helpers/shared_preference_helper.dart';
-import 'package:day_tracker_graduation/models/user_model.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
-import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,11 +9,9 @@ import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/journal_model.dart';
-import '../../../models/note_model.dart';
 import '../../../router/app_router.dart';
 import '../../../widgets/dialog_widget.dart';
 import '../widgets/journal_widget.dart';
-import '../../notes/widgets/note_widget.dart';
 
 class JournalTab extends StatefulWidget {
   JournalTab(

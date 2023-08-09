@@ -11,8 +11,10 @@ class StaticCalendarWidget extends StatefulWidget {
   const StaticCalendarWidget({
     Key? key,
     required this.onDayPressed,
+    required this.eventList,
   }) : super(key: key);
   final Function(DateTime) onDayPressed;
+  final EventList<Event> eventList;
   @override
   State<StaticCalendarWidget> createState() => _StaticCalendarWidgetState();
 }
@@ -55,8 +57,7 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
       dayPadding: 5,
       showHeader: true,
       headerTitleTouchable: true,
-      markedDatesMap:
-          Provider.of<NoteProvider>(context, listen: false).eventList,
+      markedDatesMap: widget.eventList,
       onHeaderTitlePressed: () async {
         var value = await floatingCalendarWidget(context);
         dateTime = value;

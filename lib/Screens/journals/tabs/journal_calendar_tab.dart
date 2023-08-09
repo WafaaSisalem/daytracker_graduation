@@ -1,32 +1,32 @@
-import 'package:day_tracker_graduation/provider/note_provider.dart';
+import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
+import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../widgets/no_entries_widget.dart';
 import '../../../widgets/static_calendar.dart';
 import '../../../utils/svgs/svgs.dart';
-import 'notes_tab.dart';
 
-class CalendarTab extends StatelessWidget {
-  const CalendarTab({Key? key}) : super(key: key);
+class JournalCalendarTab extends StatelessWidget {
+  const JournalCalendarTab({Key? key}) : super(key: key);
+  @override
   Widget build(BuildContext context) {
-    return Consumer<NoteProvider>(builder: (context, noteProvider, x) {
+    return Consumer<JournalProvider>(builder: (context, journalProvider, x) {
       return Column(
         children: [
           StaticCalendarWidget(
+            eventList: journalProvider.eventList,
             onDayPressed: (date) {
-              noteProvider
+              journalProvider
                   .setSelectedDay(DateTime(date.year, date.month, date.day));
-              print(date);
             },
           ),
           Expanded(
-              child: NotesTab(
+              child: JournalTab(
             longPressActivated: false,
-            notes: noteProvider.selectedDayNotes,
+            journals: journalProvider.selectedDayJournals,
             noEntriesWidget: NoEntriesWidget(
               image: svgNoCalendarEntry,
-              text: 'No notes entries on this day',
+              text: 'No journals entries on this day',
             ),
           ))
         ],

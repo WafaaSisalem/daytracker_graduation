@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:day_tracker_graduation/Screens/master_password_screen.dart';
 import 'package:day_tracker_graduation/helpers/shared_preference_helper.dart';
-import 'package:day_tracker_graduation/models/user_model.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,5 @@
 import 'package:day_tracker_graduation/Screens/journals/tabs/gallary_tab.dart';
+import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/location_tab.dart';
 import 'package:day_tracker_graduation/Screens/notes/widgets/appbar_textfield.dart';
@@ -19,8 +20,7 @@ import '../../widgets/no_entries_widget.dart';
 import '../../utils/svgs/svgs.dart';
 import '../choose_screen.dart';
 import '../notes/note_home_screen.dart';
-import '../notes/tabs/calendar_tab.dart';
-import '../notes/tabs/notes_tab.dart';
+import '../notes/tabs/note_calendar_tab.dart';
 import '../notes/tabs/search_tab.dart';
 import 'journal_add_screen.dart';
 
@@ -56,7 +56,7 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
             title: 'Home Page',
             iconPath: 'assets/images/all_journal.svg'),
         TabModel(
-            content: const CalendarTab(),
+            content: const JournalCalendarTab(),
             title: 'Calendar',
             iconPath: 'assets/images/calendar.svg'),
         TabModel(

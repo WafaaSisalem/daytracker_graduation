@@ -12,7 +12,7 @@ import 'journal_add_screen.dart';
 import 'journal_home_screen.dart';
 
 class JournalDisplayScreen extends StatelessWidget {
-  List<Widget> widgets = [
+  final List<Widget> widgets = [
     Image.asset(
       'assets/images/team.jpg',
       fit: BoxFit.cover,

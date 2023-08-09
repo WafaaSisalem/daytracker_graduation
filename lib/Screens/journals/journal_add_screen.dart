@@ -11,10 +11,7 @@ import '../../utils/constants.dart';
 import '../../widgets/appbar_widget.dart';
 import '../../widgets/dialog_widget.dart';
 import '../../widgets/floating_calendar.dart';
-import 'widgets/expandable_fab.dart';
 import '../notes/widgets/writing_place.dart';
-import '../../utils/svgs/svgs.dart';
-import 'journal_display_screen.dart';
 import 'journal_home_screen.dart';
 
 class JournalAddScreen extends StatefulWidget {

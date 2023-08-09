@@ -17,7 +17,7 @@ import '../../utils/svgs/svgs.dart';
 import '../choose_screen.dart';
 
 import 'note_handling_screen.dart';
-import 'tabs/calendar_tab.dart';
+import 'tabs/note_calendar_tab.dart';
 import 'tabs/notes_tab.dart';
 import 'tabs/search_tab.dart';
 import 'tabs/settings_tab.dart';
@@ -58,7 +58,7 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
             title: 'Home Page',
             iconPath: 'assets/images/allnote.svg'),
         TabModel(
-            content: CalendarTab(),
+            content: NoteCalendarTab(),
             title: 'Calendar',
             iconPath: 'assets/images/calendar.svg'),
         TabModel(
