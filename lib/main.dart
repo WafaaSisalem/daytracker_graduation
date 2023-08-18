@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
             return RegistrationScreen(
                 type: (arguments as List)[0] as RegistrationType);
           } else if (name == MasterPassScreen.routeName) {
-            return MasterPassScreen(note: (arguments as List)[0] as NoteModel);
+            return MasterPassScreen(item: (arguments as List)[0] as NoteModel);
           } else {
             return const Scaffold(
               body: Text('ERROR 404!'),

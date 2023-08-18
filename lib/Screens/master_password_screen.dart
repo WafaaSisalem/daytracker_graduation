@@ -1,4 +1,6 @@
+import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/models/note_model.dart';
+import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/router/app_router.dart';
 import 'package:day_tracker_graduation/widgets/appbar_widget.dart';
@@ -15,16 +17,17 @@ import '../utils/constants.dart';
 class MasterPassScreen extends StatelessWidget {
   MasterPassScreen({
     Key? key,
-    required this.note,
+    required this.item,
   }) : super(key: key);
 
   static const String routeName = 'MasterPassScreen';
-  final NoteModel note;
+  var item;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String masterPass = '';
   String reEnterPass = '';
   String currenPass = '';
-  save(context, NoteProvider noteProvider) async {
+  save(context, NoteProvider noteProvider,
+      JournalProvider journalProvider) async {
     if (masterPass.isEmpty) {
       toastWidget(message: 'Enter a master password!', context: context);
     } else if (reEnterPass.isEmpty) {
@@ -44,17 +47,25 @@ class MasterPassScreen extends StatelessWidget {
           id: noteProvider.userModel!.id,
           masterPassword: masterPass);
       noteProvider.updateUser(user);
-      noteProvider.updateNote(NoteModel.fromMap({
-        ...note.toMap(),
-        Constants.isLockedKey: 1,
-      }));
+      if (item is NoteModel) {
+        noteProvider.updateNote(NoteModel.fromMap({
+          ...item.toMap(),
+          Constants.isLockedKey: 1,
+        }));
+      } else {
+        journalProvider.updateJournal(JournalModel.fromMap({
+          ...item.toMap(),
+          Constants.isLockedKey: 1,
+        }));
+      }
       AppRouter.router.pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NoteProvider>(builder: (context, noteProvider, x) {
+    return Consumer2<NoteProvider, JournalProvider>(
+        builder: (context, noteProvider, journalProvider, x) {
       return Scaffold(
         appBar: const AppbarWidget(
             titlePlace: Text('Master Password'), actions: []),
@@ -67,7 +78,7 @@ class MasterPassScreen extends StatelessWidget {
                   children: [
                     myForm(context),
                     SizedBox(height: 30.h),
-                    myButton(context, noteProvider),
+                    myButton(context, noteProvider, journalProvider),
                     SizedBox(
                       height: 30.h,
                     ),
@@ -81,13 +92,13 @@ class MasterPassScreen extends StatelessWidget {
     });
   }
 
-  myButton(BuildContext context, noteProvider) {
+  myButton(BuildContext context, noteProvider, journalProvider) {
     return ButtonWidget(
         text: 'Change Password',
         onPressed: () async {
           // formKey.currentState!.validate();
 
-          save(context, noteProvider);
+          save(context, noteProvider, journalProvider);
         },
         height: 48.h,
         width: 269.w);

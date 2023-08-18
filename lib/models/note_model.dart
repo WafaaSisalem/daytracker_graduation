@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/constants.dart';
@@ -32,10 +33,12 @@ class NoteModel {
     };
   }
 
-  NoteModel.fromMap(Map<String, dynamic> map)
+  NoteModel.fromMap(map)
       : id = map[Constants.idKey],
         content = map[Constants.contentKey],
         title = map[Constants.titleKey],
         isLocked = map[Constants.isLockedKey] == 1 ? true : false,
-        date = map[Constants.dateKey];
+        date = (map[Constants.dateKey] is Timestamp)
+            ? (map[Constants.dateKey] as Timestamp).toDate()
+            : map[Constants.dateKey];
 }

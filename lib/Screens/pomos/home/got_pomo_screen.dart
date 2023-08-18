@@ -1,5 +1,4 @@
 import 'package:day_tracker_graduation/Screens/pomos/home/break_screen.dart';
-import 'package:day_tracker_graduation/Screens/pomos/home/home_screen.dart';
 import 'package:day_tracker_graduation/Screens/pomos/widgets/pomo_app_bar.dart';
 import 'package:day_tracker_graduation/router/app_router.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';

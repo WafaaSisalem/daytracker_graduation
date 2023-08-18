@@ -64,9 +64,7 @@ class NoteWidget extends StatelessWidget {
           SizedBox(
             width: 30.w,
           ),
-          shape == NoteShape.rectangle
-              ? titlePlace(theme)
-              : const Expanded(child: SizedBox()),
+          shape == NoteShape.rectangle ? titlePlace(theme) : Spacer(),
           if (isSelectionMode)
             Icon(
               isSelected ? Icons.check_circle : Icons.radio_button_off_outlined,
@@ -151,14 +149,14 @@ class NoteWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Expanded(child: SizedBox()),
+        Spacer(),
         Text(
           note.content,
           maxLines: shape == NoteShape.rectangle ? 3 : 4,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.subtitle2!.copyWith(height: 1.7.h),
         ),
-        const Expanded(child: SizedBox()),
+        const Spacer(),
         dateWidget(theme)
       ],
     );
@@ -183,7 +181,7 @@ class NoteWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Expanded(child: SizedBox()),
+        const Spacer(),
         SizedBox(
           width: 30.w,
           height: 30.h,
@@ -199,7 +197,7 @@ class NoteWidget extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        const Expanded(child: SizedBox()),
+        const Spacer(),
         shape == NoteShape.rectangle ? SizedBox() : dateWidget(theme),
       ],
     );

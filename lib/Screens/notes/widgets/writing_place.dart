@@ -2,20 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class WritingPlaceWidget extends StatelessWidget {
-  const WritingPlaceWidget({
-    Key? key,
-    required this.onChanged,
-    required this.contentText,
-    required this.hintText,
-  }) : super(key: key);
+  const WritingPlaceWidget(
+      {Key? key,
+      required this.onChanged,
+      required this.contentText,
+      required this.hintText,
+      this.enabled = true})
+      : super(key: key);
 
   final Function(String) onChanged;
   final String? contentText;
   final String hintText;
+  final bool enabled;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return TextField(
+      enabled: enabled,
       controller: TextEditingController(text: contentText),
       cursorColor: Colors.grey, //TODO: color
       onChanged: onChanged,

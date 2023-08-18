@@ -5,9 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:simple_timer/simple_timer.dart';
 
 import '../../../provider/pomo_provider.dart';
-import '../../../router/app_router.dart';
 import '../../../utils/constants.dart';
-import '../../../widgets/button_widget.dart';
 import '../widgets/pomo_app_bar.dart';
 import '../widgets/quote_container.dart';
 import '../widgets/timer_resume_widget..dart';

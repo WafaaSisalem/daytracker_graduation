@@ -37,9 +37,29 @@ const String unlockIcon = 'assets/images/unlock.svg';
 final Widget svgUnlock = SvgPicture.asset(
   unlockIcon,
 );
+const String happyIcon = 'assets/images/happy.svg';
+final Widget svgHappy = SvgPicture.asset(
+  happyIcon,
+);
+const String sadIcon = 'assets/images/sad.svg';
+final Widget svgSad = SvgPicture.asset(
+  sadIcon,
+);
+const String normalIcon = 'assets/images/normal.svg';
+final Widget svgNormal = SvgPicture.asset(
+  normalIcon,
+);
+const String angryIcon = 'assets/images/angry.svg';
+final Widget svgAngry = SvgPicture.asset(
+  angryIcon,
+);
 const String smileIcon = 'assets/images/smile.svg';
 final Widget svgSmile = SvgPicture.asset(
   smileIcon,
+);
+const String minusIcon = 'assets/images/minus.svg';
+final Widget svgMinus = SvgPicture.asset(
+  minusIcon,
 );
 const String weatherIcon = 'assets/images/weather.svg';
 final Widget svgWeather = SvgPicture.asset(

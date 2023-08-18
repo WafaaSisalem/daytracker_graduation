@@ -55,14 +55,13 @@ class NoteProvider extends ChangeNotifier {
     allNotes.clear();
     QuerySnapshot noteQuery =
         await FirestoreHelper.firestoreHelper.getAllNotes();
-    allNotes = noteQuery.docs
-        .map((note) => NoteModel(
-            id: note[Constants.idKey],
-            content: note[Constants.contentKey],
-            date: (note[Constants.dateKey] as Timestamp).toDate(),
-            title: note[Constants.titleKey],
-            isLocked: note[Constants.isLockedKey] == 0 ? false : true))
-        .toList();
+    allNotes = noteQuery.docs.map((note) => NoteModel.fromMap(note)).toList();
+    // NoteModel(
+    //     id: note[Constants.idKey],
+    //     content: note[Constants.contentKey],
+    //     date: (note[Constants.dateKey] as Timestamp).toDate(),
+    //     title: note[Constants.titleKey],
+    //     isLocked: note[Constants.isLockedKey] == 0 ? false : true)
     eventList.clear();
     addEvents();
     setSelectedDayNotes();

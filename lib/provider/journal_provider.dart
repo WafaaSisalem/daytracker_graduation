@@ -18,7 +18,7 @@ class JournalProvider extends ChangeNotifier {
   EventList<Event> eventList = EventList<Event>(events: {});
   UserModel? userModel;
   List<JournalModel> searchResult = [];
-
+  List<Map> allImagesUrls = [];
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
       getAllJournals();
@@ -56,18 +56,31 @@ class JournalProvider extends ChangeNotifier {
     QuerySnapshot journalQuery =
         await FirestoreHelper.firestoreHelper.getAllJournals();
     allJournals = journalQuery.docs
-        .map((journal) => JournalModel(
-            location: journal[Constants.locationKey],
-            id: journal[Constants.idKey],
-            content: journal[Constants.contentKey],
-            date: (journal[Constants.dateKey] as Timestamp).toDate(),
-            isLocked: journal[Constants.isLockedKey] == 0 ? false : true))
+        .map((journal) => JournalModel.fromMap(journal))
         .toList();
     eventList.clear();
     addEvents();
     setSelectedDayJournals();
-
+    getAllImagesUrls();
     notifyListeners();
+  }
+
+  getAllImagesUrls() {
+    // imageUrls = allJournals.map((journal) {
+    //   List<String> urls = journal.imagesUrls as List<String>;
+    //   List<String> allUrls = [];
+
+    //   allUrls.addAll(urls);
+
+    //   return allUrls;
+    // }).toList();
+    allImagesUrls.clear();
+    for (JournalModel journal in allJournals) {
+      for (String url in journal.imagesUrls) {
+        allImagesUrls.add({journal.id: url});
+      }
+      // allImagesUrls.addAll(journal.imagesUrls);
+    }
   }
 
   void updateJournal(JournalModel journal) async {
@@ -100,8 +113,8 @@ class JournalProvider extends ChangeNotifier {
     }
   }
 
-  JournalModel getJournalById(String? title) {
-    return allJournals.where((element) => element.id == title).toList()[0];
+  JournalModel getJournalById(String? id) {
+    return allJournals.where((element) => element.id == id).toList()[0];
   }
 
   void search(String value) {

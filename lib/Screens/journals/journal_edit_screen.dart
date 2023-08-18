@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:day_tracker_graduation/Screens/journals/journal_display_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/widgets/image_viewer_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
@@ -17,20 +19,39 @@ import '../../widgets/floating_calendar.dart';
 import '../notes/widgets/writing_place.dart';
 import 'journal_home_screen.dart';
 
-class JournalAddScreen extends StatefulWidget {
-  const JournalAddScreen({Key? key}) : super(key: key);
-
+class JournalEditScreen extends StatefulWidget {
+  const JournalEditScreen({Key? key, required this.journal}) : super(key: key);
+  final JournalModel journal;
   @override
-  State<JournalAddScreen> createState() => _JournalAddScreenState();
+  State<JournalEditScreen> createState() => _JournalEditScreenState();
 }
 
-class _JournalAddScreenState extends State<JournalAddScreen> {
-  // String date = DateFormat('MMMM d, y').format(DateTime.now()).toString();
-  DateTime date = DateTime.now();
+class _JournalEditScreenState extends State<JournalEditScreen> {
   String content = '';
-  String status = '';
-  // String imageUrl = '';
-  List<String> imagesUrls = [];
+  List<dynamic> imagesUrls = [];
+  DateTime date = DateTime.now();
+  String status = Constants.normal;
+
+  get newJournal {
+    return JournalModel(
+        id: widget.journal.id,
+        content: content,
+        date: date,
+        isLocked: widget.journal.isLocked,
+        location: Constants.mylocation,
+        imagesUrls: imagesUrls,
+        status: status);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    content = widget.journal.content;
+    status = widget.journal.status;
+    imagesUrls = widget.journal.imagesUrls;
+    date = widget.journal.date;
+  }
+
   List<File> files = [];
   @override
   Widget build(BuildContext context) {
@@ -47,9 +68,11 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                   color: Colors.white, //TODO: COLOR
                 ),
                 onPressed: () {
-                  if (content == '') {
+                  if (widget.journal.isEqual(newJournal) && files.isEmpty) {
                     AppRouter.router
-                        .pushWithReplacementFunction(JournalHomeScreen());
+                        .pushWithReplacementFunction(JournalDisplayScreen(
+                      journal: widget.journal,
+                    ));
                   } else {
                     showDialog(
                         context: context,
@@ -60,7 +83,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                               onOkPressed: (value) {
                                 AppRouter.router.pop();
                                 AppRouter.router.pushWithReplacementFunction(
-                                    JournalHomeScreen());
+                                    const JournalHomeScreen());
                               });
                         });
                   }
@@ -74,7 +97,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                   DateTime? val =
                       await floatingCalendarWidget(context, initialDate: date);
                   setState(() {
-                    date = val ?? DateTime.now();
+                    date = val ?? widget.journal.date;
                   });
                 },
                 child: Container(
@@ -119,39 +142,27 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
                     onPressed: () async {
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return AlertDialog(
-                              backgroundColor: Colors.transparent,
-                              // title: Text('Wait for the photos to be uploaded'),
-                              content: SizedBox(
-                                  width: 50.w,
-                                  height: 50.h,
-                                  child: Center(
-                                      child: CircularProgressIndicator(
-                                    color: theme.primaryColor,
-                                  ))),
-                            );
-                          });
-
-                      if (content != '') {
-                        imagesUrls = await FirestorageHelper.firestorageHelper
-                            .uploadImage(files, journalProvider.userModel!.id);
-                        journalProvider.addJournal(
-                            journal: JournalModel(
-                                location: Constants.mylocation,
-                                id: DateTime.now().toString(),
-                                content: content,
-                                date: date,
-                                imagesUrls: imagesUrls,
-                                isLocked: false,
-                                status: status));
+                      if (widget.journal.isEqual(newJournal) && files.isEmpty) {
+                        //No changes happend
+                        print('no changes');
+                      } else if (content == '') {
+                        print('delete journal');
+                        journalProvider.deleteJournal(
+                            journalId: widget.journal.id);
+                      } else {
+                        print('changes happend');
+                        journalProvider.deleteJournal(
+                            journalId: widget.journal.id);
+                        if (files.isNotEmpty) {
+                          imagesUrls.addAll(await FirestorageHelper
+                              .firestorageHelper
+                              .uploadImage(
+                                  files, journalProvider.userModel!.id));
+                        }
+                        journalProvider.addJournal(journal: newJournal);
                       }
-                      AppRouter.router.pop();
-                      AppRouter.router
-                          .pushWithReplacementFunction(JournalHomeScreen());
+                      AppRouter.router.pushWithReplacementFunction(
+                          const JournalHomeScreen());
                     },
                     icon: const Icon(
                       Icons.check,
@@ -166,7 +177,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
             onChanged: (value) {
               content = value;
             },
-            contentText: content != '' ? content : null,
+            contentText: content,
             hintText: 'What happened with you today?',
           ),
         ),
@@ -175,60 +186,79 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
           initialOpen: true,
           children: [
             FloatingActionButton(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
+              clipBehavior: Clip.antiAlias,
               heroTag: 'btn1',
               backgroundColor: Colors.white,
-              child: files.isEmpty
+              child: imagesUrls.isEmpty
                   ? svgGallery
                   : SizedBox(
                       width: double.infinity,
                       height: double.infinity,
-                      child: Image.file(
-                        files[0],
+                      child: CachedNetworkImage(
                         fit: BoxFit.cover,
+                        imageUrl: imagesUrls[0],
+                        placeholder: (context, url) => Container(
+                          color: Colors.black12,
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     ),
               onPressed: () async {
-                if (files.isEmpty) {
+                if (imagesUrls.isEmpty) {
                   List<File> images =
                       await FirestorageHelper.firestorageHelper.selectFile();
                   files.addAll(images);
+
                   setState(() {});
                 } else {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        List<Widget> images = files
-                            .map((file) => Image.file(file, fit: BoxFit.cover))
+                        List<Widget> urlImages = imagesUrls
+                            .map((url) => CachedNetworkImage(
+                                  fit: BoxFit.fitWidth,
+                                  imageUrl: url,
+                                  placeholder: (context, url) => Container(
+                                    color: Colors.black12,
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ))
                             .toList();
-                        return ImageViewerWidget(
-                            images: images,
-                            // onAddImagePressed:(images) {
+                        List<Widget> fileImages = files
+                            .map((file) => Image.file(
+                                  file,
+                                  fit: BoxFit.cover,
+                                ))
+                            .toList();
+                        urlImages.addAll(fileImages);
 
-                            // },
+                        return ImageViewerWidget(
+                            images:
+                                urlImages, //we added fileimages to urlimages
                             onDonePressed: (files) {
                               this.files = files;
                               AppRouter.router.pop();
                             });
-                        //  ImageViewerWidget(
-                        //   onDoneTap: (files) {
-                        //     if (files.isEmpty) {
-                        //       setState(() {});
-                        //     }
-                        //     AppRouter.router.pop();
-                        //   },
-                        //   pickedImages: files,
-                        //   // onAddTap: (files) async {
-                        //   //   this.files = files;
-                        //   //   setState(() {});
-                        //   // }
-                        // );
+                        // ImageViewerWidget(
+                        //     onDoneTap: (files) {
+                        //       print('done pressed');
+                        //       if (imagesUrls.isEmpty) {
+                        //         setState(() {});
+                        //       }
+                        //       this.files.addAll(files);
+
+                        //       AppRouter.router.pop();
+                        //     },
+                        //     pickedImages: [
+                        //       ...imagesUrls.map((url) => File(url)).toList(),
+                        //       ...files
+                        //     ],
+                        //     imagesUrls: imagesUrls);
                       });
                 }
-                // File file =
-                //     await FirestorageHelper.firestorageHelper.selectFile();
-                // imageUrl = await FirestorageHelper.firestorageHelper
-                //     .uploadImage(file, journalProvider.userModel!.id);
+                // files = await FirestorageHelper.firestorageHelper.selectFile();
               },
             ),
             FloatingActionButton(
@@ -281,34 +311,6 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
             ),
           ],
         ),
-        // floatingActionButton: ExpandableFab(
-        //   children: [
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('gallary pressed!');
-        //       },
-        //       icon: svgGallery,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('map pressed!');
-        //       },
-        //       icon: svgMap,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('weather pressed!');
-        //       },
-        //       icon: svgWeather,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('smile pressed!');
-        //       },
-        //       icon: svgSmile,
-        //     ),
-        //   ],
-        // ),
       );
     });
   }

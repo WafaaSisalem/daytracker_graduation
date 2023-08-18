@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:day_tracker_graduation/Screens/journals/widgets/status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +12,6 @@ class JournalWidget extends StatelessWidget {
     Key? key,
     required this.journal,
     required this.onJournalTap,
-    required this.onPasswordIconTap,
-    required this.onDeleteIconTap,
     required this.onLongPress,
     required this.isSelected,
     required this.isSelectionMode,
@@ -19,8 +19,6 @@ class JournalWidget extends StatelessWidget {
 
   final JournalModel journal;
   final Function() onJournalTap;
-  final Function() onPasswordIconTap;
-  final Function() onDeleteIconTap;
   final Function() onLongPress;
   final bool isSelectionMode;
   final bool isSelected;
@@ -47,7 +45,15 @@ class JournalWidget extends StatelessWidget {
                 SizedBox(
                   height: 10.h,
                 ),
-                journalBody(theme, context),
+                journal.isLocked
+                    ? Expanded(
+                        child: SizedBox(
+                          width: 50.w,
+                          height: 50.h,
+                          child: svgGreyLock,
+                        ),
+                      )
+                    : journalBody(theme, context),
               ],
             ),
           )
@@ -83,7 +89,8 @@ class JournalWidget extends StatelessWidget {
                         .copyWith(height: 1.7.h),
                   ),
                 ),
-                const Expanded(child: SizedBox()),
+                // const Expanded(child: SizedBox()),
+                const Spacer(),
                 Padding(
                   padding: EdgeInsets.only(left: 10.w),
                   child: Row(
@@ -92,7 +99,7 @@ class JournalWidget extends StatelessWidget {
                         radius: 5,
 
                         backgroundColor: Colors.white, //TODO: COLORS
-                        child: svgSmile,
+                        child: StatusWidget(status: journal.status),
                       ),
                       SizedBox(
                         width: 10.w,
@@ -122,22 +129,39 @@ class JournalWidget extends StatelessWidget {
               ],
             ),
           ),
-          if (true) ...[
+          if (journal.imagesUrls.isNotEmpty) ...[
             SizedBox(
               width: 10.w,
             ),
             Expanded(
               flex: 1,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                clipBehavior: Clip.antiAlias,
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(5.r)),
-                child: Image.asset(
-                  'assets/images/team.jpg',
-                  fit: BoxFit.cover,
-                ),
+              child: Hero(
+                tag: journal.id,
+                child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.r),
+                        boxShadow: [
+                          BoxShadow(
+                              color: const Color(0x28000000), //TODO: COLOR
+                              offset: Offset(0, 1.h),
+                              blurRadius: 3),
+                        ]),
+                    // child: Image.network(
+                    //   journal.imagesUrls[0],
+                    //   fit: BoxFit.cover,
+                    // ),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      imageUrl: journal.imagesUrls[0],
+                      placeholder: (context, url) => Container(
+                        color: Colors.black12,
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    )),
               ),
             ),
           ]

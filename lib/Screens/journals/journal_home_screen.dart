@@ -3,7 +3,6 @@ import 'package:day_tracker_graduation/Screens/journals/tabs/gallary_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/location_tab.dart';
-import 'package:day_tracker_graduation/Screens/notes/widgets/appbar_textfield.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -66,12 +65,28 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
             title: 'Gallery',
             iconPath: 'assets/images/gallery.svg'),
         TabModel(
-            content: JournalSearchScreen(),
-            title: AppbarTextFieldWidget(
-                onChanged: (value) {},
+            content: const JournalSearchScreen(),
+            title: TextField(
+              cursorColor: Colors.grey,
+              onChanged: (value) {
+                journalProvider.search(value);
+              },
+              autofocus: true,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.all(0),
+                hintStyle: Theme.of(context)
+                    .textTheme
+                    .headline3!
+                    .copyWith(color: const Color(0x73C4C4C4)), //TODO: color
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
                 hintText: 'Search your memories...',
-                text: null,
-                autofocus: true),
+              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline3!
+                  .copyWith(color: Colors.white), //TODO: color
+            ),
             iconPath: 'assets/images/map.svg')
       ];
 
@@ -139,23 +154,29 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                         }
                       },
                     )
-                  : PopupMenuButton<String>(
-                      onSelected: (value) {
-                        AppRouter.router
-                            .pushWithReplacementFunction(ChooseCardScreen());
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return {
-                          'Back Home',
-                        }.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
-              if (currentIndex != 4)
+                  : currentIndex != 4
+                      ? PopupMenuButton<String>(
+                          onSelected: (value) {
+                            AppRouter.router.pushWithReplacementFunction(
+                                ChooseCardScreen());
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return {
+                              'Back Home',
+                            }.map((String choice) {
+                              return PopupMenuItem<String>(
+                                value: choice,
+                                child: Text(choice),
+                              );
+                            }).toList();
+                          },
+                        )
+                      : SizedBox(),
+              if (currentIndex !=
+                  4) //if current index = 4 then we are on search page if not 4
+                //then we are not in search page so when its not 4 we have to show the search icon
+                // when we press this icon we should set the current index to 4 to be able to hide
+                //search icon
                 IconButton(
                     onPressed: () {
                       setState(() {
@@ -179,19 +200,9 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                       color: Colors.white, //TODO: COLOR
                     ),
                     onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DialogWidget(
-                                dialogType: DialogType.discard,
-                                entryType: 'journal',
-                                onOkPressed: (value) {
-                                  AppRouter.router.pop();
-                                  AppRouter.router.pushWithReplacementFunction(
-                                    const JournalHomeScreen(),
-                                  );
-                                });
-                          });
+                      AppRouter.router.pushWithReplacementFunction(
+                        const JournalHomeScreen(),
+                      );
                     },
                   ),
                 currentIndex == 4

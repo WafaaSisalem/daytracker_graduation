@@ -57,7 +57,8 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
       headerTitleTouchable: true,
       markedDatesMap: widget.eventList,
       onHeaderTitlePressed: () async {
-        var value = await floatingCalendarWidget(context);
+        var value =
+            await floatingCalendarWidget(context, initialDate: dateTime);
         dateTime = value;
         widget.onDayPressed(value);
         setState(() {});

@@ -36,9 +36,11 @@ class _NotesTabState extends State<NotesTab> {
   void initState() {
     super.initState();
     Timer(const Duration(milliseconds: 1500), () {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     });
   }
 

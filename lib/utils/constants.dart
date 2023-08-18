@@ -22,9 +22,15 @@ class Constants {
   static const String idKey = 'id';
   static const String passwordKey = 'password';
   static const String isLockedKey = 'isLocked';
+  static const String imageUrlKey = 'imageUrl';
   static const String dateFormat = 'MMMM d, y. EEE. hh:mm a';
 
   static const totalPomoKey = "totalPomo";
+  static const statusKey = "status";
+  static const happy = "happy";
+  static const sad = "sad";
+  static const normal = "normal";
+  static const angry = "angry";
   static const numPomoKey = "numPomo";
   static const minutesKey = "Minutes";
   static const start = "Start";

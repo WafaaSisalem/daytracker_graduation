@@ -1,8 +1,5 @@
 import 'dart:async';
-
-import 'package:day_tracker_graduation/Screens/master_password_screen.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
-import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -11,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../models/journal_model.dart';
 import '../../../router/app_router.dart';
 import '../../../widgets/dialog_widget.dart';
+import '../journal_display_screen.dart';
 import '../widgets/journal_widget.dart';
 
 class JournalTab extends StatefulWidget {
@@ -34,9 +32,11 @@ class _JournalTabState extends State<JournalTab> {
   void initState() {
     super.initState();
     Timer(const Duration(milliseconds: 1500), () {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     });
   }
 
@@ -74,88 +74,6 @@ class _JournalTabState extends State<JournalTab> {
       journal: widget.journals[index],
       onJournalTap: () {
         onTap(isSelected, index, journalProvider);
-      },
-      onPasswordIconTap: () {
-        if (journalProvider.userModel!.masterPassword.isEmpty) {
-          AppRouter.router.pushNamedFunction(
-              MasterPassScreen.routeName, [widget.journals[index]]);
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.password,
-                  entryType: 'journal',
-                  onOkPressed: (value) {
-                    if (value.isEmpty) {
-                      showToast('Password can not be empty!', context: context);
-                    } else {
-                      if (journalProvider.userModel!.masterPassword == value) {
-                        if (widget.journals[index].isLocked) {
-                          journalProvider.updateJournal(JournalModel.fromMap({
-                            ...widget.journals[index].toMap(),
-                            Constants.isLockedKey: 0,
-                          }));
-                        } else {
-                          journalProvider.updateJournal(JournalModel.fromMap({
-                            ...widget.journals[index].toMap(),
-                            Constants.isLockedKey: 1,
-                          }));
-                        }
-                        AppRouter.router.pop();
-                      } else {
-                        showToast('Wrong Password!',
-                            context: context,
-                            position: StyledToastPosition.top);
-                      }
-                    }
-                  }));
-          print('password idonc');
-        }
-      },
-      onDeleteIconTap: () {
-        if (widget.journals[index].isLocked) {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.password,
-                  entryType: 'journal',
-                  onOkPressed: (value) {
-                    if (value.isEmpty) {
-                      showToast('Password can not be empty!', context: context);
-                    } else {
-                      if (journalProvider.userModel!.masterPassword == value) {
-                        AppRouter.router.pop();
-                        showDialog(
-                            context: context,
-                            builder: (context) => DialogWidget(
-                                dialogType: DialogType.delete,
-                                entryType: 'journal',
-                                onOkPressed: (value) {
-                                  print(widget.journals[index].id);
-                                  journalProvider.deleteJournal(
-                                      journalId: widget.journals[index].id);
-                                  AppRouter.router.pop();
-                                }));
-                      } else {
-                        showToast('Wrong Password!',
-                            context: context,
-                            position: StyledToastPosition.top);
-                      }
-                    }
-                  }));
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.delete,
-                  entryType: 'journal',
-                  onOkPressed: (value) {
-                    print(widget.journals[index].id);
-                    journalProvider.deleteJournal(
-                        journalId: widget.journals[index].id);
-                    AppRouter.router.pop();
-                  }));
-        }
       },
     );
   }
@@ -203,6 +121,10 @@ class _JournalTabState extends State<JournalTab> {
                   } else {
                     if (journalProvider.userModel!.masterPassword == value) {
                       AppRouter.router.pop();
+                      AppRouter.router
+                          .pushWithReplacementFunction(JournalDisplayScreen(
+                        journal: widget.journals[index],
+                      ));
                     } else {
                       showToast('Wrong Password!',
                           context: context, position: StyledToastPosition.top);
@@ -210,10 +132,9 @@ class _JournalTabState extends State<JournalTab> {
                   }
                 }));
       } else {
-        // AppRouter.router.pushWithReplacementFunction(NoteHandlingScreen(
-        //   type: NoteHandlingType.display,
-        //   note: widget.notes[index],
-        // ));
+        AppRouter.router.pushWithReplacementFunction(JournalDisplayScreen(
+          journal: widget.journals[index],
+        ));
       }
     }
   }
