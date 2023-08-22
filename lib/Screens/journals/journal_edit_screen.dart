@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:day_tracker_graduation/Screens/journals/journal_display_screen.dart';
-import 'package:day_tracker_graduation/Screens/journals/widgets/image_viewer_widget.dart';
+import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/services/firestorage_helper.dart';
@@ -31,6 +31,7 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
   List<dynamic> imagesUrls = [];
   DateTime date = DateTime.now();
   String status = Constants.normal;
+  List<File> files = [];
 
   get newJournal {
     return JournalModel(
@@ -52,7 +53,6 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
     date = widget.journal.date;
   }
 
-  List<File> files = [];
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -215,32 +215,61 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        List<Widget> urlImages = imagesUrls
-                            .map((url) => CachedNetworkImage(
-                                  fit: BoxFit.fitWidth,
-                                  imageUrl: url,
-                                  placeholder: (context, url) => Container(
-                                    color: Colors.black12,
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                ))
-                            .toList();
-                        List<Widget> fileImages = files
-                            .map((file) => Image.file(
-                                  file,
-                                  fit: BoxFit.cover,
-                                ))
-                            .toList();
-                        urlImages.addAll(fileImages);
+                        // List<Widget> urlImages = imagesUrls
+                        //     .map((url) => CachedNetworkImage(
+                        //           fit: BoxFit.fitWidth,
+                        //           imageUrl: url,
+                        //           placeholder: (context, url) => Container(
+                        //             color: Colors.black12,
+                        //           ),
+                        //           errorWidget: (context, url, error) =>
+                        //               const Icon(Icons.error),
+                        //         ) as Widget) // Cast the CachedNetworkImage to Widget
+                        //     .toList();
 
-                        return ImageViewerWidget(
-                            images:
-                                urlImages, //we added fileimages to urlimages
+                        // print(urlImages.runtimeType);
+                        // List<Widget> fileImages = files
+                        //     .map((file) => Image.file(
+                        //           file,
+                        //           fit: BoxFit.cover,
+                        //         ))
+                        //     .toList();
+                        // List<dynamic> allImages = urlImages;
+                        // allImages.add(fileImages);
+                        List<Widget> urlImages = [];
+
+                        for (var url in imagesUrls) {
+                          urlImages.add(CachedNetworkImage(
+                            fit: BoxFit.fitWidth,
+                            imageUrl: url,
+                            placeholder: (context, url) => Container(
+                              color: Colors.black12,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ));
+                        }
+
+                        for (var file in files) {
+                          urlImages.add(Image.file(file));
+                        }
+
+                        return PickImageWidget(
+                            images: urlImages,
+                            onRemovePressed: (index) {
+                              urlImages.removeAt(index);
+                              setState(() {});
+                            },
+                            onAddImagePressed: (files) {
+                              this.files.addAll(files);
+                              print('added');
+                              setState(() {});
+                            },
                             onDonePressed: (files) {
-                              this.files = files;
+                              // this.files = files;
                               AppRouter.router.pop();
                             });
+
                         // ImageViewerWidget(
                         //     onDoneTap: (files) {
                         //       print('done pressed');

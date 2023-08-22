@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:day_tracker_graduation/Screens/journals/widgets/image_viewer_widget.dart';
+import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/services/firestorage_helper.dart';
@@ -31,7 +31,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
   String status = '';
   // String imageUrl = '';
   List<String> imagesUrls = [];
-  List<File> files = [];
+  // List<File> files = [];
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -137,8 +138,12 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                           });
 
                       if (content != '') {
+                        // if (journalProvider.userModel == null) {
+                        //   journalProvider.getUserModel();
+                        // }
                         imagesUrls = await FirestorageHelper.firestorageHelper
-                            .uploadImage(files, journalProvider.userModel!.id);
+                            .uploadImage(journalProvider.files,
+                                journalProvider.userModel!.id);
                         journalProvider.addJournal(
                             journal: JournalModel(
                                 location: Constants.mylocation,
@@ -178,52 +183,79 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
               clipBehavior: Clip.antiAliasWithSaveLayer,
               heroTag: 'btn1',
               backgroundColor: Colors.white,
-              child: files.isEmpty
+              child: journalProvider.files.isEmpty
                   ? svgGallery
                   : SizedBox(
                       width: double.infinity,
                       height: double.infinity,
                       child: Image.file(
-                        files[0],
+                        journalProvider.files[0],
                         fit: BoxFit.cover,
                       ),
                     ),
               onPressed: () async {
-                if (files.isEmpty) {
+                if (journalProvider.files.isEmpty) {
                   List<File> images =
                       await FirestorageHelper.firestorageHelper.selectFile();
-                  files.addAll(images);
+                  // files.addAll(images);
+                  journalProvider.addFile(images);
                   setState(() {});
                 } else {
                   showDialog(
                       context: context,
                       builder: (context) {
-                        List<Widget> images = files
-                            .map((file) => Image.file(file, fit: BoxFit.cover))
-                            .toList();
-                        return ImageViewerWidget(
-                            images: images,
-                            // onAddImagePressed:(images) {
+                        // List<Widget> images = journalProvider.files
+                        //     .map((file) => Image.file(file, fit: BoxFit.cover))
+                        //     .toList();
 
-                            // },
+                        return PickImageWidget(
+                            images: journalProvider.images,
+                            onRemovePressed: (index) {
+                              journalProvider.images.removeAt(index);
+                              journalProvider.files.removeAt(index);
+                            },
+                            onAddImagePressed: (files) {
+                              journalProvider.addFile(files);
+                              print('added');
+                            },
                             onDonePressed: (files) {
-                              this.files = files;
                               AppRouter.router.pop();
+                              setState(() {});
                             });
-                        //  ImageViewerWidget(
-                        //   onDoneTap: (files) {
-                        //     if (files.isEmpty) {
-                        //       setState(() {});
-                        //     }
-                        //     AppRouter.router.pop();
-                        //   },
-                        //   pickedImages: files,
-                        //   // onAddTap: (files) async {
-                        //   //   this.files = files;
-                        //   //   setState(() {});
-                        //   // }
-                        // );
                       });
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (context) {
+                  //       List<Widget> images = files
+                  //           .map((file) => Image.file(file, fit: BoxFit.cover))
+                  //           .toList();
+
+                  //       return PickImageWidget(
+                  //           images: images,
+                  //           onAddImagePressed: (images) {},
+                  //           onRemovePressed: (index) {
+                  //             images.removeAt(index);
+                  //             setState(() {});
+                  //           },
+                  //           onDonePressed: (files) {
+                  //             this.files.addAll(files);
+                  //             setState(() {});
+                  //             AppRouter.router.pop();
+                  //           });
+                  //       //  ImageViewerWidget(
+                  //       //   onDoneTap: (files) {
+                  //       //     if (files.isEmpty) {
+                  //       //       setState(() {});
+                  //       //     }
+                  //       //     AppRouter.router.pop();
+                  //       //   },
+                  //       //   pickedImages: files,
+                  //       //   // onAddTap: (files) async {
+                  //       //   //   this.files = files;
+                  //       //   //   setState(() {});
+                  //       //   // }
+                  //       // );
+                  //     });
                 }
                 // File file =
                 //     await FirestorageHelper.firestorageHelper.selectFile();

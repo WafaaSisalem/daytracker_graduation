@@ -21,6 +21,7 @@ class NoteProvider extends ChangeNotifier {
 
   NoteProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
+      print('first time from noteprovider');
       getAllNote();
       getUserModel();
     }

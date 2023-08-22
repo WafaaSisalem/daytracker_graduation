@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
@@ -19,8 +21,11 @@ class JournalProvider extends ChangeNotifier {
   UserModel? userModel;
   List<JournalModel> searchResult = [];
   List<Map> allImagesUrls = [];
+  List<File> files = [];
+  List<Widget> images = [];
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
+      print('first time');
       getAllJournals();
       getUserModel();
     }
@@ -147,5 +152,15 @@ class JournalProvider extends ChangeNotifier {
     });
     selectedFlag = {};
     isSelectionMode = false;
+  }
+
+  getImagesWidgets() {
+    images = files.map((file) => Image.file(file, fit: BoxFit.cover)).toList();
+  }
+
+  void addFile(List<File> files) {
+    this.files.addAll(files);
+    getImagesWidgets();
+    notifyListeners();
   }
 }

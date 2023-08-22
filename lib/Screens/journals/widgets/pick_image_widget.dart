@@ -5,22 +5,35 @@ import 'package:flutter/material.dart';
 import '../../../services/firestorage_helper.dart';
 import '../../../utils/svgs/svgs.dart';
 
-class ImageViewerWidget extends StatelessWidget {
-  ImageViewerWidget(
+class PickImageWidget extends StatefulWidget {
+  PickImageWidget(
       {super.key,
       required this.images,
-      // required this.onAddImagePressed,
+      required this.onRemovePressed,
+      required this.onAddImagePressed,
       required this.onDonePressed});
   final List<Widget> images;
-  // final Function(List<File>) onAddImagePressed;
+  final Function(List<File>) onAddImagePressed;
   final Function(List<File>) onDonePressed;
+  final Function(int) onRemovePressed;
+
+  @override
+  State<PickImageWidget> createState() => _PickImageWidgetState();
+}
+
+class _PickImageWidgetState extends State<PickImageWidget> {
   List<File> files = [];
-  void _removeImage(int index) {
-    // setState(() {
-    //   widget.imagesUrls.removeAt(index);
-    // });
-    images.removeAt(index);
-  }
+  @override
+
+  // int removeImage(int index) {
+  //   // setState(() {
+  //   //   widget.imagesUrls.removeAt(index);
+  //   // });
+  //   setState(() {
+  //     widget.images.removeAt(index);
+  //   });
+  //   return index;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +52,18 @@ class ImageViewerWidget extends StatelessWidget {
                 mainAxisSpacing: 5,
                 crossAxisSpacing: 5,
               ),
-              itemCount: images.length + 1, // Add 1 for the "+" button
+              itemCount: widget.images.length + 1, // Add 1 for the "+" button
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return GestureDetector(
                     onTap: () async {
                       files = await FirestorageHelper.firestorageHelper
                           .selectFile();
-                      // onAddImagePressed(images);
-                    }
-                    // setState(() {});
-                    ,
+                      widget.onAddImagePressed(files);
+                      setState(() {});
+
+                      print(files);
+                    },
                     child: Container(
                       color: Theme.of(context).primaryColor,
                       child: const Center(
@@ -69,11 +83,16 @@ class ImageViewerWidget extends StatelessWidget {
                       SizedBox(
                           width: double.infinity,
                           height: double.infinity,
-                          child: images[index]),
+                          child: widget.images[imageIndex]),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                          onTap: () => _removeImage(imageIndex),
+                          onTap: () {
+                            widget.onRemovePressed(imageIndex);
+                            print('remove pressed');
+                            // widget.onRemovePressed(removeImage(imageIndex));
+                            setState(() {});
+                          },
                           child: svgMinus,
                         ),
                       ),
@@ -87,7 +106,10 @@ class ImageViewerWidget extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => onDonePressed(files),
+          onPressed: () {
+            widget.onDonePressed(files);
+            setState(() {});
+          },
           child: Text(
             'DONE',
             style: Theme.of(context).textTheme.headline6,
