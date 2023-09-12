@@ -41,7 +41,7 @@ class AuthProvider extends ChangeNotifier {
       String userId = userCredential.user!.uid;
 
       UserModel user = UserModel(email: email, userName: userName, id: userId);
-      addUserToFirestore(user: user);
+      await addUserToFirestore(user: user);
     }
     getCurrentUser();
   }
@@ -54,8 +54,8 @@ class AuthProvider extends ChangeNotifier {
     return isSigned;
   }
 
-  addUserToFirestore({required UserModel user}) {
-    FirestoreHelper.firestoreHelper.addUser(user: user);
+  addUserToFirestore({required UserModel user}) async {
+    await FirestoreHelper.firestoreHelper.addUser(user: user);
   }
 
   void signOut() {

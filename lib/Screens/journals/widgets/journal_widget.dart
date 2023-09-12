@@ -119,7 +119,9 @@ class JournalWidget extends StatelessWidget {
                       SizedBox(
                         width: 110.w,
                         child: Text(
-                          journal.location,
+                          journal.location == null
+                              ? ''
+                              : journal.location!.address,
                           style: myTextStyle(theme),
                         ),
                       ),
@@ -209,7 +211,7 @@ class JournalWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Text(
-        journal.location,
+        journal.location == null ? '' : journal.location!.address,
         style: TextStyle(
             fontFamily: 'Poppins',
             color: theme.colorScheme.secondary,

@@ -31,7 +31,7 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
   List<dynamic> imagesUrls = [];
   DateTime date = DateTime.now();
   String status = Constants.normal;
-  List<File> files = [];
+  // List<File> files = [];
 
   get newJournal {
     return JournalModel(
@@ -39,7 +39,7 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
         content: content,
         date: date,
         isLocked: widget.journal.isLocked,
-        location: Constants.mylocation,
+        location: null, //Todo
         imagesUrls: imagesUrls,
         status: status);
   }
@@ -68,7 +68,8 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                   color: Colors.white, //TODO: COLOR
                 ),
                 onPressed: () {
-                  if (widget.journal.isEqual(newJournal) && files.isEmpty) {
+                  if (widget.journal.isEqual(newJournal) &&
+                      journalProvider.filesPicked.isEmpty) {
                     AppRouter.router
                         .pushWithReplacementFunction(JournalDisplayScreen(
                       journal: widget.journal,
@@ -142,25 +143,27 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
                     onPressed: () async {
-                      if (widget.journal.isEqual(newJournal) && files.isEmpty) {
+                      if (widget.journal.isEqual(newJournal) &&
+                          journalProvider.filesPicked.isEmpty) {
                         //No changes happend
-                        print('no changes');
                       } else if (content == '') {
-                        print('delete journal');
                         journalProvider.deleteJournal(
                             journalId: widget.journal.id);
                       } else {
-                        print('changes happend');
+                        // if something in the journal was changed
                         journalProvider.deleteJournal(
-                            journalId: widget.journal.id);
-                        if (files.isNotEmpty) {
+                            journalId: widget.journal
+                                .id); // delete old journal and add the new one
+                        if (journalProvider.filesPicked.isNotEmpty) {
                           imagesUrls.addAll(await FirestorageHelper
                               .firestorageHelper
-                              .uploadImage(
-                                  files, journalProvider.userModel!.id));
+                              .uploadImage(journalProvider.filesPicked,
+                                  journalProvider.userModel!.id));
                         }
                         journalProvider.addJournal(journal: newJournal);
                       }
+                      journalProvider.filesPicked.clear();
+                      journalProvider.imagesPicked.clear();
                       AppRouter.router.pushWithReplacementFunction(
                           const JournalHomeScreen());
                     },
@@ -208,60 +211,36 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                 if (imagesUrls.isEmpty) {
                   List<File> images =
                       await FirestorageHelper.firestorageHelper.selectFile();
-                  files.addAll(images);
+                  journalProvider.filesPicked.addAll(images);
 
                   setState(() {});
                 } else {
+                  journalProvider.addUrls(imagesUrls);
                   showDialog(
                       context: context,
                       builder: (context) {
-                        // List<Widget> urlImages = imagesUrls
-                        //     .map((url) => CachedNetworkImage(
-                        //           fit: BoxFit.fitWidth,
-                        //           imageUrl: url,
-                        //           placeholder: (context, url) => Container(
-                        //             color: Colors.black12,
-                        //           ),
-                        //           errorWidget: (context, url, error) =>
-                        //               const Icon(Icons.error),
-                        //         ) as Widget) // Cast the CachedNetworkImage to Widget
-                        //     .toList();
-
-                        // print(urlImages.runtimeType);
-                        // List<Widget> fileImages = files
-                        //     .map((file) => Image.file(
-                        //           file,
-                        //           fit: BoxFit.cover,
-                        //         ))
-                        //     .toList();
-                        // List<dynamic> allImages = urlImages;
-                        // allImages.add(fileImages);
-                        List<Widget> urlImages = [];
-
-                        for (var url in imagesUrls) {
-                          urlImages.add(CachedNetworkImage(
-                            fit: BoxFit.fitWidth,
-                            imageUrl: url,
-                            placeholder: (context, url) => Container(
-                              color: Colors.black12,
-                            ),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ));
-                        }
-
-                        for (var file in files) {
-                          urlImages.add(Image.file(file));
-                        }
+                        // for (var url in imagesUrls) {
+                        //   if (journalProvider.urlsPicked.isEmpty) {
+                        //     journalProvider.urlsPicked.add(CachedNetworkImage(
+                        //       fit: BoxFit.fitWidth,
+                        //       imageUrl: url,
+                        //       placeholder: (context, url) => Container(
+                        //         color: Colors.black12,
+                        //       ),
+                        //       errorWidget: (context, url, error) =>
+                        //           const Icon(Icons.error),
+                        //     ));
+                        //   }
+                        // }
 
                         return PickImageWidget(
-                            images: urlImages,
+                            images: journalProvider.imagesPicked,
                             onRemovePressed: (index) {
-                              urlImages.removeAt(index);
+                              journalProvider.imagesPicked.removeAt(index);
                               setState(() {});
                             },
                             onAddImagePressed: (files) {
-                              this.files.addAll(files);
+                              journalProvider.addFile(files);
                               print('added');
                               setState(() {});
                             },

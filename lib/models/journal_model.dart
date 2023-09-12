@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_tracker_graduation/models/place_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +19,7 @@ class JournalModel {
   final String content;
   final DateTime date;
   final bool isLocked;
-  final String location;
+  final LocationModel? location;
   final List<dynamic> imagesUrls;
   final String status;
 
@@ -34,7 +35,7 @@ class JournalModel {
           formatedDate, //February 11, 2021. Thu. 03:30 PM
       Constants.dateKey: date,
       Constants.isLockedKey: isLocked ? 1 : 0, //February 11, 2022. Wed. 6:17 PM
-      Constants.locationKey: location,
+      Constants.locationKey: location == null ? {} : location!.toMap(),
       Constants.imageUrlKey: imagesUrls,
       Constants.statusKey: status
     };
@@ -56,7 +57,8 @@ class JournalModel {
       : id = map[Constants.idKey],
         content = map[Constants.contentKey],
         isLocked = map[Constants.isLockedKey] == 1 ? true : false,
-        location = map[Constants.locationKey],
+        location = LocationModel.fromMap(
+            map[Constants.locationKey] as Map<String, dynamic>),
         date = (map[Constants.dateKey] is Timestamp)
             ? (map[Constants.dateKey] as Timestamp).toDate()
             : map[Constants.dateKey],

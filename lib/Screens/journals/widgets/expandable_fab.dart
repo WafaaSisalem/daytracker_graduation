@@ -26,7 +26,7 @@
 // //         children: [
 // //           ActionButton(
 // //             onPressed: () {
-// //               print('gallary pressed!');
+// //               print('gallery pressed!');
 // //             },
 // //             icon: svgGallery,
 // //           ),

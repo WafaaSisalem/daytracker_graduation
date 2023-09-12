@@ -32,6 +32,10 @@ const String editIcon = 'assets/images/edit.svg';
 final SvgPicture svgEditIcon = SvgPicture.asset(
   editIcon,
 );
+const String flagPinIcon = 'assets/images/flagpin.svg';
+final SvgPicture svgFlagPin = SvgPicture.asset(
+  flagPinIcon,
+);
 
 const String unlockIcon = 'assets/images/unlock.svg';
 final Widget svgUnlock = SvgPicture.asset(
@@ -76,6 +80,10 @@ final Widget svgGallery = SvgPicture.asset(
 const String mapIcon = 'assets/images/map.svg';
 final Widget svgMap = SvgPicture.asset(
   mapIcon,
+);
+const String mapDoneIcon = 'assets/images/mapdone.svg';
+final Widget svgMapDone = SvgPicture.asset(
+  mapDoneIcon,
 );
 
 const String bg = 'assets/images/bg.svg';

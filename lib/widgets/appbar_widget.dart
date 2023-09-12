@@ -16,6 +16,7 @@ class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         title: titlePlace,
         actions: actions,
+        automaticallyImplyLeading: false,
         backgroundColor: theme.primaryColor, //TODO: COLOR
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(36.r))),

@@ -56,6 +56,8 @@ class Constants {
   static const goOnMess = "Let's go on to the next pomo";
 
   static const mylocation = 'AlRemal st, Gaza, Palestine';
+  static const addressNotFound = 'Address not found';
+  static const errorGettingAddress = 'error getting address';
 
   // static Methods
   static void playSound() async {

@@ -1,5 +1,5 @@
 import 'package:day_tracker_graduation/Screens/journals/journal_search_screen.dart.dart';
-import 'package:day_tracker_graduation/Screens/journals/tabs/gallary_tab.dart';
+import 'package:day_tracker_graduation/Screens/journals/tabs/gallery_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/location_tab.dart';

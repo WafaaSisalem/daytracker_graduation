@@ -40,7 +40,6 @@ class AuthHelper {
     try {
       UserCredential userCredential = await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
-
       if (!firebaseAuth.currentUser!.emailVerified) {
         await sendEmailVerification(context);
       }

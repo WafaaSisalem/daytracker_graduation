@@ -1,13 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_marker/marker_icon.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/journal_model.dart';
+import '../models/place_model.dart';
 import '../models/user_model.dart';
 
 class JournalProvider extends ChangeNotifier {
@@ -21,15 +27,18 @@ class JournalProvider extends ChangeNotifier {
   UserModel? userModel;
   List<JournalModel> searchResult = [];
   List<Map> allImagesUrls = [];
-  List<File> files = [];
-  List<Widget> images = [];
+  List<File> filesPicked = [];
+  List<Widget> imagesPicked = <Widget>[];
+  List<Widget> urlsPicked = [];
+  Set<Marker> markers = {};
+  List<JournalModel> seletctedLoc = [];
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
-      print('first time');
       getAllJournals();
       getUserModel();
     }
   }
+
   getUserModel() async {
     QuerySnapshot noteQuery =
         await FirestoreHelper.firestoreHelper.getUserModel();
@@ -56,6 +65,44 @@ class JournalProvider extends ChangeNotifier {
     getAllJournals();
   }
 
+  getAllMarkers() async {
+    final markerList = await Future.wait(allJournals
+        .where((journal) => journal.location!.address != '')
+        .map((journal) async {
+      final icon = await MarkerIcon.downloadResizePictureCircle(
+        journal.imagesUrls.isNotEmpty
+            ? journal.imagesUrls[0]
+            : 'https://firebasestorage.googleapis.com/v0/b/graduation-project-adedc.appspot.com/o/note.jpg?alt=media&token=ce568055-7cea-4b08-a3ae-f0140fadee2d',
+        size: 150,
+        addBorder: true,
+        borderColor: Colors.white,
+        borderSize: 15,
+      );
+      seletctedLoc.clear(); ///////////////
+      return Marker(
+        onTap: () {
+          getJournalsByLocation(journal.location);
+        },
+        icon: icon,
+        markerId: MarkerId(journal.id),
+        position: LatLng(journal.location!.lat, journal.location!.lng),
+      );
+    }).toSet());
+
+    markers = Set<Marker>.from(markerList);
+    notifyListeners();
+  }
+
+  getJournalsByLocation(LocationModel? loc) {
+    List<JournalModel> journalsHaveLoc =
+        allJournals.where((journal) => journal.location != null).toList();
+    seletctedLoc = journalsHaveLoc.where((journal) {
+      return journal.location!.address == loc!.address;
+    }).toList();
+
+    notifyListeners();
+  }
+
   getAllJournals() async {
     allJournals.clear();
     QuerySnapshot journalQuery =
@@ -67,6 +114,7 @@ class JournalProvider extends ChangeNotifier {
     addEvents();
     setSelectedDayJournals();
     getAllImagesUrls();
+
     notifyListeners();
   }
 
@@ -155,12 +203,36 @@ class JournalProvider extends ChangeNotifier {
   }
 
   getImagesWidgets() {
-    images = files.map((file) => Image.file(file, fit: BoxFit.cover)).toList();
+    // if (images.isEmpty) {
+    //   images =
+    //       files.map((file) => Image.file(file, fit: BoxFit.cover)).toList();
+    // } else {
+    //   images.addAll(
+    //       files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
+    // }
   }
 
   void addFile(List<File> files) {
-    this.files.addAll(files);
-    getImagesWidgets();
+    filesPicked.addAll(files);
+    imagesPicked.addAll(
+        files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
     notifyListeners();
+  }
+
+  void addUrls(List imagesUrls) {
+    if (urlsPicked.isEmpty) {
+      urlsPicked = imagesUrls
+          .map((url) => CachedNetworkImage(
+                fit: BoxFit.fitWidth,
+                imageUrl: url,
+                placeholder: (context, url) => Container(
+                  color: Colors.black12,
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ))
+          .toList();
+      imagesPicked.addAll(urlsPicked);
+      notifyListeners();
+    }
   }
 }

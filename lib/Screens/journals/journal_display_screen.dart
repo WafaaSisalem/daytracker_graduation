@@ -188,24 +188,26 @@ class JournalDisplayScreen extends StatelessWidget {
                   hintText: 'What happened with you today?',
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () {},
-                    iconSize: 25.r,
-                    color: Colors.grey, //TODO: COLOR
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios),
-                    onPressed: () {},
-                    iconSize: 25.r,
-                    color:
-                        Theme.of(context).colorScheme.secondary, //TODO: COLOR
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     IconButton(
+              //       icon: const Icon(Icons.arrow_back_ios),
+              //       onPressed: () {},
+              //       iconSize: 25.r,
+              //       color: Colors.grey, //TODO: COLOR
+              //     ),
+              //     IconButton(
+              //       icon: const Icon(Icons.arrow_forward_ios),
+              //       onPressed: () {
+
+              //       },
+              //       iconSize: 25.r,
+              //       color:
+              //           Theme.of(context).colorScheme.secondary, //TODO: COLOR
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),

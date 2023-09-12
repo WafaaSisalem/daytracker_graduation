@@ -5,7 +5,7 @@ class AppRouter {
   static AppRouter router = AppRouter._();
   GlobalKey<NavigatorState> routerKey = GlobalKey<NavigatorState>();
   pushFunction(Widget widget) {
-    routerKey.currentState?.push(MaterialPageRoute(builder: (context) {
+    return routerKey.currentState?.push(MaterialPageRoute(builder: (context) {
       return widget;
     }));
   }

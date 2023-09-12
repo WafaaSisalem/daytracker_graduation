@@ -103,7 +103,9 @@ class MyApp extends StatelessWidget {
       ),
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       primaryColor: primaryColor,
-      colorScheme: ThemeData().colorScheme.copyWith(secondary: secondaryColor),
+      colorScheme: ThemeData()
+          .colorScheme
+          .copyWith(secondary: secondaryColor, primary: secondaryColor),
       textTheme: ThemeData.light().textTheme.copyWith(
           headline1: TextStyle(
             color: secondaryColor,

@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:day_tracker_graduation/Screens/journals/image_slider_screen.dart';
-import 'package:day_tracker_graduation/Screens/journals/image_viewer_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/journal_display_screen.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:flutter/material.dart';
