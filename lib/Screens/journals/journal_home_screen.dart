@@ -3,7 +3,9 @@ import 'package:day_tracker_graduation/Screens/journals/tabs/gallery_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/location_tab.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
+import 'package:day_tracker_graduation/widgets/back_home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -18,7 +20,6 @@ import '../../widgets/dialog_widget.dart';
 import '../../widgets/fab_widget.dart';
 import '../../widgets/no_entries_widget.dart';
 import '../../utils/svgs/svgs.dart';
-import '../choose_screen.dart';
 import 'journal_add_screen.dart';
 
 class JournalHomeScreen extends StatefulWidget {
@@ -38,7 +39,8 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     // const String assetsImages = 'assets/images/';
-    return Consumer<JournalProvider>(builder: (context, journalProvider, x) {
+    return Consumer2<JournalProvider, AuthProvider>(
+        builder: (context, journalProvider, authProvider, x) {
       journals = journalProvider.allJournals;
       List<TabModel> tabs = [
         TabModel(
@@ -99,10 +101,14 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                       icon: svgWhiteDelete,
                       onPressed: () {
                         bool isLockedExist = false;
+
                         Iterable<int> keys = journalProvider.selectedFlag.keys;
+
                         for (int key in keys) {
-                          if (journalProvider.allJournals[key].isLocked) {
-                            isLockedExist = true;
+                          if (journalProvider.selectedFlag[key] == true) {
+                            if (journalProvider.allJournals[key].isLocked) {
+                              isLockedExist = true;
+                            }
                           }
                         }
                         if (isLockedExist) {
@@ -116,7 +122,7 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                                       showToast('Password can not be empty!',
                                           context: context);
                                     } else {
-                                      if (journalProvider
+                                      if (authProvider
                                               .userModel!.masterPassword ==
                                           value) {
                                         AppRouter.router.pop();
@@ -155,22 +161,7 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                       },
                     )
                   : currentIndex != 4
-                      ? PopupMenuButton<String>(
-                          onSelected: (value) {
-                            AppRouter.router.pushWithReplacementFunction(
-                                ChooseCardScreen());
-                          },
-                          itemBuilder: (BuildContext context) {
-                            return {
-                              'Back Home',
-                            }.map((String choice) {
-                              return PopupMenuItem<String>(
-                                value: choice,
-                                child: Text(choice),
-                              );
-                            }).toList();
-                          },
-                        )
+                      ? const BackHomeMenuWidget()
                       : SizedBox(),
               if (currentIndex !=
                   4) //if current index = 4 then we are on search page if not 4

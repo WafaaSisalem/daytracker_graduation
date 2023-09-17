@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:day_tracker_graduation/Screens/journals/map_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
-import 'package:day_tracker_graduation/models/place_model.dart';
+import 'package:day_tracker_graduation/models/location_model.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/services/firestorage_helper.dart';
 import 'package:flutter/material.dart';
@@ -152,8 +153,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Consumer<JournalProvider>(
-        builder: (context, journalProvider, child) {
+    return Consumer2<JournalProvider, AuthProvider>(
+        builder: (context, journalProvider, authProvider, child) {
       return Scaffold(
         appBar: AppbarWidget(
             titlePlace: Row(children: [
@@ -164,23 +165,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                   color: Colors.white, //TODO: COLOR
                 ),
                 onPressed: () {
-                  if (content == '') {
-                    AppRouter.router
-                        .pushWithReplacementFunction(JournalHomeScreen());
-                  } else {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return DialogWidget(
-                              dialogType: DialogType.discard,
-                              entryType: 'journal',
-                              onOkPressed: (value) {
-                                AppRouter.router.pop();
-                                AppRouter.router.pushWithReplacementFunction(
-                                    JournalHomeScreen());
-                              });
-                        });
-                  }
+                  onBackButtonPressed();
                 },
               ),
               SizedBox(
@@ -235,7 +220,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
-                    onPressed: () => onCheckPressed(journalProvider),
+                    onPressed: () =>
+                        onCheckPressed(journalProvider, authProvider),
                     icon: const Icon(
                       Icons.check,
                       size: 18,
@@ -523,7 +509,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
         });
   }
 
-  onCheckPressed(JournalProvider journalProvider) async {
+  onCheckPressed(
+      JournalProvider journalProvider, AuthProvider authProvider) async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -546,8 +533,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
       //   journalProvider.getUserModel();
       // }
 
-      imagesUrls = await FirestorageHelper.firestorageHelper.uploadImage(
-          journalProvider.filesPicked, journalProvider.userModel!.id);
+      imagesUrls = await FirestorageHelper.firestorageHelper
+          .uploadImage(journalProvider.filesPicked, authProvider.userModel!.id);
       journalProvider.addJournal(
           journal: JournalModel(
               location: location,
@@ -562,5 +549,24 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
     journalProvider.filesPicked.clear();
     AppRouter.router.pop();
     AppRouter.router.pushWithReplacementFunction(JournalHomeScreen());
+  }
+
+  void onBackButtonPressed() {
+    if (content == '') {
+      AppRouter.router.pushWithReplacementFunction(JournalHomeScreen());
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return DialogWidget(
+                dialogType: DialogType.discard,
+                entryType: 'journal',
+                onOkPressed: (value) {
+                  AppRouter.router.pop();
+                  AppRouter.router
+                      .pushWithReplacementFunction(JournalHomeScreen());
+                });
+          });
+    }
   }
 }

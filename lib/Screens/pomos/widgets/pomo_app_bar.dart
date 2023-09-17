@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/widgets/back_home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,23 +23,8 @@ class PomoAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              AppRouter.router
-                  .pushWithReplacementFunction(const ChooseCardScreen());
-            },
-            itemBuilder: (BuildContext context) {
-              return {
-                'Back Home',
-              }.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          ),
+        actions: const [
+          BackHomeMenuWidget(),
         ]);
   }
 

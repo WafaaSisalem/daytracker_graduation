@@ -32,6 +32,10 @@ const String editIcon = 'assets/images/edit.svg';
 final SvgPicture svgEditIcon = SvgPicture.asset(
   editIcon,
 );
+const String dragIcon = 'assets/images/drag.svg';
+final SvgPicture svgDrag = SvgPicture.asset(
+  dragIcon,
+);
 const String flagPinIcon = 'assets/images/flagpin.svg';
 final SvgPicture svgFlagPin = SvgPicture.asset(
   flagPinIcon,
@@ -93,6 +97,10 @@ final Widget svgbg = SvgPicture.asset(
 const String noNoteEntry = 'assets/images/no_note_entry.svg';
 final Widget svgNoNote = SvgPicture.asset(
   noNoteEntry,
+);
+const String noTaskEntry = 'assets/images/no_task_entry.svg';
+final Widget svgNoTask = SvgPicture.asset(
+  noTaskEntry,
 );
 const String noJournalEntry = 'assets/images/no_journal_entry.svg';
 final Widget svgNoJournal = SvgPicture.asset(

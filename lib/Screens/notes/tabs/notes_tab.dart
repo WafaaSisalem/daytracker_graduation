@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:day_tracker_graduation/Screens/master_password_screen.dart';
 import 'package:day_tracker_graduation/helpers/shared_preference_helper.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class NotesTab extends StatefulWidget {
 
 class _NotesTabState extends State<NotesTab> {
   bool isLoading = true;
+  late AuthProvider authProvider;
+  late NoteProvider noteProvider;
   @override
   void initState() {
     super.initState();
@@ -46,11 +49,14 @@ class _NotesTabState extends State<NotesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NoteProvider>(builder: (builder, noteProvider, x) {
+    return Consumer2<NoteProvider, AuthProvider>(
+        builder: (builder, noteProvider, authProvider, x) {
+      this.noteProvider = noteProvider;
+      this.authProvider = authProvider;
       return widget.notes.isNotEmpty
           ? SharedPreferenceHelper.sharedHelper.getView() == 1
-              ? rectangleNoteWidget(noteProvider)
-              : squareNoteWidget(noteProvider)
+              ? buildRectangleList()
+              : buildSquareList()
           : Center(
               child: isLoading
                   ? CircularProgressIndicator(
@@ -61,7 +67,7 @@ class _NotesTabState extends State<NotesTab> {
     });
   }
 
-  Container squareNoteWidget(noteProvider) {
+  Container buildSquareList() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 20.h),
       child: GridView.builder(
@@ -71,21 +77,19 @@ class _NotesTabState extends State<NotesTab> {
           itemCount: widget.notes.length,
           itemBuilder: (context, index) {
             return buildItem(
-                index: index,
-                shape: NoteShape.square,
-                context: context,
-                noteProvider: noteProvider);
+                index: index, shape: NoteShape.square, context: context);
           }),
     );
   }
 
-  NoteWidget buildItem(
-      {required context,
-      required int index,
-      required NoteShape shape,
-      required NoteProvider noteProvider}) {
-    noteProvider.selectedFlag[index] =
-        noteProvider.selectedFlag[index] ?? false;
+  NoteWidget buildItem({
+    required context,
+    required int index,
+    required NoteShape shape,
+  }) {
+    // noteProvider.selectedFlag[index] =
+    //     noteProvider.selectedFlag[index] ?? false;
+
     bool isSelected = noteProvider.selectedFlag[index]!;
 
     return NoteWidget(
@@ -93,16 +97,16 @@ class _NotesTabState extends State<NotesTab> {
       isSelectionMode: noteProvider.isSelectionMode,
       onLongPress: () {
         if (widget.longPressActivated) {
-          onLongPress(isSelected, index, noteProvider);
+          onLongPress(isSelected, index);
         }
       },
       shape: shape,
       note: widget.notes[index],
       onNoteTap: () {
-        onTap(isSelected, index, noteProvider);
+        onTap(isSelected, index);
       },
       onPasswordIconTap: () {
-        if (noteProvider.userModel!.masterPassword.isEmpty) {
+        if (authProvider.userModel!.masterPassword.isEmpty) {
           AppRouter.router.pushNamedFunction(
               MasterPassScreen.routeName, [widget.notes[index]]);
         } else {
@@ -115,7 +119,7 @@ class _NotesTabState extends State<NotesTab> {
                     if (value.isEmpty) {
                       showToast('Password can not be empty!', context: context);
                     } else {
-                      if (noteProvider.userModel!.masterPassword == value) {
+                      if (authProvider.userModel!.masterPassword == value) {
                         if (widget.notes[index].isLocked) {
                           noteProvider.updateNote(NoteModel.fromMap({
                             ...widget.notes[index].toMap(),
@@ -149,7 +153,7 @@ class _NotesTabState extends State<NotesTab> {
                     if (value.isEmpty) {
                       showToast('Password can not be empty!', context: context);
                     } else {
-                      if (noteProvider.userModel!.masterPassword == value) {
+                      if (authProvider.userModel!.masterPassword == value) {
                         AppRouter.router.pop();
                         showDialog(
                             context: context,
@@ -176,6 +180,7 @@ class _NotesTabState extends State<NotesTab> {
                   dialogType: DialogType.delete,
                   entryType: 'note',
                   onOkPressed: (value) {
+                    print('object');
                     print(widget.notes[index].id);
                     noteProvider.deleteNote(noteId: widget.notes[index].id);
                     AppRouter.router.pop();
@@ -187,16 +192,16 @@ class _NotesTabState extends State<NotesTab> {
     );
   }
 
-  Container rectangleNoteWidget(noteProvider) {
+  Container buildRectangleList() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 36.w, vertical: 20.h),
       child: ListView.separated(
         itemBuilder: (context, index) {
           return buildItem(
-              index: index,
-              shape: NoteShape.rectangle,
-              context: context,
-              noteProvider: noteProvider);
+            index: index,
+            shape: NoteShape.rectangle,
+            context: context,
+          );
         },
         separatorBuilder: (context, index) => SizedBox(
           height: 15.h,
@@ -206,14 +211,15 @@ class _NotesTabState extends State<NotesTab> {
     );
   }
 
-  void onLongPress(bool isSelected, int index, NoteProvider noteProvider) {
+  void onLongPress(bool isSelected, int index) {
     setState(() {
       noteProvider.selectedFlag[index] = !isSelected;
       noteProvider.setSelectionMode();
     });
   }
 
-  void onTap(bool isSelected, int index, NoteProvider noteProvider) {
+  void onTap(bool isSelected, int index) {
+    print('indexxxxxxxxxxxxxxxxxxxxxxx$index');
     if (noteProvider.isSelectionMode) {
       setState(() {
         noteProvider.selectedFlag[index] = !isSelected;
@@ -230,7 +236,8 @@ class _NotesTabState extends State<NotesTab> {
                   if (value.isEmpty) {
                     showToast('Password can not be empty!', context: context);
                   } else {
-                    if (noteProvider.userModel!.masterPassword == value) {
+                    // if (noteProvider.userModel!.masterPassword == value)
+                    if (authProvider.userModel!.masterPassword == value) {
                       AppRouter.router.pop();
                       AppRouter.router
                           .pushWithReplacementFunction(NoteHandlingScreen(

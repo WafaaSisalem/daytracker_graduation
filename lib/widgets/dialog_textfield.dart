@@ -18,7 +18,8 @@ class DialogTextFieldWidget extends StatelessWidget {
       style: theme.textTheme.subtitle2,
       cursorColor: Colors.grey, //  TODO: COLOR
       onChanged: onChanged,
-
+      maxLines: isObscured ? 1 : 3,
+      minLines: 1,
       decoration: InputDecoration(
           hintText: hintText,
           hintStyle: theme.textTheme.headline4!

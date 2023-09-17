@@ -8,6 +8,7 @@ import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
 import 'package:day_tracker_graduation/provider/pomo_provider.dart';
+import 'package:day_tracker_graduation/provider/task_provider.dart';
 import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,8 @@ void main() async {
                 create: (context) => NoteProvider()),
             ChangeNotifierProvider<JournalProvider>(
                 create: (context) => JournalProvider()),
+            ChangeNotifierProvider<TaskProvider>(
+                create: (context) => TaskProvider()),
           ],
           child: const MyApp(),
         ),

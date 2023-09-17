@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:day_tracker_graduation/Screens/journals/journal_display_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/services/firestorage_helper.dart';
 import 'package:flutter/material.dart';
@@ -56,8 +57,8 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Consumer<JournalProvider>(
-        builder: (context, journalProvider, child) {
+    return Consumer2<JournalProvider, AuthProvider>(
+        builder: (context, journalProvider, authProvider, child) {
       return Scaffold(
         appBar: AppbarWidget(
             titlePlace: Row(children: [
@@ -158,7 +159,7 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                           imagesUrls.addAll(await FirestorageHelper
                               .firestorageHelper
                               .uploadImage(journalProvider.filesPicked,
-                                  journalProvider.userModel!.id));
+                                  authProvider.userModel!.id));
                         }
                         journalProvider.addJournal(journal: newJournal);
                       }

@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
-import 'package:day_tracker_graduation/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import '../models/note_model.dart';
-import '../models/user_model.dart';
 
 class NoteProvider extends ChangeNotifier {
   List<NoteModel> allNotes = [];
@@ -16,27 +14,27 @@ class NoteProvider extends ChangeNotifier {
   DateTime selectedDay =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   EventList<Event> eventList = EventList<Event>(events: {});
-  UserModel? userModel;
+  // UserModel? userModel;
   List<NoteModel> searchResult = [];
 
   NoteProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
-      print('first time from noteprovider');
       getAllNote();
-      getUserModel();
+
+      // getUserModel();
     }
   }
-  getUserModel() async {
-    QuerySnapshot noteQuery =
-        await FirestoreHelper.firestoreHelper.getUserModel();
-    QueryDocumentSnapshot userMap = noteQuery.docs[0];
-    userModel = UserModel(
-        email: userMap[Constants.emailKey],
-        userName: userMap[Constants.userNameKey],
-        id: userMap[Constants.idKey],
-        masterPassword: userMap[Constants.masterPassKey]);
-    notifyListeners();
-  }
+  // getUserModel() async {
+  //   QuerySnapshot noteQuery =
+  //       await FirestoreHelper.firestoreHelper.getUserModel();
+  //   QueryDocumentSnapshot userMap = noteQuery.docs[0];
+  //   userModel = UserModel(
+  //       email: userMap[Constants.emailKey],
+  //       userName: userMap[Constants.userNameKey],
+  //       id: userMap[Constants.idKey],
+  //       masterPassword: userMap[Constants.masterPassKey]);
+  //   notifyListeners();
+  // }
 
   addNote({
     required NoteModel note,
@@ -49,6 +47,7 @@ class NoteProvider extends ChangeNotifier {
 
   deleteNote({required String noteId}) async {
     await FirestoreHelper.firestoreHelper.deleteNote(noteId: noteId);
+
     getAllNote();
   }
 
@@ -57,6 +56,7 @@ class NoteProvider extends ChangeNotifier {
     QuerySnapshot noteQuery =
         await FirestoreHelper.firestoreHelper.getAllNotes();
     allNotes = noteQuery.docs.map((note) => NoteModel.fromMap(note)).toList();
+    setSelectedFlags();
     // NoteModel(
     //     id: note[Constants.idKey],
     //     content: note[Constants.contentKey],
@@ -121,10 +121,10 @@ class NoteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateUser(UserModel user) async {
-    await FirestoreHelper.firestoreHelper.updateUser(user);
-    getUserModel();
-  }
+  // void updateUser(UserModel user) async {
+  //   await FirestoreHelper.firestoreHelper.updateUser(user);
+  //   // getUserModel();
+  // }
 
   void setSelectionMode() {
     isSelectionMode = selectedFlag.containsValue(true);
@@ -132,12 +132,23 @@ class NoteProvider extends ChangeNotifier {
   }
 
   void deleteSelectedNotes() {
-    selectedFlag.forEach((key, value) {
+    selectedFlag.forEach((key, value) async {
       if (value) {
-        deleteNote(noteId: allNotes[key].id);
+        await FirestoreHelper.firestoreHelper
+            .deleteNote(noteId: allNotes[key].id);
+
+        // deleteNote(noteId: allNotes[key].id);
       }
     });
-    selectedFlag = {};
+
     isSelectionMode = false;
+    getAllNote();
+  }
+
+  void setSelectedFlags() {
+    selectedFlag = {};
+    for (int i = 0; i < allNotes.length; i++) {
+      selectedFlag[i] = false;
+    }
   }
 }

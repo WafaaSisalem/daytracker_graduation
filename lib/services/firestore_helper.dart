@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:day_tracker_graduation/models/note_model.dart';
+import 'package:day_tracker_graduation/models/task_model.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 
 import '../models/journal_model.dart';
@@ -91,6 +92,59 @@ class FirestoreHelper {
           .collection(Constants.noteCollectionName)
           .doc(note.id)
           .update(note.toMap());
+    } on Exception catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+////////////////////////////////////////////////////////
+  ///Tasks Database
+  Future<QuerySnapshot<Map<String, dynamic>>> getAllTasks() async {
+    return await firebaseFirestore
+        .collection(Constants.userCollectionName)
+        .doc(AuthHelper.authHelper.getCurrentUser()!.uid)
+        .collection(Constants.taskCollectionName)
+        .orderBy(Constants.dateKey, descending: true)
+        .get();
+  }
+
+  addTask({required TaskModel task}) async {
+    try {
+      await firebaseFirestore
+          .collection(Constants.userCollectionName)
+          .doc(AuthHelper.authHelper.getCurrentUser()!.uid)
+          .collection(Constants.taskCollectionName)
+          .doc(task.id)
+          .set(task.toMap());
+    } on Exception catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+  deleteTask({required String taskId}) async {
+    try {
+      await firebaseFirestore
+          .collection(Constants.userCollectionName)
+          .doc(AuthHelper.authHelper.getCurrentUser()!.uid)
+          .collection(Constants.taskCollectionName)
+          .doc(taskId)
+          .delete();
+    } on Exception catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+  updateTask(TaskModel task) async {
+    try {
+      await firebaseFirestore
+          .collection(Constants.userCollectionName)
+          .doc(AuthHelper.authHelper.getCurrentUser()!.uid)
+          .collection(Constants.taskCollectionName)
+          .doc(task.id)
+          .update(task.toMap());
     } on Exception catch (e) {
       // ignore: avoid_print
       print(e.toString());

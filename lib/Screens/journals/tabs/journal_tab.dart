@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,12 +40,15 @@ class _JournalTabState extends State<JournalTab> {
       }
     });
   }
+  // late AuthProvider authProvider;
+  // late JournalProvider journalProvider;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<JournalProvider>(builder: (builder, journalProvider, x) {
+    return Consumer2<JournalProvider, AuthProvider>(
+        builder: (builder, journalProvider, authProvider, x) {
       return widget.journals.isNotEmpty
-          ? journalWidget(journalProvider)
+          ? buildList(journalProvider, authProvider)
           : Center(
               child: isLoading
                   ? CircularProgressIndicator(
@@ -58,7 +62,8 @@ class _JournalTabState extends State<JournalTab> {
   JournalWidget buildItem(
       {required context,
       required int index,
-      required JournalProvider journalProvider}) {
+      required JournalProvider journalProvider,
+      required AuthProvider authProvider}) {
     journalProvider.selectedFlag[index] =
         journalProvider.selectedFlag[index] ?? false;
     bool isSelected = journalProvider.selectedFlag[index]!;
@@ -73,18 +78,22 @@ class _JournalTabState extends State<JournalTab> {
       },
       journal: widget.journals[index],
       onJournalTap: () {
-        onTap(isSelected, index, journalProvider);
+        onTap(isSelected, index, journalProvider, authProvider);
       },
     );
   }
 
-  Container journalWidget(JournalProvider journalProvider) {
+  Container buildList(
+      JournalProvider journalProvider, AuthProvider authProvider) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 20.h),
       child: ListView.separated(
         itemBuilder: (context, index) {
           return buildItem(
-              index: index, context: context, journalProvider: journalProvider);
+              index: index,
+              context: context,
+              journalProvider: journalProvider,
+              authProvider: authProvider);
         },
         separatorBuilder: (context, index) => SizedBox(
           height: 15.h,
@@ -102,7 +111,8 @@ class _JournalTabState extends State<JournalTab> {
     });
   }
 
-  void onTap(bool isSelected, int index, JournalProvider journalProvider) {
+  void onTap(bool isSelected, int index, JournalProvider journalProvider,
+      AuthProvider authProvider) {
     if (journalProvider.isSelectionMode) {
       setState(() {
         journalProvider.selectedFlag[index] = !isSelected;
@@ -119,7 +129,7 @@ class _JournalTabState extends State<JournalTab> {
                   if (value.isEmpty) {
                     showToast('Password can not be empty!', context: context);
                   } else {
-                    if (journalProvider.userModel!.masterPassword == value) {
+                    if (authProvider.userModel!.masterPassword == value) {
                       AppRouter.router.pop();
                       AppRouter.router
                           .pushWithReplacementFunction(JournalDisplayScreen(

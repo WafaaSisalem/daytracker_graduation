@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:day_tracker_graduation/models/place_model.dart';
+import 'package:day_tracker_graduation/models/location_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 

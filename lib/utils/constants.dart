@@ -7,6 +7,7 @@ class Constants {
   static const quotKey = "Quot";
   static const String userCollectionName = 'users';
   static const String noteCollectionName = 'notes';
+  static const String taskCollectionName = 'tasks';
   static const String journalCollectionName = 'journals';
 
   static const String formatedDateKey = 'formatedDate';
@@ -15,8 +16,12 @@ class Constants {
   static const String userNameKey = 'userName';
 
   static const String dateKey = 'date';
+  static const String doneKey = 'done';
+  static const String itemIdKey = 'itemId';
+  static const String taskIdKey = 'taskId';
 
   static const String contentKey = 'content';
+  static const String itemsKey = 'items';
   static const String locationKey = 'location';
   static const String titleKey = 'title';
   static const String idKey = 'id';

@@ -9,6 +9,7 @@ import '../router/app_router.dart';
 import '../widgets/choose_card_widget.dart';
 import 'journals/journal_home_screen.dart';
 import 'notes/note_home_screen.dart';
+import 'tasks/task_home_screen.dart';
 
 class ChooseCardScreen extends StatelessWidget {
   const ChooseCardScreen({Key? key}) : super(key: key);
@@ -79,7 +80,10 @@ class ChooseCardScreen extends StatelessWidget {
                       description:
                           'Write your tasks and what are you going to do, TRACK your tasks and progress',
                       imagePath: 'assets/images/tasks_card.png',
-                      onPressed: () {}),
+                      onPressed: () {
+                        AppRouter.router
+                            .pushWithReplacementFunction(TaskHomeScreen());
+                      }),
                   SizedBox(
                     height: 20.h,
                   ),

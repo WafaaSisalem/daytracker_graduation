@@ -1,3 +1,5 @@
+import 'package:day_tracker_graduation/provider/auth_provider.dart';
+import 'package:day_tracker_graduation/widgets/back_home_widget.dart';
 import 'package:day_tracker_graduation/widgets/dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +15,6 @@ import '../../widgets/bottombar_widget.dart';
 import '../../widgets/fab_widget.dart';
 import '../../widgets/no_entries_widget.dart';
 import '../../utils/svgs/svgs.dart';
-import '../choose_screen.dart';
 
 import 'note_handling_screen.dart';
 import 'tabs/note_calendar_tab.dart';
@@ -40,7 +41,8 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     // const String assetsImages = 'assets/images/';
-    return Consumer<NoteProvider>(builder: (context, noteProvider, x) {
+    return Consumer2<NoteProvider, AuthProvider>(
+        builder: (context, noteProvider, authProvider, x) {
       notes = noteProvider.allNotes;
       List<TabModel> tabs = [
         TabModel(
@@ -95,81 +97,8 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
           appBar: AppbarWidget(
             actions: [
               noteProvider.isSelectionMode
-                  ? IconButton(
-                      icon: svgWhiteDelete,
-                      onPressed: () {
-                        bool isLockedExist = false;
-                        Iterable<int> keys = noteProvider.selectedFlag.keys;
-                        for (int key in keys) {
-                          if (noteProvider.allNotes[key].isLocked) {
-                            isLockedExist = true;
-                          }
-                        }
-                        if (isLockedExist) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => DialogWidget(
-                                  dialogType: DialogType.password,
-                                  entryType: 'note',
-                                  onOkPressed: (value) {
-                                    if (value.isEmpty) {
-                                      showToast('Password can not be empty!',
-                                          context: context);
-                                    } else {
-                                      if (noteProvider
-                                              .userModel!.masterPassword ==
-                                          value) {
-                                        AppRouter.router.pop();
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return DialogWidget(
-                                                  dialogType: DialogType.delete,
-                                                  entryType: 'note',
-                                                  onOkPressed: (value) {
-                                                    noteProvider
-                                                        .deleteSelectedNotes();
-                                                    AppRouter.router.pop();
-                                                  });
-                                            });
-                                      } else {
-                                        showToast('Wrong Password!',
-                                            context: context,
-                                            position: StyledToastPosition.top);
-                                      }
-                                    }
-                                  }));
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DialogWidget(
-                                    dialogType: DialogType.delete,
-                                    entryType: 'note',
-                                    onOkPressed: (value) {
-                                      noteProvider.deleteSelectedNotes();
-                                      AppRouter.router.pop();
-                                    });
-                              });
-                        }
-                      },
-                    )
-                  : PopupMenuButton<String>(
-                      onSelected: (value) {
-                        AppRouter.router
-                            .pushWithReplacementFunction(ChooseCardScreen());
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return {
-                          'Back Home',
-                        }.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
+                  ? onSelectionModeWidget(noteProvider, context, authProvider)
+                  : const BackHomeMenuWidget(),
             ],
             titlePlace: Row(
               children: [
@@ -205,5 +134,68 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
                 NoteHandlingScreen(type: NoteHandlingType.add));
           }));
     });
+  }
+
+  IconButton onSelectionModeWidget(NoteProvider noteProvider,
+      BuildContext context, AuthProvider authProvider) {
+    return IconButton(
+      icon: svgWhiteDelete,
+      onPressed: () {
+        bool isLockedExist = false;
+
+        Iterable<int> keys = noteProvider.selectedFlag.keys;
+
+        for (int key in keys) {
+          if (noteProvider.selectedFlag[key] == true) {
+            if (noteProvider.allNotes[key].isLocked) {
+              isLockedExist = true;
+            }
+          }
+        }
+        if (isLockedExist) {
+          showDialog(
+              context: context,
+              builder: (context) => DialogWidget(
+                  dialogType: DialogType.password,
+                  entryType: 'note',
+                  onOkPressed: (value) {
+                    if (value.isEmpty) {
+                      showToast('Password can not be empty!', context: context);
+                    } else {
+                      if (authProvider.userModel!.masterPassword == value) {
+                        AppRouter.router.pop();
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return DialogWidget(
+                                  dialogType: DialogType.delete,
+                                  entryType: 'note',
+                                  onOkPressed: (value) {
+                                    noteProvider.deleteSelectedNotes();
+                                    AppRouter.router.pop();
+                                  });
+                            });
+                      } else {
+                        showToast('Wrong Password!',
+                            context: context,
+                            position: StyledToastPosition.top);
+                      }
+                    }
+                  }));
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return DialogWidget(
+                    dialogType: DialogType.delete,
+                    entryType: 'note',
+                    onOkPressed: (value) {
+                      noteProvider.deleteSelectedNotes();
+                      AppRouter.router.pop();
+                    });
+              });
+        }
+      },
+    );
   }
 }

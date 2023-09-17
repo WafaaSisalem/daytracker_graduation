@@ -1,4 +1,4 @@
-import 'package:day_tracker_graduation/models/place_model.dart';
+import 'package:day_tracker_graduation/models/location_model.dart';
 import 'package:day_tracker_graduation/widgets/appbar_widget.dart';
 import 'package:day_tracker_graduation/widgets/fab_widget.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,15 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
-import 'package:day_tracker_graduation/utils/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/journal_model.dart';
-import '../models/place_model.dart';
-import '../models/user_model.dart';
+import '../models/location_model.dart';
 
 class JournalProvider extends ChangeNotifier {
   List<JournalModel> allJournals = [];
@@ -24,7 +20,7 @@ class JournalProvider extends ChangeNotifier {
   DateTime selectedDay =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   EventList<Event> eventList = EventList<Event>(events: {});
-  UserModel? userModel;
+  // UserModel? userModel;
   List<JournalModel> searchResult = [];
   List<Map> allImagesUrls = [];
   List<File> filesPicked = [];
@@ -35,21 +31,21 @@ class JournalProvider extends ChangeNotifier {
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
       getAllJournals();
-      getUserModel();
+      // getUserModel();
     }
   }
 
-  getUserModel() async {
-    QuerySnapshot noteQuery =
-        await FirestoreHelper.firestoreHelper.getUserModel();
-    QueryDocumentSnapshot userMap = noteQuery.docs[0];
-    userModel = UserModel(
-        email: userMap[Constants.emailKey],
-        userName: userMap[Constants.userNameKey],
-        id: userMap[Constants.idKey],
-        masterPassword: userMap[Constants.masterPassKey]);
-    notifyListeners();
-  }
+  // getUserModel() async {
+  //   QuerySnapshot noteQuery =
+  //       await FirestoreHelper.firestoreHelper.getUserModel();
+  //   QueryDocumentSnapshot userMap = noteQuery.docs[0];
+  //   userModel = UserModel(
+  //       email: userMap[Constants.emailKey],
+  //       userName: userMap[Constants.userNameKey],
+  //       id: userMap[Constants.idKey],
+  //       masterPassword: userMap[Constants.masterPassKey]);
+  //   notifyListeners();
+  // }
 
   addJournal({
     required JournalModel journal,
@@ -182,10 +178,10 @@ class JournalProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateUser(UserModel user) async {
-    await FirestoreHelper.firestoreHelper.updateUser(user);
-    getUserModel();
-  }
+  // void updateUser(UserModel user) async {
+  //   await FirestoreHelper.firestoreHelper.updateUser(user);
+  //   getUserModel();
+  // }
 
   void setSelectionMode() {
     isSelectionMode = selectedFlag.containsValue(true);

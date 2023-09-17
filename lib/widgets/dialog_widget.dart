@@ -6,19 +6,21 @@ import '../provider/pomo_provider.dart';
 import '../utils/constants.dart';
 import 'dialog_textfield.dart';
 
-enum DialogType { discard, delete, password, quote, end }
+enum DialogType { discard, delete, password, quote, end, addTask }
 
 class DialogWidget extends StatefulWidget {
-  const DialogWidget(
+  DialogWidget(
       {Key? key,
       required this.dialogType,
       required this.entryType,
-      required this.onOkPressed})
+      required this.onOkPressed,
+      this.onNextPressed})
       : super(key: key);
 
   final String entryType;
   final DialogType dialogType;
   final Function(String) onOkPressed;
+  Function(String)? onNextPressed;
 
   @override
   State<DialogWidget> createState() => _DialogWidgetState();
@@ -29,6 +31,7 @@ class _DialogWidgetState extends State<DialogWidget> {
   Widget? dialogContent;
   String value = '';
   late PomoProvider pomoProvider;
+  bool nextButton = false;
   initValues() {
     //final pomoProvider = Provider.of<PomoProvider>(context);
     switch (widget.dialogType) {
@@ -66,6 +69,16 @@ class _DialogWidgetState extends State<DialogWidget> {
         dialogContent = Text(pomoProvider.duration.inMinutes >= 1
             ? Constants.doEnd
             : Constants.notSaved);
+        break;
+      case DialogType.addTask:
+        dialogTitle = 'Add Task';
+        dialogContent = DialogTextFieldWidget(
+            isObscured: false,
+            hintText: 'write a task',
+            onChanged: (value) {
+              this.value = value;
+            });
+        nextButton = true;
     }
   }
 
@@ -95,6 +108,22 @@ class _DialogWidgetState extends State<DialogWidget> {
       ),
       content: dialogContent,
       actions: [
+        if (nextButton) ...[
+          TextButton(
+              onPressed: () {
+                widget.onNextPressed!(value);
+              },
+              child: Text(
+                'Next',
+                style: theme.textTheme.headline6,
+                // color
+              )),
+          TextButton(
+            onPressed: null,
+            
+            child: SizedBox(),
+          )
+        ],
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();

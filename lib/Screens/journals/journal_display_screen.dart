@@ -104,7 +104,7 @@ class JournalDisplayScreen extends StatelessWidget {
                 // splashColor: Colors.transparent,
                 child: journal.isLocked ? svgWhiteUnlock : svgWhiteLock,
                 onTap: () {
-                  if (journalProvider.userModel!.masterPassword.isEmpty) {
+                  if (authProvider.userModel!.masterPassword.isEmpty) {
                     AppRouter.router
                         .pushFunction(MasterPassScreen(item: journal));
                   } else {
@@ -119,8 +119,7 @@ class JournalDisplayScreen extends StatelessWidget {
                                   showToast('Password can not be empty!',
                                       context: context);
                                 } else {
-                                  if (journalProvider
-                                          .userModel!.masterPassword ==
+                                  if (authProvider.userModel!.masterPassword ==
                                       value) {
                                     if (journal.isLocked) {
                                       journalProvider

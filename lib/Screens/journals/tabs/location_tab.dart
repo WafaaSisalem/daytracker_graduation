@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_tab.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/widgets/no_entries_widget.dart';

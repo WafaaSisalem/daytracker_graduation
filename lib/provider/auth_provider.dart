@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -7,9 +8,11 @@ import '../models/user_model.dart';
 import '../router/app_router.dart';
 import '../services/auth_helper.dart';
 import '../services/firestore_helper.dart';
+import '../utils/constants.dart';
 
 class AuthProvider extends ChangeNotifier {
   User? currentUser;
+  UserModel? userModel;
   AuthProvider() {
     getCurrentUser();
   }
@@ -23,9 +26,22 @@ class AuthProvider extends ChangeNotifier {
     //ChooseCardScreen()
   }
 
+  getUserModel() async {
+    QuerySnapshot userQuery =
+        await FirestoreHelper.firestoreHelper.getUserModel();
+    QueryDocumentSnapshot userMap = userQuery.docs[0];
+    userModel = UserModel(
+        email: userMap[Constants.emailKey],
+        userName: userMap[Constants.userNameKey],
+        id: userMap[Constants.idKey],
+        masterPassword: userMap[Constants.masterPassKey]);
+  }
+
   getCurrentUser() {
     currentUser = AuthHelper.authHelper.getCurrentUser();
-
+    if (currentUser != null) {
+      getUserModel();
+    }
     notifyListeners();
   }
 
@@ -61,5 +77,11 @@ class AuthProvider extends ChangeNotifier {
   void signOut() {
     AuthHelper.authHelper.signOut();
     getCurrentUser();
+  }
+
+  void updatePassword(String masterPass) async {
+    UserModel newUser = UserModel.fromMap(
+        {...userModel!.toMap(), Constants.masterPassKey: masterPass});
+    await FirestoreHelper.firestoreHelper.updateUser(newUser);
   }
 }
