@@ -106,12 +106,20 @@ class JournalProvider extends ChangeNotifier {
     allJournals = journalQuery.docs
         .map((journal) => JournalModel.fromMap(journal))
         .toList();
+    setSelectedFlags();
     eventList.clear();
     addEvents();
     setSelectedDayJournals();
     getAllImagesUrls();
 
     notifyListeners();
+  }
+
+  void setSelectedFlags() {
+    selectedFlag = {};
+    for (int i = 0; i < allJournals.length; i++) {
+      selectedFlag[i] = false;
+    }
   }
 
   getAllImagesUrls() {
@@ -194,7 +202,7 @@ class JournalProvider extends ChangeNotifier {
         deleteJournal(journalId: allJournals[key].id);
       }
     });
-    selectedFlag = {};
+    // selectedFlag = {};
     isSelectionMode = false;
   }
 

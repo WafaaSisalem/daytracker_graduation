@@ -82,6 +82,7 @@ class AuthProvider extends ChangeNotifier {
   void updatePassword(String masterPass) async {
     UserModel newUser = UserModel.fromMap(
         {...userModel!.toMap(), Constants.masterPassKey: masterPass});
+    userModel = newUser;
     await FirestoreHelper.firestoreHelper.updateUser(newUser);
   }
 }

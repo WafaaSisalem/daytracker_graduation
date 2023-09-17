@@ -26,8 +26,7 @@ class MasterPassScreen extends StatelessWidget {
   String masterPass = '';
   String reEnterPass = '';
   String currenPass = '';
-  save(context, NoteProvider noteProvider, JournalProvider journalProvider,
-      AuthProvider authProvider) async {
+  save() async {
     if (masterPass.isEmpty) {
       toastWidget(message: 'Enter a master password!', context: context);
     } else if (reEnterPass.isEmpty) {
@@ -63,10 +62,18 @@ class MasterPassScreen extends StatelessWidget {
     }
   }
 
+  late NoteProvider noteProvider;
+  late AuthProvider authProvider;
+  late JournalProvider journalProvider;
+  late BuildContext context;
   @override
   Widget build(BuildContext context) {
     return Consumer3<NoteProvider, JournalProvider, AuthProvider>(
         builder: (context, noteProvider, journalProvider, authProvider, x) {
+      this.context = context;
+      this.journalProvider = journalProvider;
+      this.noteProvider = noteProvider;
+      this.authProvider = authProvider;
       return Scaffold(
         appBar: const AppbarWidget(
             titlePlace: Text('Master Password'), actions: []),
@@ -77,10 +84,9 @@ class MasterPassScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    myForm(context),
+                    myForm(),
                     SizedBox(height: 30.h),
-                    myButton(
-                        context, noteProvider, journalProvider, authProvider),
+                    myButton(),
                     SizedBox(
                       height: 30.h,
                     ),
@@ -94,13 +100,13 @@ class MasterPassScreen extends StatelessWidget {
     });
   }
 
-  myButton(BuildContext context, noteProvider, journalProvider, authProvider) {
+  myButton() {
     return ButtonWidget(
         text: 'Change Password',
         onPressed: () async {
           // formKey.currentState!.validate();
 
-          save(context, noteProvider, journalProvider, authProvider);
+          save();
         },
         height: 48.h,
         width: 269.w);
@@ -122,7 +128,7 @@ class MasterPassScreen extends StatelessWidget {
     );
   }
 
-  Form myForm(BuildContext context) {
+  Form myForm() {
     return Form(
       key: formKey,
       child: Column(children: [

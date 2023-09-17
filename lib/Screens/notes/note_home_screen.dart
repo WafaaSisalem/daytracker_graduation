@@ -36,68 +36,29 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
   String nameText = '';
   String password = '';
   List<NoteModel> notes = [];
-
+  late NoteProvider noteProvider;
+  late AuthProvider authProvider;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     // const String assetsImages = 'assets/images/';
     return Consumer2<NoteProvider, AuthProvider>(
         builder: (context, noteProvider, authProvider, x) {
+      this.noteProvider = noteProvider;
+      this.authProvider = authProvider;
       notes = noteProvider.allNotes;
       List<TabModel> tabs = [
-        TabModel(
-            content: NotesTab(
-              longPressActivated: true,
-              notes: notes,
-              noEntriesWidget: NoEntriesWidget(
-                image: svgNoNote,
-                text: 'No notes entries',
-              ),
-            ),
-            title: 'Home Page',
-            iconPath: 'assets/images/allnote.svg'),
-        TabModel(
-            content: const NoteCalendarTab(),
-            title: 'Calendar',
-            iconPath: 'assets/images/calendar.svg'),
-        TabModel(
-            content: const NoteSearchTab(),
-            title: SizedBox(
-              width: 200.w,
-              child: TextField(
-                cursorColor: Colors.grey,
-                onChanged: (value) {
-                  noteProvider.search(value);
-                },
-                autofocus: true,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(0),
-                  hintStyle: Theme.of(context)
-                      .textTheme
-                      .headline3!
-                      .copyWith(color: const Color(0x73C4C4C4)), //TODO: color
-                  border: const OutlineInputBorder(borderSide: BorderSide.none),
-                  hintText: 'Search your notes...',
-                ),
-                style: Theme.of(context)
-                    .textTheme
-                    .headline3!
-                    .copyWith(color: Colors.white), //TODO: color
-              ),
-            ),
-            iconPath: 'assets/images/search.svg'),
-        TabModel(
-            content: SettingsTab(),
-            title: 'View Settings',
-            iconPath: 'assets/images/theme.svg')
+        buildTabOne(),
+        buildTabTwo(),
+        buildTabThree(),
+        buildTabFour()
       ];
       return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppbarWidget(
             actions: [
               noteProvider.isSelectionMode
-                  ? onSelectionModeWidget(noteProvider, context, authProvider)
+                  ? onSelectionModeWidget()
                   : const BackHomeMenuWidget(),
             ],
             titlePlace: Row(
@@ -136,8 +97,65 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
     });
   }
 
-  IconButton onSelectionModeWidget(NoteProvider noteProvider,
-      BuildContext context, AuthProvider authProvider) {
+  TabModel buildTabFour() {
+    return TabModel(
+        content: SettingsTab(),
+        title: 'View Settings',
+        iconPath: 'assets/images/theme.svg');
+  }
+
+  TabModel buildTabThree() {
+    return TabModel(
+        content: const NoteSearchTab(),
+        title: SizedBox(
+          width: 200.w,
+          child: TextField(
+            cursorColor: Colors.grey,
+            onChanged: (value) {
+              noteProvider.search(value);
+            },
+            autofocus: true,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(0),
+              hintStyle: Theme.of(context)
+                  .textTheme
+                  .headline3!
+                  .copyWith(color: const Color(0x73C4C4C4)), //TODO: color
+              border: const OutlineInputBorder(borderSide: BorderSide.none),
+              hintText: 'Search your notes...',
+            ),
+            style: Theme.of(context)
+                .textTheme
+                .headline3!
+                .copyWith(color: Colors.white), //TODO: color
+          ),
+        ),
+        iconPath: 'assets/images/search.svg');
+  }
+
+  TabModel buildTabTwo() {
+    return TabModel(
+        content: const NoteCalendarTab(),
+        title: 'Calendar',
+        iconPath: 'assets/images/calendar.svg');
+  }
+
+  TabModel buildTabOne() {
+    return TabModel(
+        content: NotesTab(
+          longPressActivated: true,
+          notes: notes,
+          noEntriesWidget: NoEntriesWidget(
+            image: svgNoNote,
+            text: 'No notes entries',
+          ),
+        ),
+        title: 'Home Page',
+        iconPath: 'assets/images/allnote.svg');
+  }
+
+  IconButton onSelectionModeWidget() {
     return IconButton(
       icon: svgWhiteDelete,
       onPressed: () {
@@ -164,17 +182,7 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
                     } else {
                       if (authProvider.userModel!.masterPassword == value) {
                         AppRouter.router.pop();
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return DialogWidget(
-                                  dialogType: DialogType.delete,
-                                  entryType: 'note',
-                                  onOkPressed: (value) {
-                                    noteProvider.deleteSelectedNotes();
-                                    AppRouter.router.pop();
-                                  });
-                            });
+                        deleteDialog();
                       } else {
                         showToast('Wrong Password!',
                             context: context,
@@ -183,19 +191,23 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
                     }
                   }));
         } else {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return DialogWidget(
-                    dialogType: DialogType.delete,
-                    entryType: 'note',
-                    onOkPressed: (value) {
-                      noteProvider.deleteSelectedNotes();
-                      AppRouter.router.pop();
-                    });
-              });
+          deleteDialog();
         }
       },
     );
+  }
+
+  Future<dynamic> deleteDialog() {
+    return showDialog(
+        context: context,
+        builder: (ctx) {
+          return DialogWidget(
+              dialogType: DialogType.delete,
+              entryType: 'note',
+              onOkPressed: (value) {
+                noteProvider.deleteSelectedNotes();
+                AppRouter.router.pop();
+              });
+        });
   }
 }

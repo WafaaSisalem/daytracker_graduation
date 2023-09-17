@@ -64,8 +64,8 @@ class _JournalTabState extends State<JournalTab> {
       required int index,
       required JournalProvider journalProvider,
       required AuthProvider authProvider}) {
-    journalProvider.selectedFlag[index] =
-        journalProvider.selectedFlag[index] ?? false;
+    // journalProvider.selectedFlag[index] =
+    //     journalProvider.selectedFlag[index] ?? false;
     bool isSelected = journalProvider.selectedFlag[index]!;
 
     return JournalWidget(
