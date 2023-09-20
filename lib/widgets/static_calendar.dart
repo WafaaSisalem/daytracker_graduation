@@ -53,6 +53,7 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
       todayButtonColor: theme.colorScheme.secondary,
       showOnlyCurrentMonthDate: false,
       dayPadding: 5,
+      targetDateTime: dateTime,
       showHeader: true,
       headerTitleTouchable: true,
       markedDatesMap: widget.eventList,

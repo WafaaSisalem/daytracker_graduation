@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/models/task_item_model.dart';
 import 'package:day_tracker_graduation/provider/task_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,11 +49,12 @@ class _TaskListWidgetState extends State<TaskListWidget> {
         children: provider.currentTodos
             .asMap()
             .entries
-            .map((entry) => addTaskItem(entry))
+            .map((entry) => taskItem(entry))
             .toList());
   }
 
-  Widget addTaskItem(MapEntry<int, String> entry) {
+  Widget taskItem(MapEntry<int, TaskItemModel> entry) {
+    // Widget taskItem(MapEntry<int, String> entry) {
     return Padding(
       key: UniqueKey(),
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -60,9 +62,12 @@ class _TaskListWidgetState extends State<TaskListWidget> {
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(5)),
         child: ListTile(
-          onTap: () => print('tapped'),
+          onTap: () {
+            editTodo(entry.value, entry.key);
+          },
           title: Text(
-            entry.value,
+            entry.value.content,
+            // entry.value,
             style: Theme.of(context)
                 .textTheme
                 .headline2!
@@ -112,6 +117,33 @@ class _TaskListWidgetState extends State<TaskListWidget> {
     );
   }
 
+  editTodo(TaskItemModel task, int index) {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return DialogWidget(
+              dialogType: DialogType.editTask,
+              entryType: 'task',
+              content: task.content,
+              onOkPressed: (value) {
+                AppRouter.router.pop();
+
+                if (value == task.content) {
+                  AppRouter.router.pop();
+                } else {
+                  if (value.isEmpty) {
+                    setState(() {
+                      provider.currentTodos.removeAt(index);
+                    });
+                  } else {
+                    provider.currentTodos[index].content = value;
+                    setState(() {});
+                  }
+                }
+              });
+        });
+  }
+
   onAddBtnPressed() {
     showDialog(
         context: context,
@@ -122,7 +154,8 @@ class _TaskListWidgetState extends State<TaskListWidget> {
               onNextPressed: (value) {
                 AppRouter.router.pop();
                 if (value.isNotEmpty) {
-                  provider.addTodo(value);
+                  // provider.addTodo(value);
+                  provider.addTodo(TaskItemModel(content: value));
                 }
                 onAddBtnPressed();
               },
@@ -130,7 +163,8 @@ class _TaskListWidgetState extends State<TaskListWidget> {
                 AppRouter.router.pop();
 
                 if (value.isNotEmpty) {
-                  provider.addTodo(value);
+                  // provider.addTodo(value);
+                  provider.addTodo(TaskItemModel(content: value));
                 }
               });
         });

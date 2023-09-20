@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
+
 import '../utils/constants.dart';
 
-class TaskItemModel {
+class TaskItemModel extends Equatable {
   TaskItemModel({
     // required this.itemId,
     // required this.taskId,
@@ -28,4 +30,7 @@ class TaskItemModel {
       done: map[Constants.doneKey] ?? false,
     );
   }
+
+  @override
+  List<Object?> get props => [content];
 }

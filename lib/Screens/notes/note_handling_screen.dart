@@ -50,19 +50,20 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
             return false;
           },
           child: Scaffold(
+            // resizeToAvoidBottomInset: true,
             appBar: AppbarWidget(
                 titlePlace: Row(children: [
                   IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      size: 18.r,
+                    icon: const Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 28,
                       color: Colors.white, //TODO: COLOR
                     ),
                     onPressed: () {
                       onBackButtonPressed();
                     },
                   ),
-                  buildTitleTextField()
+                  Expanded(child: buildTitleTextField())
                 ]),
                 actions: [
                   if (widget.type == NoteHandlingType.display) ...[
@@ -88,7 +89,9 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
         onChanged: (value) {
           content = value;
         },
-        contentText: widget.type == NoteHandlingType.display ? content : null,
+        controller: widget.type == NoteHandlingType.display
+            ? TextEditingController(text: content)
+            : TextEditingController(text: null),
         hintText: 'note',
       ),
     );
@@ -100,8 +103,8 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
       child: IconButton(
           onPressed: () => onCheckPressed(),
           icon: const Icon(
-            Icons.check,
-            size: 18,
+            Icons.check_rounded,
+            size: 28,
             color: Colors.white, //TODO: COLOR
           )),
     );
@@ -109,7 +112,10 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
 
   InkWell buildLockIcon(BuildContext context) {
     return InkWell(
-      child: widget.note!.isLocked ? svgWhiteUnlock : svgWhiteLock,
+      child: SizedBox(
+          width: 18,
+          height: 18,
+          child: widget.note!.isLocked ? svgWhiteUnlock : svgWhiteLock),
       onTap: () {
         if (authProvider.userModel!.masterPassword.isEmpty) {
           AppRouter.router
@@ -158,7 +164,11 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
 
   InkWell buildDeleteIcon(BuildContext context) {
     return InkWell(
-      child: svgWhiteDelete,
+      child: SizedBox(
+        width: 18,
+        height: 18,
+        child: svgWhiteDelete,
+      ),
       onTap: () {
         showDialog(
             context: context,

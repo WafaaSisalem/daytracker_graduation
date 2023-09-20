@@ -98,7 +98,11 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
             actions: [
               journalProvider.isSelectionMode
                   ? IconButton(
-                      icon: svgWhiteDelete,
+                      icon: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: svgWhiteDelete,
+                      ),
                       onPressed: () {
                         bool isLockedExist = false;
 
@@ -185,9 +189,9 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                   ),
                 if (currentIndex == 4)
                   IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      size: 18.r,
+                    icon: const Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 28,
                       color: Colors.white, //TODO: COLOR
                     ),
                     onPressed: () {

@@ -6,7 +6,7 @@ import '../provider/pomo_provider.dart';
 import '../utils/constants.dart';
 import 'dialog_textfield.dart';
 
-enum DialogType { discard, delete, password, quote, end, addTask }
+enum DialogType { discard, delete, password, quote, end, addTask, editTask }
 
 class DialogWidget extends StatefulWidget {
   DialogWidget(
@@ -14,6 +14,7 @@ class DialogWidget extends StatefulWidget {
       required this.dialogType,
       required this.entryType,
       required this.onOkPressed,
+      this.content,
       this.onNextPressed})
       : super(key: key);
 
@@ -21,7 +22,7 @@ class DialogWidget extends StatefulWidget {
   final DialogType dialogType;
   final Function(String) onOkPressed;
   Function(String)? onNextPressed;
-
+  final String? content;
   @override
   State<DialogWidget> createState() => _DialogWidgetState();
 }
@@ -79,6 +80,16 @@ class _DialogWidgetState extends State<DialogWidget> {
               this.value = value;
             });
         nextButton = true;
+        break;
+      case DialogType.editTask:
+        dialogTitle = 'Edit Task';
+        dialogContent = DialogTextFieldWidget(
+            isObscured: false,
+            content: widget.content,
+            hintText: 'write a task',
+            onChanged: (value) {
+              this.value = value;
+            });
     }
   }
 
@@ -120,7 +131,6 @@ class _DialogWidgetState extends State<DialogWidget> {
               )),
           TextButton(
             onPressed: null,
-            
             child: SizedBox(),
           )
         ],

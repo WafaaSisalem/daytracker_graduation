@@ -38,7 +38,9 @@ class TaskWidget extends StatelessWidget {
             padding: EdgeInsets.only(
                 left: 20.w, right: 13.w, top: 13.h, bottom: 13.h),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: task.isLocked
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
               children: [
                 taskHead(theme, context),
                 taskBody(theme, context),
@@ -76,8 +78,8 @@ class TaskWidget extends StatelessWidget {
           onPasswordIconTap();
         },
         child: SizedBox(
-          width: 17.w,
-          height: 17.h,
+          width: 20.w,
+          height: 20.h,
           child: task.isLocked ? svgUnlock : svgLock,
         ),
       );
@@ -88,8 +90,8 @@ class TaskWidget extends StatelessWidget {
           onDeleteIconTap();
         },
         child: SizedBox(
-          width: 17.w,
-          height: 17.h,
+          width: 20.w,
+          height: 20.h,
           child: svgDelete,
         ),
       );
@@ -144,7 +146,7 @@ class TaskWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Spacer(),
+        // const Spacer(),
         SizedBox(
           width: 30.w,
           height: 30.h,

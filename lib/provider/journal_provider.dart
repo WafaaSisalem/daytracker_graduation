@@ -197,13 +197,16 @@ class JournalProvider extends ChangeNotifier {
   }
 
   void deleteSelectedJournals() {
-    selectedFlag.forEach((key, value) {
+    selectedFlag.forEach((key, value) async {
       if (value) {
-        deleteJournal(journalId: allJournals[key].id);
+        // deleteJournal(journalId: allJournals[key].id);
+        await FirestoreHelper.firestoreHelper
+            .deleteJournal(journalId: allJournals[key].id);
       }
     });
     // selectedFlag = {};
     isSelectionMode = false;
+    getAllJournals();
   }
 
   getImagesWidgets() {

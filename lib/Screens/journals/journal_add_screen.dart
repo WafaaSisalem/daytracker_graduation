@@ -159,9 +159,9 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
         appBar: AppbarWidget(
             titlePlace: Row(children: [
               IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  size: 18.r,
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 28,
                   color: Colors.white, //TODO: COLOR
                 ),
                 onPressed: () {
@@ -223,8 +223,8 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                     onPressed: () =>
                         onCheckPressed(journalProvider, authProvider),
                     icon: const Icon(
-                      Icons.check,
-                      size: 18,
+                      Icons.check_rounded,
+                      size: 28,
                       color: Colors.white, //TODO: COLOR
                     )),
               ),
@@ -258,7 +258,9 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                   onChanged: (value) {
                     content = value;
                   },
-                  contentText: content != '' ? content : null,
+                  controller: content != ''
+                      ? TextEditingController(text: content)
+                      : TextEditingController(text: null),
                   hintText: 'What happened with you today?',
                 ),
               ),

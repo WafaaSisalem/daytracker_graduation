@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/constants.dart';
 import 'task_item_model.dart';
 
-class TaskModel {
+class TaskModel extends Equatable {
   TaskModel(
       {required this.id,
       required this.date,
@@ -16,7 +17,7 @@ class TaskModel {
   final DateTime date;
   final String title;
   final bool isLocked;
-  final List<dynamic> items;
+  final List<dynamic> items; //as TaskItemModel
 
   get formatedDate {
     return DateFormat(Constants.dateFormat).format(date);
@@ -45,4 +46,7 @@ class TaskModel {
             .map((mapItem) =>
                 TaskItemModel.fromMap(mapItem as Map<String, dynamic>))
             .toList();
+
+  @override
+  List<Object?> get props => [title, items];
 }

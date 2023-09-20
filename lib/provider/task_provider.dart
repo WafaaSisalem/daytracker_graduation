@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_tracker_graduation/models/task_item_model.dart';
 import 'package:day_tracker_graduation/models/task_model.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ class TaskProvider extends ChangeNotifier {
   List<TaskModel> allTasks = [];
   bool isSelectionMode = false;
   Map<int, bool> selectedFlag = {};
-  List<String> currentTodos = [];
+  List<TaskItemModel> currentTodos = [];
 
   TaskProvider() {
     getAllTasks();
@@ -23,8 +24,20 @@ class TaskProvider extends ChangeNotifier {
     getAllTasks();
   }
 
-  addTodo(String todo) {
+  void setSelectedFlags() {
+    selectedFlag = {};
+    for (int i = 0; i < allTasks.length; i++) {
+      selectedFlag[i] = false;
+    }
+  }
+
+  addTodo(TaskItemModel todo) {
     currentTodos.insert(0, todo);
+    notifyListeners();
+  }
+
+  setCurrentTodos(List<TaskItemModel> todos) {
+    currentTodos = todos;
     notifyListeners();
   }
 
@@ -39,6 +52,7 @@ class TaskProvider extends ChangeNotifier {
     QuerySnapshot taskQuery =
         await FirestoreHelper.firestoreHelper.getAllTasks();
     allTasks = taskQuery.docs.map((task) => TaskModel.fromMap(task)).toList();
+    setSelectedFlags();
     notifyListeners();
   }
 
@@ -57,12 +71,23 @@ class TaskProvider extends ChangeNotifier {
   }
 
   void deleteSelectedTask() {
-    selectedFlag.forEach((key, value) {
+    selectedFlag.forEach((key, value) async {
       if (value) {
-        deleteTask(taskId: allTasks[key].id);
+        // deleteTask(taskId: allTasks[key].id);
+        await FirestoreHelper.firestoreHelper
+            .deleteTask(taskId: allTasks[key].id);
       }
     });
-    selectedFlag = {};
+    // selectedFlag = {};
     isSelectionMode = false;
+    getAllTasks();
+  }
+
+  void updateTodos(String id, List<TaskItemModel> items) async {
+    if (items.isEmpty) {
+      deleteTask(taskId: id);
+    } else {
+      await FirestoreHelper.firestoreHelper.updateTodos(id, items);
+    }
   }
 }

@@ -106,90 +106,24 @@ class _NotesTabState extends State<NotesTab> {
         onTap(isSelected, index);
       },
       onPasswordIconTap: () {
-        if (authProvider.userModel!.masterPassword.isEmpty) {
-          AppRouter.router.pushNamedFunction(
-              MasterPassScreen.routeName, [widget.notes[index]]);
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.password,
-                  entryType: 'note',
-                  onOkPressed: (value) {
-                    if (value.isEmpty) {
-                      showToast('Password can not be empty!', context: context);
-                    } else {
-                      if (authProvider.userModel!.masterPassword == value) {
-                        if (widget.notes[index].isLocked) {
-                          noteProvider.updateNote(NoteModel.fromMap({
-                            ...widget.notes[index].toMap(),
-                            Constants.isLockedKey: 0,
-                          }));
-                        } else {
-                          noteProvider.updateNote(NoteModel.fromMap({
-                            ...widget.notes[index].toMap(),
-                            Constants.isLockedKey: 1,
-                          }));
-                        }
-                        AppRouter.router.pop();
-                      } else {
-                        showToast('Wrong Password!',
-                            context: context,
-                            position: StyledToastPosition.top);
-                      }
-                    }
-                  }));
-          print('password idonc');
-        }
+        onPassword(index);
       },
       onDeleteIconTap: () {
-        if (widget.notes[index].isLocked) {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.password,
-                  entryType: 'note',
-                  onOkPressed: (value) {
-                    if (value.isEmpty) {
-                      showToast('Password can not be empty!', context: context);
-                    } else {
-                      if (authProvider.userModel!.masterPassword == value) {
-                        AppRouter.router.pop();
-                        showDialog(
-                            context: context,
-                            builder: (context) => DialogWidget(
-                                dialogType: DialogType.delete,
-                                entryType: 'note',
-                                onOkPressed: (value) {
-                                  print(widget.notes[index].id);
-                                  noteProvider.deleteNote(
-                                      noteId: widget.notes[index].id);
-                                  AppRouter.router.pop();
-                                }));
-                      } else {
-                        showToast('Wrong Password!',
-                            context: context,
-                            position: StyledToastPosition.top);
-                      }
-                    }
-                  }));
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) => DialogWidget(
-                  dialogType: DialogType.delete,
-                  entryType: 'note',
-                  onOkPressed: (value) {
-                    print('object');
-                    print(widget.notes[index].id);
-                    noteProvider.deleteNote(noteId: widget.notes[index].id);
-                    AppRouter.router.pop();
-                  }));
-        }
-
-        print('delete icon');
+        onDelete(index);
       },
     );
+  }
+
+  Future<dynamic> deleteDialog(int index) {
+    return showDialog(
+        context: context,
+        builder: (context) => DialogWidget(
+            dialogType: DialogType.delete,
+            entryType: 'note',
+            onOkPressed: (value) {
+              noteProvider.deleteNote(noteId: widget.notes[index].id);
+              AppRouter.router.pop();
+            }));
   }
 
   Container buildRectangleList() {
@@ -219,7 +153,6 @@ class _NotesTabState extends State<NotesTab> {
   }
 
   void onTap(bool isSelected, int index) {
-    print('indexxxxxxxxxxxxxxxxxxxxxxx$index');
     if (noteProvider.isSelectionMode) {
       setState(() {
         noteProvider.selectedFlag[index] = !isSelected;
@@ -227,29 +160,12 @@ class _NotesTabState extends State<NotesTab> {
       });
     } else {
       if (widget.notes[index].isLocked) {
-        showDialog(
-            context: context,
-            builder: (context) => DialogWidget(
-                dialogType: DialogType.password,
-                entryType: 'note',
-                onOkPressed: (value) {
-                  if (value.isEmpty) {
-                    showToast('Password can not be empty!', context: context);
-                  } else {
-                    // if (noteProvider.userModel!.masterPassword == value)
-                    if (authProvider.userModel!.masterPassword == value) {
-                      AppRouter.router.pop();
-                      AppRouter.router
-                          .pushWithReplacementFunction(NoteHandlingScreen(
-                        type: NoteHandlingType.display,
-                        note: widget.notes[index],
-                      ));
-                    } else {
-                      showToast('Wrong Password!',
-                          context: context, position: StyledToastPosition.top);
-                    }
-                  }
-                }));
+        passwordDialog(whenMatch: () {
+          AppRouter.router.pushWithReplacementFunction(NoteHandlingScreen(
+            type: NoteHandlingType.display,
+            note: widget.notes[index],
+          ));
+        });
       } else {
         AppRouter.router.pushWithReplacementFunction(NoteHandlingScreen(
           type: NoteHandlingType.display,
@@ -259,20 +175,56 @@ class _NotesTabState extends State<NotesTab> {
     }
   }
 
-  // void unLockNote(NoteProvider noteProvider, int index) {
-  //   noteProvider.updateNote(NoteModel.fromMap({
-  //     ...widget.notes[index].toMap(),
-  //     Constants.isLockedKey: false,
-  //     Constants.passwordKey: '',
-  //   }));
-  // }
+  Future<dynamic> passwordDialog({required Function() whenMatch}) {
+    return showDialog(
+        context: context,
+        builder: (context) => DialogWidget(
+            dialogType: DialogType.password,
+            entryType: 'note',
+            onOkPressed: (value) {
+              if (value.isEmpty) {
+                showToast('Password can not be empty!', context: context);
+              } else {
+                // if (noteProvider.userModel!.masterPassword == value)
+                if (authProvider.userModel!.masterPassword == value) {
+                  AppRouter.router.pop();
+                  whenMatch();
+                } else {
+                  showToast('Wrong Password!',
+                      context: context, position: StyledToastPosition.top);
+                }
+              }
+            }));
+  }
 
-  // void lockNote(NoteProvider noteProvider, int index, String value) {
+  void onPassword(index) {
+    if (authProvider.userModel!.masterPassword.isEmpty) {
+      AppRouter.router
+          .pushNamedFunction(MasterPassScreen.routeName, [widget.notes[index]]);
+    } else {
+      passwordDialog(whenMatch: () {
+        if (widget.notes[index].isLocked) {
+          noteProvider.updateNote(NoteModel.fromMap({
+            ...widget.notes[index].toMap(),
+            Constants.isLockedKey: 0,
+          }));
+        } else {
+          noteProvider.updateNote(NoteModel.fromMap({
+            ...widget.notes[index].toMap(),
+            Constants.isLockedKey: 1,
+          }));
+        }
+      });
+    }
+  }
 
-  //   noteProvider.updateNote(NoteModel.fromMap({
-  //     ...widget.notes[index].toMap(),
-  //     Constants.isLockedKey: true,
-  //     Constants.passwordKey: value,
-  //   }));
-  // }
+  void onDelete(int index) {
+    if (widget.notes[index].isLocked) {
+      passwordDialog(whenMatch: () {
+        deleteDialog(index);
+      });
+    } else {
+      deleteDialog(index);
+    }
+  }
 }

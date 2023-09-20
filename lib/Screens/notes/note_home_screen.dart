@@ -157,7 +157,11 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
 
   IconButton onSelectionModeWidget() {
     return IconButton(
-      icon: svgWhiteDelete,
+      icon: SizedBox(
+        width: 18,
+        height: 18,
+        child: svgWhiteDelete,
+      ),
       onPressed: () {
         bool isLockedExist = false;
 

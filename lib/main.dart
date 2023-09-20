@@ -32,6 +32,7 @@ void main() async {
       .then((_) {
     loadAudioFile().then((value) {
       runApp(ScreenUtilInit(
+        useInheritedMediaQuery: true,
         builder: (context, child) => MultiProvider(
           providers: [
             ChangeNotifierProvider<AuthProvider>(

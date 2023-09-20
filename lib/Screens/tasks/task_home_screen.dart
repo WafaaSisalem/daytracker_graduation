@@ -27,18 +27,19 @@ class TaskHomeScreen extends StatefulWidget {
 class _TaskHomeScreenState extends State<TaskHomeScreen> {
   int currentIndex = 0;
   List<TaskModel> tasks = [];
-
+  late TaskProvider taskProvider;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<TaskProvider>(builder: (context, taskProvider, x) {
+      this.taskProvider = taskProvider;
       tasks = taskProvider.allTasks;
       return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppbarWidget(
             actions: [
               taskProvider.isSelectionMode
-                  ? onSelectionModeWidget(taskProvider)
+                  ? onSelectionModeWidget()
                   : const BackHomeMenuWidget()
             ],
             titlePlace: Row(
@@ -57,20 +58,27 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           floatingActionButton: FabWidget(onPressed: () {
-            AppRouter.router.pushWithReplacementFunction(const AddTaskScreen());
+            taskProvider.currentTodos.clear();
+            AppRouter.router.pushWithReplacementFunction(const TaskAddScreen());
           }));
     });
   }
 
-  onSelectionModeWidget(TaskProvider taskProvider) {
+  onSelectionModeWidget() {
     return IconButton(
-      icon: svgWhiteDelete,
+      icon: SizedBox(
+        width: 18,
+        height: 18,
+        child: svgWhiteDelete,
+      ),
       onPressed: () {
         bool isLockedExist = false;
         Iterable<int> keys = taskProvider.selectedFlag.keys;
         for (int key in keys) {
-          if (taskProvider.allTasks[key].isLocked) {
-            isLockedExist = true;
+          if (taskProvider.selectedFlag[key] == true) {
+            if (taskProvider.allTasks[key].isLocked) {
+              isLockedExist = true;
+            }
           }
         }
         if (isLockedExist) {
@@ -88,17 +96,7 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
                               .masterPassword ==
                           value) {
                         AppRouter.router.pop();
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return DialogWidget(
-                                  dialogType: DialogType.delete,
-                                  entryType: 'note',
-                                  onOkPressed: (value) {
-                                    taskProvider.deleteSelectedTask();
-                                    AppRouter.router.pop();
-                                  });
-                            });
+                        deleteDialog();
                       } else {
                         showToast('Wrong Password!',
                             context: context,
@@ -107,19 +105,23 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
                     }
                   }));
         } else {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return DialogWidget(
-                    dialogType: DialogType.delete,
-                    entryType: 'task',
-                    onOkPressed: (value) {
-                      taskProvider.deleteSelectedTask();
-                      AppRouter.router.pop();
-                    });
-              });
+          deleteDialog();
         }
       },
     );
+  }
+
+  Future<dynamic> deleteDialog() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return DialogWidget(
+              dialogType: DialogType.delete,
+              entryType: 'task',
+              onOkPressed: (value) {
+                taskProvider.deleteSelectedTask();
+                AppRouter.router.pop();
+              });
+        });
   }
 }

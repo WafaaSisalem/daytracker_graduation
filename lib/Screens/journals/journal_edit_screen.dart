@@ -63,9 +63,9 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
         appBar: AppbarWidget(
             titlePlace: Row(children: [
               IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  size: 18.r,
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 28,
                   color: Colors.white, //TODO: COLOR
                 ),
                 onPressed: () {
@@ -169,8 +169,8 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
                           const JournalHomeScreen());
                     },
                     icon: const Icon(
-                      Icons.check,
-                      size: 18,
+                      Icons.check_rounded,
+                      size: 28,
                       color: Colors.white, //TODO: COLOR
                     )),
               ),
@@ -181,7 +181,7 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
             onChanged: (value) {
               content = value;
             },
-            contentText: content,
+            controller: TextEditingController(text: content),
             hintText: 'What happened with you today?',
           ),
         ),

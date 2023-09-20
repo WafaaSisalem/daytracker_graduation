@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:day_tracker_graduation/models/note_model.dart';
+import 'package:day_tracker_graduation/models/task_item_model.dart';
 import 'package:day_tracker_graduation/models/task_model.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
 
@@ -198,6 +199,21 @@ class FirestoreHelper {
           .collection(Constants.journalCollectionName)
           .doc(journal.id)
           .update(journal.toMap());
+    } on Exception catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+  updateTodos(String id, List<TaskItemModel> items) async {
+    try {
+      await firebaseFirestore
+          .collection(Constants.userCollectionName)
+          .doc(AuthHelper.authHelper.getCurrentUser()!.uid)
+          .collection(Constants.taskCollectionName)
+          .doc(id)
+          .update(
+              {Constants.itemsKey: items.map((item) => item.toMap()).toList()});
     } on Exception catch (e) {
       // ignore: avoid_print
       print(e.toString());

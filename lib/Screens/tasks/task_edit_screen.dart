@@ -13,26 +13,35 @@ import '../../widgets/appbar_widget.dart';
 import '../../widgets/dialog_widget.dart';
 import 'widgets/task_list_widget.dart';
 
-class TaskAddScreen extends StatefulWidget {
-  const TaskAddScreen({
-    Key? key,
-  }) : super(key: key);
-
+class TaskEditScreen extends StatefulWidget {
+  const TaskEditScreen({Key? key, required this.task}) : super(key: key);
+  final TaskModel task;
   @override
-  State<TaskAddScreen> createState() => _TaskAddScreenState();
+  State<TaskEditScreen> createState() => _TaskEditScreenState();
 }
 
-class _TaskAddScreenState extends State<TaskAddScreen> {
-  String? title;
+class _TaskEditScreenState extends State<TaskEditScreen> {
+  late String title;
+  late List<TaskItemModel> items;
   late TaskProvider taskProvider;
   late AuthProvider authProvider;
+  get newTask {
+    return TaskModel(
+        id: widget.task.id,
+        date: DateTime.now(),
+        title: title,
+        isLocked: widget.task.isLocked,
+        items: items);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, TaskProvider>(
       builder: (context, authProvider, taskProvider, child) {
         this.taskProvider = taskProvider;
         this.authProvider = authProvider;
-
+        title = widget.task.title;
+        items = widget.task.items as List<TaskItemModel>;
         return WillPopScope(
           onWillPop: () async {
             onCheckPressed();
@@ -81,20 +90,22 @@ class _TaskAddScreenState extends State<TaskAddScreen> {
 
   onCheckPressed() {
     if (taskProvider.currentTodos.isNotEmpty) {
-      taskProvider.addTask(
-          task: TaskModel(
-              id: DateTime.now().toString(),
-              date: DateTime.now(),
-              title: title ?? '',
-              isLocked: false,
-              items: taskProvider.currentTodos));
+      if (widget.task == newTask) {
+        //dont do any thing
+      } else {
+        taskProvider.updateTask(newTask);
+      }
+    } else {
+      taskProvider.deleteTask(taskId: widget.task.id);
     }
 
     AppRouter.router.pushWithReplacementFunction(const TaskHomeScreen());
   }
 
   void onBackButtonPressed() {
-    if (taskProvider.currentTodos.isEmpty) {
+    if (widget.task == newTask) {
+      //dont do any thing
+      print('dont do');
       AppRouter.router.pushWithReplacementFunction(const TaskHomeScreen());
     } else {
       showDialog(

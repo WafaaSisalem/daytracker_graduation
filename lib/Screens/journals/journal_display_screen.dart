@@ -22,20 +22,6 @@ import '../../utils/svgs/svgs.dart';
 import 'journal_home_screen.dart';
 
 class JournalDisplayScreen extends StatelessWidget {
-  // final List<Widget> widgets = [
-  //   Image.asset(
-  //     'assets/images/team.jpg',
-  //     fit: BoxFit.cover,
-  //   ),
-  //   Image.asset(
-  //     'assets/images/tanjiro.jpg',
-  //     fit: BoxFit.cover,
-  //   ),
-  //   Image.asset(
-  //     'assets/images/sunset.jpg',
-  //     fit: BoxFit.cover,
-  //   )
-  // ];
   JournalDisplayScreen({
     Key? key,
     required this.journal,
@@ -45,7 +31,6 @@ class JournalDisplayScreen extends StatelessWidget {
     return StatusWidget(status: journal.status);
   }
 
-  // String content = '';
   @override
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, JournalProvider>(
@@ -55,31 +40,23 @@ class JournalDisplayScreen extends StatelessWidget {
       return Scaffold(
         appBar: AppbarWidget(
             titlePlace: IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                size: 18.r,
+              icon: const Icon(
+                Icons.arrow_back_ios_rounded,
+                size: 28,
                 color: Colors.white, //TODO: COLOR
               ),
               onPressed: () {
                 AppRouter.router
                     .pushWithReplacementFunction(const JournalHomeScreen());
-                // showDialog(
-                //     context: context,
-                //     builder: (context) {
-                //       return DialogWidget(
-                //           dialogType: DialogType.discard,
-                //           entryType: 'journal',
-                //           onOkPressed: (value) {
-                //             AppRouter.router.pop();
-                //             AppRouter.router
-                //                 .pushWithReplacementFunction(JournalHomeScreen());
-                //           });
-                //     });
               },
             ),
             actions: [
               InkWell(
-                child: svgWhiteDelete,
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: svgWhiteDelete,
+                ),
                 onTap: () {
                   showDialog(
                       context: context,
@@ -102,7 +79,11 @@ class JournalDisplayScreen extends StatelessWidget {
               ),
               InkWell(
                 // splashColor: Colors.transparent,
-                child: journal.isLocked ? svgWhiteUnlock : svgWhiteLock,
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: journal.isLocked ? svgWhiteUnlock : svgWhiteLock,
+                ),
                 onTap: () {
                   if (authProvider.userModel!.masterPassword.isEmpty) {
                     AppRouter.router
@@ -155,7 +136,11 @@ class JournalDisplayScreen extends StatelessWidget {
               ),
               InkWell(
                 // splashColor: Colors.transparent,
-                child: svgEditIcon,
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: svgEditIcon,
+                ),
                 onTap: () {
                   AppRouter.router
                       .pushWithReplacementFunction(JournalEditScreen(
@@ -183,7 +168,7 @@ class JournalDisplayScreen extends StatelessWidget {
                 child: WritingPlaceWidget(
                   enabled: false,
                   onChanged: (value) {},
-                  contentText: journal.content,
+                  controller: TextEditingController(text: journal.content),
                   hintText: 'What happened with you today?',
                 ),
               ),
@@ -191,7 +176,7 @@ class JournalDisplayScreen extends StatelessWidget {
               //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
               //   children: [
               //     IconButton(
-              //       icon: const Icon(Icons.arrow_back_ios),
+              //       icon: const Icon(Icons.arrow_back_ios_rounded),
               //       onPressed: () {},
               //       iconSize: 25.r,
               //       color: Colors.grey, //TODO: COLOR

@@ -85,8 +85,8 @@ class NoteWidget extends StatelessWidget {
           onPasswordIconTap();
         },
         child: SizedBox(
-          width: 17.w,
-          height: 17.h,
+          width: 20.w,
+          height: 20.h,
           child: note.isLocked ? svgUnlock : svgLock,
         ),
       );
@@ -97,8 +97,8 @@ class NoteWidget extends StatelessWidget {
           onDeleteIconTap();
         },
         child: SizedBox(
-          width: 17.w,
-          height: 17.h,
+          width: 20.w,
+          height: 20.h,
           child: svgDelete,
         ),
       );
