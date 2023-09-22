@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -8,33 +7,29 @@ import '../models/note_model.dart';
 
 class NoteProvider extends ChangeNotifier {
   List<NoteModel> allNotes = [];
-  List<NoteModel> selectedDayNotes = []; //important
+  List<NoteModel> selectedDayNotes = [];
   bool isSelectionMode = false;
   Map<int, bool> selectedFlag = {};
   DateTime selectedDay =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   EventList<Event> eventList = EventList<Event>(events: {});
-  // UserModel? userModel;
   List<NoteModel> searchResult = [];
 
   NoteProvider() {
-    if (AuthHelper.authHelper.getCurrentUser() != null) {
-      getAllNote();
-
-      // getUserModel();
-    }
+    getAllNote();
   }
-  // getUserModel() async {
-  //   QuerySnapshot noteQuery =
-  //       await FirestoreHelper.firestoreHelper.getUserModel();
-  //   QueryDocumentSnapshot userMap = noteQuery.docs[0];
-  //   userModel = UserModel(
-  //       email: userMap[Constants.emailKey],
-  //       userName: userMap[Constants.userNameKey],
-  //       id: userMap[Constants.idKey],
-  //       masterPassword: userMap[Constants.masterPassKey]);
-  //   notifyListeners();
-  // }
+
+  getAllNote() async {
+    allNotes.clear();
+    QuerySnapshot noteQuery =
+        await FirestoreHelper.firestoreHelper.getAllNotes();
+    allNotes = noteQuery.docs.map((note) => NoteModel.fromMap(note)).toList();
+    setSelectedFlags();
+    eventList.clear();
+    addEvents();
+    setSelectedDayNotes();
+    notifyListeners();
+  }
 
   addNote({
     required NoteModel note,
@@ -47,27 +42,7 @@ class NoteProvider extends ChangeNotifier {
 
   deleteNote({required String noteId}) async {
     await FirestoreHelper.firestoreHelper.deleteNote(noteId: noteId);
-
     getAllNote();
-  }
-
-  getAllNote() async {
-    allNotes.clear();
-    QuerySnapshot noteQuery =
-        await FirestoreHelper.firestoreHelper.getAllNotes();
-    allNotes = noteQuery.docs.map((note) => NoteModel.fromMap(note)).toList();
-    setSelectedFlags();
-    // NoteModel(
-    //     id: note[Constants.idKey],
-    //     content: note[Constants.contentKey],
-    //     date: (note[Constants.dateKey] as Timestamp).toDate(),
-    //     title: note[Constants.titleKey],
-    //     isLocked: note[Constants.isLockedKey] == 0 ? false : true)
-    eventList.clear();
-    addEvents();
-    setSelectedDayNotes();
-
-    notifyListeners();
   }
 
   void updateNote(NoteModel note) async {
@@ -75,8 +50,29 @@ class NoteProvider extends ChangeNotifier {
     getAllNote();
   }
 
+  NoteModel getNoteById(String? title) {
+    return allNotes.where((element) => element.id == title).toList()[0];
+  }
+
+  void search(String value) {
+    searchResult = allNotes.where((note) {
+      String content = note.content.toLowerCase();
+      String title = note.title.toLowerCase();
+      String input = value.toLowerCase();
+
+      if (input == '') {
+        return false;
+      }
+      if (note.isLocked == true) {
+        return title.contains(input);
+      }
+      return content.contains(input) || title.contains(input);
+    }).toList();
+    notifyListeners();
+  }
+
+//Calendar ////////////////////////////////////////////////////////////
   void setSelectedDay(DateTime date) {
-    //important
     selectedDay = date;
     setSelectedDayNotes();
     notifyListeners();
@@ -84,10 +80,7 @@ class NoteProvider extends ChangeNotifier {
 
   void setSelectedDayNotes() {
     List<Event> events = eventList.getEvents(selectedDay);
-
-    print(events.toString() + 'evetnttts');
     selectedDayNotes = events.map((e) {
-      print(e.title.toString() + 'title');
       return getNoteById(e.title);
     }).toList();
   }
@@ -103,29 +96,7 @@ class NoteProvider extends ChangeNotifier {
     }
   }
 
-  NoteModel getNoteById(String? title) {
-    print(allNotes.where((element) => element.id == title).toList()[0]);
-    return allNotes.where((element) => element.id == title).toList()[0];
-  }
-
-  void search(String value) {
-    searchResult = allNotes.where((note) {
-      String content = note.content.toLowerCase();
-      String title = note.title.toLowerCase();
-      String input = value.toLowerCase();
-      if (input == '') {
-        return false;
-      }
-      return content.contains(input) || title.contains(input);
-    }).toList();
-    notifyListeners();
-  }
-
-  // void updateUser(UserModel user) async {
-  //   await FirestoreHelper.firestoreHelper.updateUser(user);
-  //   // getUserModel();
-  // }
-
+//Selection Mode /////////////////////////////////////////////////
   void setSelectionMode() {
     isSelectionMode = selectedFlag.containsValue(true);
     notifyListeners();
@@ -136,8 +107,6 @@ class NoteProvider extends ChangeNotifier {
       if (value) {
         await FirestoreHelper.firestoreHelper
             .deleteNote(noteId: allNotes[key].id);
-
-        // deleteNote(noteId: allNotes[key].id);
       }
     });
 

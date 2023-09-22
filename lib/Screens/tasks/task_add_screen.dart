@@ -1,11 +1,9 @@
 import 'package:day_tracker_graduation/Screens/tasks/task_home_screen.dart';
-import 'package:day_tracker_graduation/models/task_item_model.dart';
 import 'package:day_tracker_graduation/models/task_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/Screens/notes/widgets/appbar_textfield.dart';
 import 'package:day_tracker_graduation/provider/task_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../router/app_router.dart';

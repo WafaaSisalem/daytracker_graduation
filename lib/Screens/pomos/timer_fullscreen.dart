@@ -1,6 +1,8 @@
 import 'package:custom_timer/custom_timer.dart';
+import 'package:day_tracker_graduation/provider/pomo_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class TimerFullscreen extends StatefulWidget {
   TimerFullscreen({Key? key, required this.duration}) : super(key: key);
@@ -16,7 +18,7 @@ class _TimerFullscreenState extends State<TimerFullscreen>
     vsync: this,
     initialState: CustomTimerState.counting,
     begin: Duration(
-        minutes:  24-(widget.duration!.inMinutes),
+        minutes: 24 - (widget.duration!.inMinutes),
         seconds: 60 - widget.duration!.inSeconds),
     end: const Duration(),
   );
@@ -63,7 +65,9 @@ class _TimerFullscreenState extends State<TimerFullscreen>
                     //widget.timerController!.start();
                   },
                   child: Text(
-                    'Small steps lead to big accomplishments!',
+                    Provider.of<PomoProvider>(context, listen: false)
+                        .currentQuote
+                        .toString(),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headline4!
                         .copyWith(color: Colors.white),

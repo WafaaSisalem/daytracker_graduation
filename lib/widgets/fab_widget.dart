@@ -5,12 +5,13 @@ class FabWidget extends StatelessWidget {
   const FabWidget(
       {Key? key,
       required this.onPressed,
-      required,
+      this.heroTag,
       this.icon = Icons.add_rounded})
       : super(key: key);
 
   final Function() onPressed;
   final IconData icon;
+  final String? heroTag;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -27,6 +28,7 @@ class FabWidget extends StatelessWidget {
         height: 62.h,
         child: FloatingActionButton(
           backgroundColor: theme.primaryColor,
+          heroTag: heroTag,
           child: Icon(icon, size: 30.r, color: Colors.white), //TODO: COLOR
           onPressed: onPressed,
         ),

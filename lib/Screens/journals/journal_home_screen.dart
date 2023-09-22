@@ -174,6 +174,7 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
                 //search icon
                 IconButton(
                     onPressed: () {
+                      journalProvider.searchResult.clear();
                       setState(() {
                         currentIndex = 4;
                       });

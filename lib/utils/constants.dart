@@ -16,6 +16,7 @@ class Constants {
   static const String userNameKey = 'userName';
 
   static const String dateKey = 'date';
+  static const String weatherKey = 'weather';
   static const String doneKey = 'done';
   static const String itemIdKey = 'itemId';
   static const String taskIdKey = 'taskId';

@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:day_tracker_graduation/Screens/journals/map_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
+import 'package:day_tracker_graduation/Screens/journals/widgets/status_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/models/location_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/services/firestorage_helper.dart';
+import 'package:day_tracker_graduation/widgets/fab_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:location/location.dart' as loc;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:weather/weather.dart';
 import '../../router/app_router.dart';
 import '../../utils/constants.dart';
 import '../../utils/svgs/svgs.dart';
@@ -41,6 +44,23 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
   LocationModel? location;
   // List<File> files = [];
   loc.LocationData? currentLocation;
+  double? celsius;
+  String formatedCelsius = '';
+  getCurrentWeather() async {
+    WeatherFactory wf = WeatherFactory("3117871fcf5c5c7027946e61b433701e");
+    if (currentLocation != null ||
+        (currentLocation?.latitude != 0.0 &&
+            currentLocation?.longitude != 0.0)) {
+      double lat = currentLocation!.latitude!;
+      double lng = currentLocation!.longitude!;
+      Weather w = await wf.currentWeatherByLocation(lat, lng);
+      celsius = w.temperature?.celsius;
+      formatedCelsius = '${w.temperature?.celsius?.round()}\u2103';
+      setState(() {});
+      print(formatedCelsius);
+    }
+  }
+
   bool isLocationServiceEnabled = false;
 
   Future<void> checkLocationService() async {
@@ -148,6 +168,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
         getLocation();
       }
     }
+    getCurrentWeather();
   }
 
   @override
@@ -235,7 +256,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: 20,
+                height: 20.h,
                 child: isGettingAddress
                     ? const Align(
                         alignment: Alignment.centerLeft,
@@ -270,6 +291,19 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
         floatingActionButtonLocation: ExpandableFab.location,
         floatingActionButton: ExpandableFab(
           initialOpen: true,
+          openButtonBuilder: FloatingActionButtonBuilder(
+              builder: (context, onPressed, progress) => FabWidget(
+                    onPressed: onPressed!,
+                    heroTag: 'open btn ',
+                  ),
+              size: 20), //size does not matter,
+          closeButtonBuilder: FloatingActionButtonBuilder(
+              builder: (context, onPressed, progress) => FabWidget(
+                    heroTag: 'close btn',
+                    onPressed: onPressed!,
+                    icon: Icons.close_rounded,
+                  ),
+              size: 20), //size does not matter
           children: [
             FloatingActionButton(
               clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -296,13 +330,28 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
             FloatingActionButton(
               heroTag: 'btn3',
               backgroundColor: Colors.white,
-              child: svgWeather,
+              child: formatedCelsius == ''
+                  ? ColorFiltered(
+                      child: svgWeather,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    )
+                  : Text(
+                      formatedCelsius,
+                      style: theme.textTheme.headline3!
+                          .copyWith(color: theme.primaryColor),
+                    ),
               onPressed: () {},
             ),
             FloatingActionButton(
               heroTag: 'btn4',
               backgroundColor: Colors.white,
-              child: svgSmile,
+              child: SizedBox(
+                  width: 22.w,
+                  height: 22.h,
+                  child: StatusWidget(status: status)),
               onPressed: () => onStatusBtnPressed(),
             ),
           ],
@@ -491,21 +540,25 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 widget: svgHappy,
                 onTap: () {
                   status = Constants.happy;
+                  setState(() {});
                 }),
             buildStatusWidget(
                 widget: svgNormal,
                 onTap: () {
                   status = Constants.normal;
+                  setState(() {});
                 }),
             buildStatusWidget(
                 widget: svgAngry,
                 onTap: () {
                   status = Constants.angry;
+                  setState(() {});
                 }),
             buildStatusWidget(
                 widget: svgSad,
                 onTap: () {
                   status = Constants.sad;
+                  setState(() {});
                 })
           ]));
         });
@@ -545,17 +598,18 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
               date: date,
               imagesUrls: imagesUrls,
               isLocked: false,
-              status: status));
+              status: status,
+              weather: formatedCelsius));
     }
     journalProvider.imagesPicked.clear();
     journalProvider.filesPicked.clear();
     AppRouter.router.pop();
-    AppRouter.router.pushWithReplacementFunction(JournalHomeScreen());
+    AppRouter.router.pushWithReplacementFunction(const JournalHomeScreen());
   }
 
   void onBackButtonPressed() {
     if (content == '') {
-      AppRouter.router.pushWithReplacementFunction(JournalHomeScreen());
+      AppRouter.router.pushWithReplacementFunction(const JournalHomeScreen());
     } else {
       showDialog(
           context: context,
@@ -566,7 +620,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 onOkPressed: (value) {
                   AppRouter.router.pop();
                   AppRouter.router
-                      .pushWithReplacementFunction(JournalHomeScreen());
+                      .pushWithReplacementFunction(const JournalHomeScreen());
                 });
           });
     }

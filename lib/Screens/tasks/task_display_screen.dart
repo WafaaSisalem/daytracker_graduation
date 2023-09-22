@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:day_tracker_graduation/Screens/tasks/task_add_screen.dart';
 import 'package:day_tracker_graduation/Screens/tasks/task_edit_screen.dart';
 import 'package:day_tracker_graduation/Screens/tasks/task_home_screen.dart';
 import 'package:day_tracker_graduation/models/task_item_model.dart';
@@ -75,10 +74,12 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
                           .pushWithReplacementFunction(const TaskHomeScreen());
                     },
                   ),
-                  Text(
-                    widget.task.title,
-                    style: Theme.of(context).textTheme.headline2,
-                    overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    child: Text(
+                      widget.task.title,
+                      style: Theme.of(context).textTheme.headline2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   )
                 ],
               ),

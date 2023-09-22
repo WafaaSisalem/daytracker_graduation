@@ -85,6 +85,9 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
             ],
             onTap: (index) {
               currentIndex = index;
+              if (currentIndex == 2) {
+                noteProvider.searchResult.clear();
+              }
               setState(() {});
             },
           ),

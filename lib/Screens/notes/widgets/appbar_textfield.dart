@@ -21,6 +21,7 @@ class AppbarTextFieldWidget extends StatelessWidget {
       child: TextField(
         cursorColor: Colors.grey,
         onChanged: onChanged,
+
         controller: TextEditingController(text: text),
         autofocus: autofocus,
         textInputAction: TextInputAction.next,

@@ -12,7 +12,7 @@ import '../widgets/timer_resume_widget..dart';
 import '../widgets/timer_start_widget.dart';
 import '../widgets/timer_stop_widget..dart';
 import '../widgets/timer_widget.dart';
-import 'home_screen.dart';
+import 'time_home_screen.dart';
 
 class GgOnScreen extends StatefulWidget {
   const GgOnScreen({Key? key}) : super(key: key);

@@ -1,4 +1,4 @@
-import 'package:day_tracker_graduation/Screens/pomos/home/home_screen.dart';
+import 'package:day_tracker_graduation/Screens/pomos/home/time_home_screen.dart';
 import 'package:day_tracker_graduation/Screens/registration/registration_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -119,8 +119,8 @@ class ChooseCardScreen extends StatelessWidget {
                           'devide your task and Manage your time by setting pomos',
                       imagePath: 'assets/images/pomo_card.png',
                       onPressed: () {
-                        AppRouter.router
-                            .pushWithReplacementFunction(const HomeScreen());
+                        AppRouter.router.pushWithReplacementFunction(
+                            const TimerHomeScreen());
                       },
                       textDirection: MyDirection.right),
                   SizedBox(

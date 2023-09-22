@@ -8,7 +8,7 @@ import '../../../provider/pomo_provider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/button_widget.dart';
 import '../../../widgets/dialog_widget.dart';
-import '../home/home_screen.dart';
+import '../home/time_home_screen.dart';
 import 'motivation_text.dart';
 
 class TimerResumeWidget extends StatelessWidget {

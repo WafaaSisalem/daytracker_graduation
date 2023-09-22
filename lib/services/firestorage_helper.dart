@@ -53,4 +53,10 @@ class FirestorageHelper {
     List<File> files = imageFileList.map((file) => File(file.path)).toList();
     return files;
   }
+
+  deleteImages(List imagesUrls) async {
+    for (String url in imagesUrls) {
+      await firebaseStorage.refFromURL(url).delete();
+    }
+  }
 }

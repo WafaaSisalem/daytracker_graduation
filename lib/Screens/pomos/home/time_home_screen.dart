@@ -1,4 +1,3 @@
-
 import 'package:day_tracker_graduation/Screens/pomos/widgets/pomo_app_bar.dart';
 import 'package:day_tracker_graduation/Screens/pomos/widgets/timer_resume_widget..dart';
 import 'package:day_tracker_graduation/main.dart';
@@ -15,15 +14,15 @@ import '../widgets/timer_widget.dart';
 
 enum TimerStatuss { started, paused, resume, stopped }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class TimerHomeScreen extends StatefulWidget {
+  const TimerHomeScreen({Key? key}) : super(key: key);
   static const String routeName = 'PomoHomeScreen';
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<TimerHomeScreen> createState() => _TimerHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
+class _TimerHomeScreenState extends State<TimerHomeScreen>
     with SingleTickerProviderStateMixin {
   TimerController? _timerController;
 
@@ -56,7 +55,11 @@ class _HomeScreenState extends State<HomeScreen>
               SizedBox(
                 height: 30.h,
               ),
-              _buildTitle(theme,provider.currentStatus == TimerStatuss.paused?'PAUSE':'FOCUS!!'),
+              _buildTitle(
+                  theme,
+                  provider.currentStatus == TimerStatuss.paused
+                      ? 'PAUSE'
+                      : 'FOCUS!!'),
               SizedBox(
                 height: 20.h,
               ),
@@ -64,11 +67,12 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(
                 height: 30,
               ),
-              TimerWidget(timerController: _timerController,),
+              TimerWidget(
+                timerController: _timerController,
+              ),
               SizedBox(
                 height: 30.h,
               ),
-
               if (provider.currentStatus == TimerStatuss.stopped)
                 Expanded(
                   child: TimerStopWidget(
@@ -95,15 +99,10 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-
-
-
-  Text _buildTitle(ThemeData theme,String text) {
+  Text _buildTitle(ThemeData theme, String text) {
     return Text(
       text,
       style: theme.textTheme.headline1!.copyWith(letterSpacing: 5),
     );
   }
-
-
 }

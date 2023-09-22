@@ -51,36 +51,39 @@ class WritingPlaceWidget extends StatelessWidget {
                     .copyWith(color: const Color(0x80707070))), //TODO: color
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: ValueListenableBuilder<UndoHistoryValue>(
-            valueListenable: undoController,
-            builder:
-                (BuildContext context, UndoHistoryValue value, Widget? child) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.undo,
-                      color: value.canUndo ? enabledStyle : disabledStyle,
+        if (enabled)
+          Expanded(
+            flex: 1,
+            child: ValueListenableBuilder<UndoHistoryValue>(
+              valueListenable: undoController,
+              builder: (BuildContext context, UndoHistoryValue value,
+                  Widget? child) {
+                return Row(
+                  mainAxisAlignment: hintText == 'What happened with you today?'
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.center,
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.undo,
+                        color: value.canUndo ? enabledStyle : disabledStyle,
+                      ),
+                      onPressed: () {
+                        undoController.undo();
+                      },
                     ),
-                    onPressed: () {
-                      undoController.undo();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.redo,
-                        color: value.canRedo ? enabledStyle : disabledStyle),
-                    onPressed: () {
-                      undoController.redo();
-                    },
-                  )
-                ],
-              );
-            },
+                    IconButton(
+                      icon: Icon(Icons.redo,
+                          color: value.canRedo ? enabledStyle : disabledStyle),
+                      onPressed: () {
+                        undoController.redo();
+                      },
+                    )
+                  ],
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }

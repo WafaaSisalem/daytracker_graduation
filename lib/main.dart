@@ -16,7 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import 'Screens/pomos/home/home_screen.dart';
+import 'Screens/pomos/home/time_home_screen.dart';
 import 'Screens/registration/registration_screen.dart';
 import 'Screens/splash_screen.dart';
 import 'helpers/shared_preference_helper.dart';
@@ -26,6 +26,7 @@ late AudioPlayer audioPlayer;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   audioPlayer = AudioPlayer();
+
   await Firebase.initializeApp();
   await SharedPreferenceHelper.sharedHelper.initSharedPreferences();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -78,7 +79,7 @@ class MyApp extends StatelessWidget {
         Constants.gotPomoScreen: (context) => const GotPomoScreen(),
         Constants.breakScreen: (context) => BreakScreen(),
         Constants.goOn: (context) => const GgOnScreen(),
-        Constants.homeScreen: (context) => const HomeScreen(),
+        Constants.homeScreen: (context) => const TimerHomeScreen(),
       },
       onGenerateRoute: (routeSettings) {
         String? name = routeSettings.name;
@@ -103,7 +104,7 @@ class MyApp extends StatelessWidget {
     return ThemeData(
       fontFamily: 'Poppins',
       textSelectionTheme: const TextSelectionThemeData(
-        selectionHandleColor: primaryColor,
+        selectionHandleColor: secondaryColor,
       ),
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       primaryColor: primaryColor,

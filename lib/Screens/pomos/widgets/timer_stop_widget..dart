@@ -8,7 +8,7 @@ import 'package:simple_timer/simple_timer.dart' as timer;
 import '../../../router/app_router.dart';
 import '../../../widgets/button_widget.dart';
 import '../../../widgets/dialog_widget.dart';
-import '../home/home_screen.dart';
+import '../home/time_home_screen.dart';
 
 class TimerStopWidget extends StatelessWidget {
   TimerStopWidget(

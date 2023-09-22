@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../services/firestore_helper.dart';
 
+enum AddTo { first, last }
+
 class TaskProvider extends ChangeNotifier {
   List<TaskModel> allTasks = [];
   bool isSelectionMode = false;
@@ -31,8 +33,12 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  addTodo(TaskItemModel todo) {
-    currentTodos.insert(0, todo);
+  addTodo(TaskItemModel todo, AddTo index) {
+    if (index == AddTo.first) {
+      currentTodos.insert(0, todo);
+    } else {
+      currentTodos.add(todo);
+    }
     notifyListeners();
   }
 

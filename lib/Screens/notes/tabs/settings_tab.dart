@@ -28,49 +28,49 @@ class _SettingsTabState extends State<SettingsTab> {
             SizedBox(
               height: 10.h,
             ),
-            Text(
-              'Theme',
-              style: theme.textTheme.headline1,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                NoteSettingsWidget(
-                    radioValue: 1,
-                    groupValue: themeChoice,
-                    containerColor: Colors.white,
-                    containerChild: Text(
-                      'Light',
-                      style: theme.textTheme.headline2!.copyWith(
-                          color: const Color(0xFF121212)), //TODO:COLOR,
-                    ),
-                    onTap: (choice) {
-                      themeChoice = choice;
-                      SharedPreferenceHelper.sharedHelper.setTheme(choice);
-                      setState(() {});
-                    }),
-                NoteSettingsWidget(
-                    radioValue: 2,
-                    groupValue: themeChoice,
-                    containerColor: const Color(0xFF1E1E1E), //TODO:COLOR,
-                    containerChild: Text(
-                      'Dark',
-                      style: theme.textTheme.headline2,
-                    ),
-                    onTap: (choice) {
-                      themeChoice = choice;
-                      setState(() {
-                        SharedPreferenceHelper.sharedHelper.setTheme(choice);
-                      });
-                    }),
-              ],
-            ),
-            SizedBox(
-              height: 30.h,
-            ),
+            // Text(
+            //   'Theme',
+            //   style: theme.textTheme.headline1,
+            // ),
+            // SizedBox(
+            //   height: 20.h,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     NoteSettingsWidget(
+            //         radioValue: 1,
+            //         groupValue: themeChoice,
+            //         containerColor: Colors.white,
+            //         containerChild: Text(
+            //           'Light',
+            //           style: theme.textTheme.headline2!.copyWith(
+            //               color: const Color(0xFF121212)), //TODO:COLOR,
+            //         ),
+            //         onTap: (choice) {
+            //           themeChoice = choice;
+            //           SharedPreferenceHelper.sharedHelper.setTheme(choice);
+            //           setState(() {});
+            //         }),
+            //     NoteSettingsWidget(
+            //         radioValue: 2,
+            //         groupValue: themeChoice,
+            //         containerColor: const Color(0xFF1E1E1E), //TODO:COLOR,
+            //         containerChild: Text(
+            //           'Dark',
+            //           style: theme.textTheme.headline2,
+            //         ),
+            //         onTap: (choice) {
+            //           themeChoice = choice;
+            //           setState(() {
+            //             SharedPreferenceHelper.sharedHelper.setTheme(choice);
+            //           });
+            //         }),
+            //   ],
+            // ),
+            // SizedBox(
+            //   height: 30.h,
+            // ),
             Text(
               'View',
               style: theme.textTheme.headline1,

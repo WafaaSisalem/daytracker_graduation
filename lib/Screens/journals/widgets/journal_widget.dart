@@ -45,15 +45,17 @@ class JournalWidget extends StatelessWidget {
                 SizedBox(
                   height: 10.h,
                 ),
-                journal.isLocked
-                    ? Expanded(
-                        child: SizedBox(
-                          width: 50.w,
-                          height: 50.h,
-                          child: svgGreyLock,
-                        ),
-                      )
-                    : journalBody(theme, context),
+                if (journal.isLocked) ...[
+                  Expanded(
+                    child: SizedBox(
+                      width: 50.w,
+                      height: 50.h,
+                      child: svgGreyLock,
+                    ),
+                  ),
+                  buildJournalBottomPart(theme)
+                ] else
+                  journalBody(theme, context)
               ],
             ),
           )
@@ -77,57 +79,10 @@ class JournalWidget extends StatelessWidget {
                   style: theme.textTheme.headline3!
                       .copyWith(color: theme.primaryColor),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 10.w),
-                  child: Text(
-                    journal.content,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2!
-                        .copyWith(height: 1.7.h),
-                  ),
-                ),
+                buildJournalContent(context),
                 // const Expanded(child: SizedBox()),
                 const Spacer(),
-                Padding(
-                  padding: EdgeInsets.only(left: 10.w),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 5,
-
-                        backgroundColor: Colors.white, //TODO: COLORS
-                        child: StatusWidget(status: journal.status),
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      SizedBox(
-                        width: 12.w,
-                        height: 9.h,
-                        child: svgWeather,
-                      ),
-                      Text(
-                        ' 23 c',
-                        style: myTextStyle(theme),
-                      ),
-                      SizedBox(
-                        width: 10.w,
-                      ),
-                      SizedBox(
-                        width: 110.w,
-                        child: Text(
-                          journal.location == null
-                              ? ''
-                              : journal.location!.address,
-                          style: myTextStyle(theme),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                buildJournalBottomPart(theme),
               ],
             ),
           ),
@@ -172,6 +127,56 @@ class JournalWidget extends StatelessWidget {
     );
   }
 
+  Padding buildJournalContent(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10.w),
+      child: Text(
+        journal.content,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.subtitle2!.copyWith(height: 1.7.h),
+      ),
+    );
+  }
+
+  Padding buildJournalBottomPart(ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10.w),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 5,
+
+            backgroundColor: Colors.white, //TODO: COLORS
+            child: StatusWidget(status: journal.status),
+          ),
+          SizedBox(
+            width: 10.w,
+          ),
+          SizedBox(
+            width: 12.w,
+            height: 9.h,
+            child: svgWeather,
+          ),
+          Text(
+            ' ${journal.weather}',
+            style: myTextStyle(theme),
+          ),
+          SizedBox(
+            width: 10.w,
+          ),
+          SizedBox(
+            width: 110.w,
+            child: Text(
+              journal.location == null ? '' : journal.location!.address,
+              style: myTextStyle(theme),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   TextStyle myTextStyle(ThemeData theme) {
     return TextStyle(
         fontFamily: 'Poppins',
@@ -184,17 +189,20 @@ class JournalWidget extends StatelessWidget {
   Row journalHead(ThemeData theme, BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          if (isSelectionMode) Spacer(),
           Text(
             DateFormat('MMMM d, y. EEE').format(journal.date),
             style: theme.textTheme.headline1!.copyWith(
               fontSize: 15.sp,
             ),
           ),
-          if (isSelectionMode)
+          if (isSelectionMode) ...[
+            const Spacer(),
             Icon(
               isSelected ? Icons.check_circle : Icons.radio_button_off_outlined,
               color: theme.primaryColor,
             )
+          ]
         ],
       );
 

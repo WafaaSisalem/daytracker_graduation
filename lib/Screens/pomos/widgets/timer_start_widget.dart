@@ -6,7 +6,7 @@ import 'package:simple_timer/simple_timer.dart' as timer;
 import '../../../provider/pomo_provider.dart';
 import '../../../utils/constants.dart';
 import '../../../widgets/button_widget.dart';
-import '../home/home_screen.dart';
+import '../home/time_home_screen.dart';
 import 'motivation_text.dart';
 
 class TimerStartWidget extends StatelessWidget {

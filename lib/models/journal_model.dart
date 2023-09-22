@@ -12,6 +12,7 @@ class JournalModel {
       required this.date,
       required this.isLocked,
       required this.location,
+      this.weather = '',
       this.imagesUrls = const [],
       this.status = ''});
 
@@ -19,6 +20,7 @@ class JournalModel {
   final String content;
   final DateTime date;
   final bool isLocked;
+  final String weather;
   final LocationModel? location;
   final List<dynamic> imagesUrls;
   final String status;
@@ -37,7 +39,8 @@ class JournalModel {
       Constants.isLockedKey: isLocked ? 1 : 0, //February 11, 2022. Wed. 6:17 PM
       Constants.locationKey: location == null ? {} : location!.toMap(),
       Constants.imageUrlKey: imagesUrls,
-      Constants.statusKey: status
+      Constants.statusKey: status,
+      Constants.weatherKey: weather,
     };
   }
 
@@ -63,5 +66,6 @@ class JournalModel {
             ? (map[Constants.dateKey] as Timestamp).toDate()
             : map[Constants.dateKey],
         imagesUrls = map[Constants.imageUrlKey],
+        weather = map[Constants.weatherKey],
         status = map[Constants.statusKey];
 }

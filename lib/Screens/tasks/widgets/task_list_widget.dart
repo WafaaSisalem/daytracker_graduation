@@ -27,8 +27,9 @@ class _TaskListWidgetState extends State<TaskListWidget> {
           padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
           child: Column(
             children: [
-              buildAddTaskBtn(context),
+              buildAddTaskBtn(context, AddTo.first),
               buildList(),
+              buildAddTaskBtn(context, AddTo.last)
             ],
           ));
     });
@@ -92,11 +93,11 @@ class _TaskListWidgetState extends State<TaskListWidget> {
     );
   }
 
-  SizedBox buildAddTaskBtn(BuildContext context) {
+  SizedBox buildAddTaskBtn(BuildContext context, AddTo index) {
     return SizedBox(
       width: double.infinity,
       child: TextButton.icon(
-          onPressed: () => onAddBtnPressed(),
+          onPressed: () => onAddBtnPressed(index),
           style: const ButtonStyle(alignment: Alignment.centerLeft),
           icon: CircleAvatar(
             radius: 11.r,
@@ -144,7 +145,7 @@ class _TaskListWidgetState extends State<TaskListWidget> {
         });
   }
 
-  onAddBtnPressed() {
+  onAddBtnPressed(AddTo index) {
     showDialog(
         context: context,
         builder: (ctx) {
@@ -155,16 +156,16 @@ class _TaskListWidgetState extends State<TaskListWidget> {
                 AppRouter.router.pop();
                 if (value.isNotEmpty) {
                   // provider.addTodo(value);
-                  provider.addTodo(TaskItemModel(content: value));
+                  provider.addTodo(TaskItemModel(content: value), index);
                 }
-                onAddBtnPressed();
+                onAddBtnPressed(index);
               },
               onOkPressed: (value) {
                 AppRouter.router.pop();
 
                 if (value.isNotEmpty) {
                   // provider.addTodo(value);
-                  provider.addTodo(TaskItemModel(content: value));
+                  provider.addTodo(TaskItemModel(content: value), index);
                 }
               });
         });

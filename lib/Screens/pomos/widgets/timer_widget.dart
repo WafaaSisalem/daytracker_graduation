@@ -5,7 +5,7 @@ import 'package:simple_timer/simple_timer.dart';
 import '../../../provider/pomo_provider.dart';
 import '../../../router/app_router.dart';
 import '../../../utils/constants.dart';
-import '../home/home_screen.dart';
+import '../home/time_home_screen.dart';
 import '../timer_fullscreen.dart';
 
 class TimerWidget extends StatelessWidget {

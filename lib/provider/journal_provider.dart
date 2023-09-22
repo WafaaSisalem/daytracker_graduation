@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_marker/marker_icon.dart';
 import 'package:day_tracker_graduation/services/auth_helper.dart';
+import 'package:day_tracker_graduation/services/firestorage_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -57,7 +58,9 @@ class JournalProvider extends ChangeNotifier {
   }
 
   deleteJournal({required String journalId}) async {
+    await deleteImages(journalId);
     await FirestoreHelper.firestoreHelper.deleteJournal(journalId: journalId);
+
     getAllJournals();
   }
 
@@ -178,9 +181,10 @@ class JournalProvider extends ChangeNotifier {
     searchResult = allJournals.where((journal) {
       String content = journal.content.toLowerCase();
       String input = value.toLowerCase();
-      if (input == '') {
+      if (input == '' || journal.isLocked) {
         return false;
       }
+
       return content.contains(input);
     }).toList();
     notifyListeners();
@@ -199,9 +203,10 @@ class JournalProvider extends ChangeNotifier {
   void deleteSelectedJournals() {
     selectedFlag.forEach((key, value) async {
       if (value) {
+        String id = allJournals[key].id;
         // deleteJournal(journalId: allJournals[key].id);
-        await FirestoreHelper.firestoreHelper
-            .deleteJournal(journalId: allJournals[key].id);
+        deleteImages(id);
+        await FirestoreHelper.firestoreHelper.deleteJournal(journalId: id);
       }
     });
     // selectedFlag = {};
@@ -241,5 +246,10 @@ class JournalProvider extends ChangeNotifier {
       imagesPicked.addAll(urlsPicked);
       notifyListeners();
     }
+  }
+
+  deleteImages(String journalId) async {
+    JournalModel journal = getJournalById(journalId);
+    await FirestorageHelper.firestorageHelper.deleteImages(journal.imagesUrls);
   }
 }
