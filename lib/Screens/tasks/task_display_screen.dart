@@ -67,7 +67,7 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
                     icon: const Icon(
                       Icons.arrow_back_ios_rounded,
                       size: 28,
-                      color: Colors.white, //TODO: COLOR
+                      color: Colors.white, //
                     ),
                     onPressed: () {
                       AppRouter.router

@@ -221,7 +221,7 @@ class RegistrationScreen extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: 1.h,
-            color: Colors.grey[200], //TODO: COLOR
+            color: Colors.grey[200], //
           ),
         ),
         Container(
@@ -361,7 +361,7 @@ class RegistrationScreen extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        color: Colors.black, //TODO:COLOR
+        color: Colors.black, //
         fontSize: 22.sp,
         fontFamily: 'Poppins',
         fontWeight: FontWeight.w700,

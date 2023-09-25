@@ -23,12 +23,15 @@ class JournalProvider extends ChangeNotifier {
   EventList<Event> eventList = EventList<Event>(events: {});
   // UserModel? userModel;
   List<JournalModel> searchResult = [];
-  List<Map> allImagesUrls = [];
-  List<File> filesPicked = [];
-  List<Widget> imagesPicked = <Widget>[];
+  List<Map> allImagesUrls = []; // used in gallery tab to display all images
   List<Widget> urlsPicked = [];
   Set<Marker> markers = {};
-  List<JournalModel> seletctedLoc = [];
+  List<JournalModel> selectedLoc = [];
+  List<Widget> pickedImages = <Widget>[];
+  List<dynamic> urlImagesPicker = []; // the urls for an journal
+  List<String> deletedUrl = [];
+  bool urlIsSet = false;
+
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
       getAllJournals();
@@ -71,13 +74,13 @@ class JournalProvider extends ChangeNotifier {
       final icon = await MarkerIcon.downloadResizePictureCircle(
         journal.imagesUrls.isNotEmpty
             ? journal.imagesUrls[0]
-            : 'https://firebasestorage.googleapis.com/v0/b/graduation-project-adedc.appspot.com/o/note.jpg?alt=media&token=ce568055-7cea-4b08-a3ae-f0140fadee2d',
+            : 'https://firebasestorage.googleapis.com/v0/b/graduation-project-adedc.appspot.com/o/note.jpg?alt=media&token=66896385-8388-4ba0-aee6-00b29e328aef',
         size: 150,
         addBorder: true,
         borderColor: Colors.white,
         borderSize: 15,
       );
-      seletctedLoc.clear(); ///////////////
+      selectedLoc.clear(); ///////////////
       return Marker(
         onTap: () {
           getJournalsByLocation(journal.location);
@@ -95,7 +98,7 @@ class JournalProvider extends ChangeNotifier {
   getJournalsByLocation(LocationModel? loc) {
     List<JournalModel> journalsHaveLoc =
         allJournals.where((journal) => journal.location != null).toList();
-    seletctedLoc = journalsHaveLoc.where((journal) {
+    selectedLoc = journalsHaveLoc.where((journal) {
       return journal.location!.address == loc!.address;
     }).toList();
 
@@ -137,7 +140,9 @@ class JournalProvider extends ChangeNotifier {
     allImagesUrls.clear();
     for (JournalModel journal in allJournals) {
       for (String url in journal.imagesUrls) {
-        allImagesUrls.add({journal.id: url});
+        if (!journal.isLocked) {
+          allImagesUrls.add({journal.id: url});
+        }
       }
       // allImagesUrls.addAll(journal.imagesUrls);
     }
@@ -214,23 +219,6 @@ class JournalProvider extends ChangeNotifier {
     getAllJournals();
   }
 
-  getImagesWidgets() {
-    // if (images.isEmpty) {
-    //   images =
-    //       files.map((file) => Image.file(file, fit: BoxFit.cover)).toList();
-    // } else {
-    //   images.addAll(
-    //       files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
-    // }
-  }
-
-  void addFile(List<File> files) {
-    filesPicked.addAll(files);
-    imagesPicked.addAll(
-        files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
-    notifyListeners();
-  }
-
   void addUrls(List imagesUrls) {
     if (urlsPicked.isEmpty) {
       urlsPicked = imagesUrls
@@ -243,7 +231,6 @@ class JournalProvider extends ChangeNotifier {
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ))
           .toList();
-      imagesPicked.addAll(urlsPicked);
       notifyListeners();
     }
   }
@@ -251,5 +238,65 @@ class JournalProvider extends ChangeNotifier {
   deleteImages(String journalId) async {
     JournalModel journal = getJournalById(journalId);
     await FirestorageHelper.firestorageHelper.deleteImages(journal.imagesUrls);
+  }
+
+  Future<List<File>> selectFiles() async {
+    List<File> files = await FirestorageHelper.firestorageHelper.selectFile();
+    pickedImages.addAll(
+        files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
+
+    notifyListeners();
+    return files;
+  }
+
+  void removeImageAt(int index) {
+    if (index < urlImagesPicker.length) {
+      deletedUrl.add(urlImagesPicker[index]);
+      urlImagesPicker.removeAt(index);
+    }
+    pickedImages.removeAt(index);
+    notifyListeners();
+  }
+
+  void addImages(List<File> files) {
+    pickedImages.addAll(
+        files.map((file) => Image.file(file, fit: BoxFit.cover)).toList());
+    notifyListeners();
+  }
+
+  void setUrlImages(List<dynamic> imagesUrls) {
+    if (!urlIsSet) {
+      if (imagesUrls.isNotEmpty) {
+        urlImagesPicker = imagesUrls
+            .map((url) => url)
+            .toList(); //if i put urlimagesPIcker = imagesUrls; any change on picker will refelct on imagesurls
+        List<Widget> images = imagesUrls
+            .map((url) => CachedNetworkImage(
+                  fit: BoxFit.cover,
+                  imageUrl: url,
+                  placeholder: (context, url) => Container(
+                    color: Colors.black12,
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ))
+            .toList();
+        pickedImages.addAll(images);
+        urlIsSet = true;
+        notifyListeners();
+      } //remove and see if changes
+    }
+  }
+
+  void imagesClear() {
+    pickedImages.clear();
+    urlImagesPicker.clear();
+    deletedUrl.clear();
+    urlIsSet = false;
+  }
+
+  deleteImagesByUrls() async {
+    if (deletedUrl.isNotEmpty) {
+      await FirestorageHelper.firestorageHelper.deleteImages(deletedUrl);
+    }
   }
 }

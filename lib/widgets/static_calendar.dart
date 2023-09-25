@@ -30,14 +30,12 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
         children: [
           Container(
               width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.white, // TODO;COLOR
-                  boxShadow: [
-                    BoxShadow(
-                        color: const Color(0x26000000), //TODO: COLOR
-                        offset: Offset(0, 1.h),
-                        blurRadius: 3)
-                  ]),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    color: const Color(0x26000000), //
+                    offset: Offset(0, 1.h),
+                    blurRadius: 3)
+              ]),
               child: SizedBox(
                 width: double.infinity,
                 height: 365.h,
@@ -73,7 +71,7 @@ class _StaticCalendarWidgetState extends State<StaticCalendarWidget> {
       selectedDayButtonColor: theme.primaryColor,
       selectedDayTextStyle: calendarTextStyle(),
       daysTextStyle: calendarTextStyle(
-        color: const Color(0xFFC192DA), //TODO: COLOR
+        color: const Color(0xFFC192DA), //
       ),
       markedDateShowIcon: true,
       markedDateCustomShapeBorder:

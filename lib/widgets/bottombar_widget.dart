@@ -40,12 +40,12 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       height: 64.h,
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(
-            color: Colors.grey[200]!, //TODO: COLOR
+            color: Colors.grey[200]!, //
             offset: Offset(0, -4.h),
             blurRadius: 4),
       ], borderRadius: BorderRadius.vertical(top: Radius.circular(36.r))),
       child: BottomAppBar(
-          color: Colors.white, //TODO: COLOR
+          color: Colors.white, //
           shape: const CircularNotchedRectangle(),
           notchMargin: 10.w,
           child: SizedBox(
@@ -75,9 +75,8 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       width: 65.w,
       child: CircleAvatar(
         radius: 18.r,
-        backgroundColor: selectedIndex == index
-            ? theme.primaryColor
-            : Colors.white, //TODO: COLOR
+        backgroundColor:
+            selectedIndex == index ? theme.primaryColor : Colors.white, //
         child: TextButton(
             onPressed: () {
               widget.onTap(index);
@@ -88,9 +87,8 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
             child: SvgPicture.asset(
               // widget.tabElements[index]['svg'],
               widget.svgs[index],
-              color: selectedIndex == index
-                  ? Colors.white
-                  : theme.primaryColor, //TODO: COLOR
+              color:
+                  selectedIndex == index ? Colors.white : theme.primaryColor, //
             )),
       ),
     );

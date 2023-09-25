@@ -18,7 +18,7 @@ class DialogTextFieldWidget extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     return TextField(
       style: theme.textTheme.subtitle2,
-      cursorColor: Colors.grey, //  TODO: COLOR
+      cursorColor: Colors.grey, //
       onChanged: onChanged,
       maxLines: isObscured ? 1 : 3,
       minLines: 1,
@@ -26,12 +26,9 @@ class DialogTextFieldWidget extends StatelessWidget {
       controller: TextEditingController(text: content),
       decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: theme.textTheme.headline4!
-              .copyWith(color: Colors.grey), //TODO: COLOR
+          hintStyle: theme.textTheme.headline4!.copyWith(color: Colors.grey), //
           focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                  color: theme
-                      .primaryColor))), // TODO CHANGE SELECT ICON COLOR  TO PRIMARY COLOR WHEN CLICT ON THE TEXT FIELD
+              borderSide: BorderSide(color: theme.primaryColor))),
       obscureText: isObscured ? true : false,
     );
   }

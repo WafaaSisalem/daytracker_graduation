@@ -34,7 +34,7 @@ class WritingPlaceWidget extends StatelessWidget {
           child: TextField(
             minLines: 1,
             maxLines: MediaQuery.of(context).size.height.toInt() - 100,
-            cursorColor: Colors.grey, //TODO: color
+            cursorColor: Colors.grey, //
             controller: controller,
             focusNode: focusNode,
             undoController: undoController,
@@ -48,7 +48,7 @@ class WritingPlaceWidget extends StatelessWidget {
                 contentPadding: const EdgeInsets.all(0),
                 hintText: hintText,
                 hintStyle: theme.textTheme.headline4!
-                    .copyWith(color: const Color(0x80707070))), //TODO: color
+                    .copyWith(color: const Color(0x80707070))), //
           ),
         ),
         if (enabled)

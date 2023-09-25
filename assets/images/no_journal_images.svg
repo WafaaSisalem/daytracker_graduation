@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="172" height="172" viewBox="0 0 172 172">
+  <g id="image" transform="translate(0.333 0.333)">
+    <circle id="Ellipse_40" data-name="Ellipse 40" cx="86" cy="86" r="86" transform="translate(-0.333 -0.333)" fill="#9a5dba"/>
+    <path id="Path_275" data-name="Path 275" d="M254.472,197.479,211.284,154.29l-66.218,46.637L120.96,223.951l52.6,52.6A87.68,87.68,0,0,0,254.472,197.479Z" transform="translate(-83.537 -105.454)" fill="#5a366d"/>
+    <rect id="Rectangle_52" data-name="Rectangle 52" width="90.324" height="69.661" transform="translate(39.475 50.836)" fill="#ffc61b"/>
+    <rect id="Rectangle_53" data-name="Rectangle 53" width="45.357" height="69.661" transform="translate(83.731 50.836)" fill="#eaa22f"/>
+    <rect id="Rectangle_54" data-name="Rectangle 54" width="77.926" height="58.445" transform="translate(45.667 56.445)" fill="#ffedb5"/>
+    <rect id="Rectangle_55" data-name="Rectangle 55" width="39.158" height="58.445" transform="translate(83.851 56.445)" fill="#fee187"/>
+    <circle id="Ellipse_41" data-name="Ellipse 41" cx="7.97" cy="7.97" r="7.97" transform="translate(53.044 63.307)" fill="#c92f00"/>
+    <path id="Path_276" data-name="Path 276" d="M182.16,189.63a7.97,7.97,0,1,1,0,15.94Z" transform="translate(-121.272 -126.323)" fill="#ff5419"/>
+    <path id="Path_277" data-name="Path 277" d="M195.951,280.2l20.674-27.565a10.685,10.685,0,0,1,17.1,0L254.4,280.2Z" transform="translate(-131.142 -165.677)" fill="#71e2ef"/>
+    <g id="Group_25" data-name="Group 25" transform="translate(45.666 82.681)">
+      <path id="Path_278" data-name="Path 278" d="M290.4,252.664a10.6,10.6,0,0,0-8.253-4.258v31.823h28.927Z" transform="translate(-233.146 -248.39)" fill="#38c6d9"/>
+      <path id="Path_279" data-name="Path 279" d="M139.062,280.2l20.674-27.565a10.685,10.685,0,0,1,17.1,0L197.506,280.2Z" transform="translate(-139.062 -248.358)" fill="#38c6d9"/>
+    </g>
+    <path id="Path_280" data-name="Path 280" d="M233.509,252.664a10.6,10.6,0,0,0-8.253-4.258v31.823h28.927Z" transform="translate(-150.224 -165.709)" fill="#19205b"/>
+  </g>
+</svg>

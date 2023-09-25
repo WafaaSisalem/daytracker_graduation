@@ -21,14 +21,27 @@ import '../notes/widgets/writing_place.dart';
 import '../../utils/svgs/svgs.dart';
 import 'journal_home_screen.dart';
 
-class JournalDisplayScreen extends StatelessWidget {
+class JournalDisplayScreen extends StatefulWidget {
   JournalDisplayScreen({
     Key? key,
     required this.journal,
   }) : super(key: key);
   final JournalModel journal;
+
+  @override
+  State<JournalDisplayScreen> createState() => _JournalDisplayScreenState();
+}
+
+class _JournalDisplayScreenState extends State<JournalDisplayScreen> {
   get status {
-    return StatusWidget(status: journal.status);
+    return StatusWidget(status: widget.journal.status);
+  }
+
+  late bool isLocked;
+  @override
+  void initState() {
+    isLocked = widget.journal.isLocked;
+    super.initState();
   }
 
   @override
@@ -43,7 +56,7 @@ class JournalDisplayScreen extends StatelessWidget {
               icon: const Icon(
                 Icons.arrow_back_ios_rounded,
                 size: 28,
-                color: Colors.white, //TODO: COLOR
+                color: Colors.white, //
               ),
               onPressed: () {
                 AppRouter.router
@@ -66,7 +79,7 @@ class JournalDisplayScreen extends StatelessWidget {
                             entryType: 'journal',
                             onOkPressed: (value) {
                               journalProvider.deleteJournal(
-                                  journalId: journal.id);
+                                  journalId: widget.journal.id);
                               AppRouter.router.pop();
                               AppRouter.router.pushWithReplacementFunction(
                                   JournalHomeScreen());
@@ -82,12 +95,12 @@ class JournalDisplayScreen extends StatelessWidget {
                 child: SizedBox(
                   width: 18,
                   height: 18,
-                  child: journal.isLocked ? svgWhiteUnlock : svgWhiteLock,
+                  child: isLocked ? svgWhiteUnlock : svgWhiteLock,
                 ),
                 onTap: () {
                   if (authProvider.userModel!.masterPassword.isEmpty) {
                     AppRouter.router
-                        .pushFunction(MasterPassScreen(item: journal));
+                        .pushFunction(MasterPassScreen(item: widget.journal));
                   } else {
                     showDialog(
                         context: context,
@@ -102,18 +115,22 @@ class JournalDisplayScreen extends StatelessWidget {
                                 } else {
                                   if (authProvider.userModel!.masterPassword ==
                                       value) {
-                                    if (journal.isLocked) {
+                                    if (isLocked) {
                                       journalProvider
                                           .updateJournal(JournalModel.fromMap({
-                                        ...journal.toMap(),
+                                        ...widget.journal.toMap(),
                                         Constants.isLockedKey: 0,
                                       }));
+                                      isLocked = false;
+                                      setState(() {});
                                     } else {
                                       journalProvider
                                           .updateJournal(JournalModel.fromMap({
-                                        ...journal.toMap(),
+                                        ...widget.journal.toMap(),
                                         Constants.isLockedKey: 1,
                                       }));
+                                      isLocked = true;
+                                      setState(() {});
                                     }
 
                                     AppRouter.router.pop();
@@ -144,7 +161,7 @@ class JournalDisplayScreen extends StatelessWidget {
                 onTap: () {
                   AppRouter.router
                       .pushWithReplacementFunction(JournalEditScreen(
-                    journal: journal,
+                    journal: widget.journal,
                   ));
                 },
               ),
@@ -156,7 +173,7 @@ class JournalDisplayScreen extends StatelessWidget {
           padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
           child: Column(
             children: [
-              if (journal.imagesUrls.isNotEmpty) ...[
+              if (widget.journal.imagesUrls.isNotEmpty) ...[
                 imageSlider(),
                 SizedBox(height: 7.h)
               ],
@@ -168,7 +185,8 @@ class JournalDisplayScreen extends StatelessWidget {
                 child: WritingPlaceWidget(
                   enabled: false,
                   onChanged: (value) {},
-                  controller: TextEditingController(text: journal.content),
+                  controller:
+                      TextEditingController(text: widget.journal.content),
                   hintText: 'What happened with you today?',
                 ),
               ),
@@ -179,7 +197,7 @@ class JournalDisplayScreen extends StatelessWidget {
               //       icon: const Icon(Icons.arrow_back_ios_rounded),
               //       onPressed: () {},
               //       iconSize: 25.r,
-              //       color: Colors.grey, //TODO: COLOR
+              //       color: Colors.grey, //
               //     ),
               //     IconButton(
               //       icon: const Icon(Icons.arrow_forward_ios),
@@ -188,7 +206,7 @@ class JournalDisplayScreen extends StatelessWidget {
               //       },
               //       iconSize: 25.r,
               //       color:
-              //           Theme.of(context).colorScheme.secondary, //TODO: COLOR
+              //           Theme.of(context).colorScheme.secondary, //
               //     ),
               //   ],
               // ),
@@ -208,7 +226,7 @@ class JournalDisplayScreen extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-              color: const Color(0x28000000), //TODO: COLOR
+              color: const Color(0x28000000), //
               offset: Offset(0, 3.h),
               blurRadius: 6),
         ],
@@ -218,10 +236,10 @@ class JournalDisplayScreen extends StatelessWidget {
         indicatorColor: Colors.white,
         indicatorBackgroundColor: Colors.grey.withOpacity(0.5),
         onPageChanged: (value) => currentImageIndex = value,
-        children: journal.imagesUrls
+        children: widget.journal.imagesUrls
             .map((imageUrl) => InkWell(
                   child: Hero(
-                    tag: journal.id,
+                    tag: widget.journal.id,
                     child: CachedNetworkImage(
                       fit: BoxFit.cover,
                       imageUrl: imageUrl,
@@ -238,7 +256,7 @@ class JournalDisplayScreen extends StatelessWidget {
                   ),
                   onTap: () {
                     AppRouter.router.pushFunction(ImageSliderViewerScreen(
-                        journal: journal,
+                        journal: widget.journal,
                         currentImageIndex: currentImageIndex));
                   },
                 ))
@@ -265,14 +283,14 @@ class JournalDisplayScreen extends StatelessWidget {
               datecontainer(
                   context: context,
                   width: 30.w,
-                  text: journal.date.day.toString(),
+                  text: widget.journal.date.day.toString(),
                   textStyle: Theme.of(context)
                       .textTheme
                       .headline1!
                       .copyWith(fontSize: 15.sp)),
               datecontainer(
                   context: context,
-                  text: DateFormat('MMMM d, y').format(journal.date),
+                  text: DateFormat('MMMM d, y').format(widget.journal.date),
                   width: 103.w,
                   textStyle: Theme.of(context)
                       .textTheme
@@ -285,7 +303,7 @@ class JournalDisplayScreen extends StatelessWidget {
                     .textTheme
                     .headline1!
                     .copyWith(fontSize: 10.sp, fontWeight: FontWeight.w600),
-                text: DateFormat('EEEE. hh:mm a').format(journal.date),
+                text: DateFormat('EEEE. hh:mm a').format(widget.journal.date),
               ),
               statusContainer()
             ],
@@ -299,15 +317,12 @@ class JournalDisplayScreen extends StatelessWidget {
     return Container(
       width: 30.w,
       height: 30.h,
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-                color: const Color(0x28000000), //TODO: COLOR
-                offset: Offset(0, 1.h),
-                blurRadius: 3),
-          ],
-          borderRadius: BorderRadius.circular(5.r),
-          color: Colors.white // TODO: COLOR
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: const Color(0x28000000), //
+            offset: Offset(0, 1.h),
+            blurRadius: 3),
+      ], borderRadius: BorderRadius.circular(5.r), color: Colors.white //
           ),
       child: Center(
         child: status ?? svgSmile,
@@ -324,15 +339,12 @@ class JournalDisplayScreen extends StatelessWidget {
     return Container(
       width: width,
       height: 30.h,
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-                color: const Color(0x28000000), //TODO: COLOR
-                offset: Offset(0, 1.h),
-                blurRadius: 3),
-          ],
-          borderRadius: BorderRadius.circular(5.r),
-          color: Colors.white // TODO: COLOR
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: const Color(0x28000000), //
+            offset: Offset(0, 1.h),
+            blurRadius: 3),
+      ], borderRadius: BorderRadius.circular(5.r), color: Colors.white //
           ),
       child: Center(
         child: Text(

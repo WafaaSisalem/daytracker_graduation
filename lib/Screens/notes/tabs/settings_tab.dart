@@ -45,7 +45,7 @@ class _SettingsTabState extends State<SettingsTab> {
             //         containerChild: Text(
             //           'Light',
             //           style: theme.textTheme.headline2!.copyWith(
-            //               color: const Color(0xFF121212)), //TODO:COLOR,
+            //               color: const Color(0xFF121212)), // ,
             //         ),
             //         onTap: (choice) {
             //           themeChoice = choice;
@@ -55,7 +55,7 @@ class _SettingsTabState extends State<SettingsTab> {
             //     NoteSettingsWidget(
             //         radioValue: 2,
             //         groupValue: themeChoice,
-            //         containerColor: const Color(0xFF1E1E1E), //TODO:COLOR,
+            //         containerColor: const Color(0xFF1E1E1E), // ,
             //         containerChild: Text(
             //           'Dark',
             //           style: theme.textTheme.headline2,

@@ -109,7 +109,7 @@ class _DialogWidgetState extends State<DialogWidget> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return AlertDialog(
-      backgroundColor: Colors.white, //TODO: COLOR
+      backgroundColor: Colors.white, //
       contentPadding:
           EdgeInsets.only(top: 10.h, bottom: 0, left: 20.w, right: 20.w),
       titlePadding: EdgeInsets.only(top: 20.h, bottom: 0, left: 20.w),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:day_tracker_graduation/services/auth_helper.dart';
 import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -16,7 +17,9 @@ class NoteProvider extends ChangeNotifier {
   List<NoteModel> searchResult = [];
 
   NoteProvider() {
-    getAllNote();
+    if (AuthHelper.authHelper.getCurrentUser() != null) {
+      getAllNote();
+    }
   }
 
   getAllNote() async {

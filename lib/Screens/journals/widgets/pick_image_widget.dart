@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
-import '../../../services/firestorage_helper.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../utils/svgs/svgs.dart';
 
 class PickImageWidget extends StatefulWidget {
-  PickImageWidget(
+  const PickImageWidget(
       {super.key,
       required this.images,
       required this.onRemovePressed,
@@ -24,17 +23,6 @@ class PickImageWidget extends StatefulWidget {
 class _PickImageWidgetState extends State<PickImageWidget> {
   List<File> files = [];
   @override
-
-  // int removeImage(int index) {
-  //   // setState(() {
-  //   //   widget.imagesUrls.removeAt(index);
-  //   // });
-  //   setState(() {
-  //     widget.images.removeAt(index);
-  //   });
-  //   return index;
-  // }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -57,10 +45,10 @@ class _PickImageWidgetState extends State<PickImageWidget> {
                 if (index == 0) {
                   return GestureDetector(
                     onTap: () async {
-                      files = await FirestorageHelper.firestorageHelper
-                          .selectFile();
+                      files = await selectFiles();
+
                       widget.onAddImagePressed(files);
-                      setState(() {});
+                      // setState(() {});
 
                       print(files);
                     },
@@ -89,9 +77,9 @@ class _PickImageWidgetState extends State<PickImageWidget> {
                         child: GestureDetector(
                           onTap: () {
                             widget.onRemovePressed(imageIndex);
-                            print('remove pressed');
+
                             // widget.onRemovePressed(removeImage(imageIndex));
-                            setState(() {});
+                            // setState(() {});
                           },
                           child: svgMinus,
                         ),
@@ -108,7 +96,7 @@ class _PickImageWidgetState extends State<PickImageWidget> {
         TextButton(
           onPressed: () {
             widget.onDonePressed(files);
-            setState(() {});
+            // setState(() {});
           },
           child: Text(
             'DONE',
@@ -117,6 +105,19 @@ class _PickImageWidgetState extends State<PickImageWidget> {
         ),
       ],
     );
+  }
+
+  selectFiles() async {
+    final ImagePicker imagePicker = ImagePicker();
+    List<XFile>? imageFileList = [];
+
+    final List<XFile> selectedImages =
+        await imagePicker.pickMultiImage(imageQuality: 25);
+    if (selectedImages.isNotEmpty) {
+      imageFileList.addAll(selectedImages);
+    }
+    files = imageFileList.map((file) => File(file.path)).toList();
+    return files;
   }
 }
 // import 'package:cached_network_image/cached_network_image.dart';

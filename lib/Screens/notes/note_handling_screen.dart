@@ -34,8 +34,16 @@ class NoteHandlingScreen extends StatefulWidget {
 class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
   String content = '';
   String title = '';
+  bool isLocked = false;
   late AuthProvider authProvider;
   late NoteProvider noteProvider;
+
+  @override
+  void initState() {
+    isLocked = widget.note?.isLocked ?? false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<AuthProvider, NoteProvider>(
@@ -57,7 +65,7 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
                     icon: const Icon(
                       Icons.arrow_back_ios_rounded,
                       size: 28,
-                      color: Colors.white, //TODO: COLOR
+                      color: Colors.white, //
                     ),
                     onPressed: () {
                       onBackButtonPressed();
@@ -105,7 +113,7 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
           icon: const Icon(
             Icons.check_rounded,
             size: 28,
-            color: Colors.white, //TODO: COLOR
+            color: Colors.white, //
           )),
     );
   }
@@ -115,7 +123,7 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
       child: SizedBox(
           width: 18,
           height: 18,
-          child: widget.note!.isLocked ? svgWhiteUnlock : svgWhiteLock),
+          child: isLocked ? svgWhiteUnlock : svgWhiteLock),
       onTap: () {
         if (authProvider.userModel!.masterPassword.isEmpty) {
           AppRouter.router
@@ -133,16 +141,20 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
                             context: context);
                       } else {
                         if (authProvider.userModel!.masterPassword == value) {
-                          if (widget.note!.isLocked) {
+                          if (isLocked) {
                             noteProvider.updateNote(NoteModel.fromMap({
                               ...widget.note!.toMap(),
                               Constants.isLockedKey: 0,
                             }));
+                            isLocked = false;
+                            setState(() {});
                           } else {
                             noteProvider.updateNote(NoteModel.fromMap({
                               ...widget.note!.toMap(),
                               Constants.isLockedKey: 1,
                             }));
+                            isLocked = true;
+                            setState(() {});
                           }
 
                           AppRouter.router.pop();
@@ -226,7 +238,7 @@ class _NoteHandlingScreenState extends State<NoteHandlingScreen> {
                 content: content,
                 date: DateTime.now(),
                 title: title,
-                isLocked: widget.note!.isLocked));
+                isLocked: isLocked!));
       }
       AppRouter.router.pushWithReplacementFunction(const NoteHomeScreen());
     } else {

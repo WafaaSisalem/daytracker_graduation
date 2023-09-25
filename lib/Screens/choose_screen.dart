@@ -36,7 +36,7 @@ class ChooseCardScreen extends StatelessWidget {
                         Text(
                           'CHOOSE',
                           style: TextStyle(
-                              color: Colors.black, //TODO:COLOR
+                              color: Colors.black, //
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w700),
                         ),
@@ -151,7 +151,7 @@ class ChooseCardScreen extends StatelessWidget {
                       Text(
                         'CHOOSE',
                         style: TextStyle(
-                            color: Colors.black, //TODO:COLOR
+                            color: Colors.black, // 
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w700),
                       ),

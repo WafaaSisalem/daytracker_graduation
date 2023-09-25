@@ -27,6 +27,8 @@ import '../../widgets/floating_calendar.dart';
 import '../notes/widgets/writing_place.dart';
 import 'journal_home_screen.dart';
 
+bool isLoading = false;
+
 class JournalAddScreen extends StatefulWidget {
   const JournalAddScreen({Key? key}) : super(key: key);
 
@@ -35,17 +37,15 @@ class JournalAddScreen extends StatefulWidget {
 }
 
 class _JournalAddScreenState extends State<JournalAddScreen> {
-  // String date = DateFormat('MMMM d, y').format(DateTime.now()).toString();
   DateTime date = DateTime.now();
   String content = '';
   String status = '';
-  // String imageUrl = '';
   List<String> imagesUrls = [];
   LocationModel? location;
-  // List<File> files = [];
   loc.LocationData? currentLocation;
   double? celsius;
   String formatedCelsius = '';
+  List<File> pickedFiles = [];
   getCurrentWeather() async {
     WeatherFactory wf = WeatherFactory("3117871fcf5c5c7027946e61b433701e");
     if (currentLocation != null ||
@@ -131,8 +131,6 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
         setState(() {
           isGettingAddress = true;
         });
-        // bool isde = await location1.serviceEnabled();
-        // print(isde);
         currentLocation = await location1.getLocation().timeout(
           const Duration(seconds: 10),
           onTimeout: () {
@@ -171,221 +169,250 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
     getCurrentWeather();
   }
 
+  late AuthProvider authProvider;
+  late JournalProvider journalProvider;
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer2<JournalProvider, AuthProvider>(
         builder: (context, journalProvider, authProvider, child) {
-      return Scaffold(
-        appBar: AppbarWidget(
-            titlePlace: Row(children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_rounded,
-                  size: 28,
-                  color: Colors.white, //TODO: COLOR
-                ),
-                onPressed: () {
-                  onBackButtonPressed();
-                },
-              ),
-              SizedBox(
-                width: 70.w,
-              ),
-              InkWell(
-                onTap: () async {
-                  DateTime? val =
-                      await floatingCalendarWidget(context, initialDate: date);
-                  setState(() {
-                    date = val ?? DateTime.now();
-                  });
-                },
-                child: Container(
-                  height: 23.h,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2.r),
-                      color: Colors.white),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          DateFormat('MMMM d, y').format(date).toString(),
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 11.sp,
-                            color: theme.colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        Container(
-                          height: 15.h,
-                          width: 1.w,
-                          color: Colors.grey[200],
-                        ),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          color: theme.colorScheme.secondary,
-                        )
-                      ],
-                    ),
+      this.authProvider = authProvider;
+      this.journalProvider = journalProvider;
+      return Stack(
+        children: [
+          Scaffold(
+            appBar: buildAppbar(context, theme),
+            body: Container(
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
+              child: Column(
+                children: [
+                  buildAddressBox(theme),
+                  Expanded(
+                    child: buildTextField(),
                   ),
-                ),
-              )
-            ]),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: IconButton(
-                    onPressed: () =>
-                        onCheckPressed(journalProvider, authProvider),
-                    icon: const Icon(
-                      Icons.check_rounded,
-                      size: 28,
-                      color: Colors.white, //TODO: COLOR
-                    )),
+                ],
               ),
-            ]),
-        body: Container(
-          padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
-          child: Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                height: 20.h,
-                child: isGettingAddress
-                    ? const Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                          width: 10,
-                          height: 10,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        location?.address ?? '',
-                        style: theme.textTheme.subtitle2!
-                            .copyWith(color: theme.colorScheme.secondary),
-                      ),
-              ),
-              Expanded(
-                child: WritingPlaceWidget(
-                  onChanged: (value) {
-                    content = value;
-                  },
-                  controller: content != ''
-                      ? TextEditingController(text: content)
-                      : TextEditingController(text: null),
-                  hintText: 'What happened with you today?',
-                ),
-              ),
-            ],
+            ),
+            floatingActionButtonLocation: ExpandableFab.location,
+            floatingActionButton: buildExpandFAB(theme),
           ),
-        ),
-        floatingActionButtonLocation: ExpandableFab.location,
-        floatingActionButton: ExpandableFab(
-          initialOpen: true,
-          openButtonBuilder: FloatingActionButtonBuilder(
-              builder: (context, onPressed, progress) => FabWidget(
-                    onPressed: onPressed!,
-                    heroTag: 'open btn ',
-                  ),
-              size: 20), //size does not matter,
-          closeButtonBuilder: FloatingActionButtonBuilder(
-              builder: (context, onPressed, progress) => FabWidget(
-                    heroTag: 'close btn',
-                    onPressed: onPressed!,
-                    icon: Icons.close_rounded,
-                  ),
-              size: 20), //size does not matter
-          children: [
-            FloatingActionButton(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              heroTag: 'btn1',
-              backgroundColor: Colors.white,
-              child: journalProvider.filesPicked.isEmpty
-                  ? svgGallery
-                  : SizedBox(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Image.file(
-                        journalProvider.filesPicked[0],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-              onPressed: () => onGalleryBtnPressed(journalProvider),
-            ),
-            FloatingActionButton(
-              heroTag: 'btn2',
-              backgroundColor: Colors.white,
-              child: location == null ? svgMap : svgMapDone,
-              onPressed: () => onMapBtnPressed(),
-            ),
-            FloatingActionButton(
-              heroTag: 'btn3',
-              backgroundColor: Colors.white,
-              child: formatedCelsius == ''
-                  ? ColorFiltered(
-                      child: svgWeather,
-                      colorFilter: const ColorFilter.mode(
-                        Colors.grey,
-                        BlendMode.srcIn,
-                      ),
-                    )
-                  : Text(
-                      formatedCelsius,
-                      style: theme.textTheme.headline3!
-                          .copyWith(color: theme.primaryColor),
-                    ),
-              onPressed: () {},
-            ),
-            FloatingActionButton(
-              heroTag: 'btn4',
-              backgroundColor: Colors.white,
-              child: SizedBox(
-                  width: 22.w,
-                  height: 22.h,
-                  child: StatusWidget(status: status)),
-              onPressed: () => onStatusBtnPressed(),
-            ),
-          ],
-        ),
-        // floatingActionButton: ExpandableFab(
-        //   children: [
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('gallery pressed!');
-        //       },
-        //       icon: svgGallery,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('map pressed!');
-        //       },
-        //       icon: svgMap,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('weather pressed!');
-        //       },
-        //       icon: svgWeather,
-        //     ),
-        //     ActionButton(
-        //       onPressed: () {
-        //         print('smile pressed!');
-        //       },
-        //       icon: svgSmile,
-        //     ),
-        //   ],
-        // ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5), // Overlay color
+              alignment: Alignment.center,
+              child:
+                  const CircularProgressIndicator(), // Your loading indicator
+            )
+        ],
       );
     });
+  }
+
+  ExpandableFab buildExpandFAB(ThemeData theme) {
+    return ExpandableFab(
+      initialOpen: true,
+      openButtonBuilder: buildOpenBtn(),
+      closeButtonBuilder: buildCloseBtn(),
+      children: [
+        buildGalleryBtn(),
+        buildMapBtn(),
+        buildWeatherBtn(theme),
+        buildStatusBtn(),
+      ],
+    );
+  }
+
+  FloatingActionButton buildStatusBtn() {
+    return FloatingActionButton(
+      heroTag: 'btn4',
+      backgroundColor: Colors.white,
+      child: SizedBox(
+          width: 22.w, height: 22.h, child: StatusWidget(status: status)),
+      onPressed: () => onStatusBtnPressed(),
+    );
+  }
+
+  FloatingActionButton buildWeatherBtn(ThemeData theme) {
+    return FloatingActionButton(
+      heroTag: 'btn3',
+      backgroundColor: Colors.white,
+      child: formatedCelsius == ''
+          ? ColorFiltered(
+              child: svgWeather,
+              colorFilter: const ColorFilter.mode(
+                Colors.grey,
+                BlendMode.srcIn,
+              ),
+            )
+          : Text(
+              formatedCelsius,
+              style: theme.textTheme.headline3!
+                  .copyWith(color: theme.primaryColor),
+            ),
+      onPressed: () {},
+    );
+  }
+
+  FloatingActionButton buildMapBtn() {
+    return FloatingActionButton(
+      heroTag: 'btn2',
+      backgroundColor: Colors.white,
+      child: location == null ? svgMap : svgMapDone,
+      onPressed: () => onMapBtnPressed(),
+    );
+  }
+
+  FloatingActionButton buildGalleryBtn() {
+    return FloatingActionButton(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      heroTag: 'btn1',
+      backgroundColor: Colors.white,
+      child: journalProvider
+              .pickedImages.isEmpty // journalProvider.filesPicked.isEmpty
+          ? svgGallery
+          : SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+
+              child: journalProvider.pickedImages[0],
+
+              // child: Image.file(
+              //   journalProvider.filesPicked[0],
+              //   fit: BoxFit.cover,
+              // ),
+            ),
+      onPressed: () => onGalleryBtnPressed(),
+    );
+  }
+
+  FloatingActionButtonBuilder buildCloseBtn() {
+    return FloatingActionButtonBuilder(
+        builder: (context, onPressed, progress) => FabWidget(
+              heroTag: 'close btn',
+              onPressed: onPressed!,
+              icon: Icons.close_rounded,
+            ),
+        size: 20); //size does not matter,
+  }
+
+  FloatingActionButtonBuilder buildOpenBtn() {
+    return FloatingActionButtonBuilder(
+        builder: (context, onPressed, progress) => FabWidget(
+              onPressed: onPressed!,
+              heroTag: 'open btn ',
+            ),
+        size: 20);
+  }
+
+  WritingPlaceWidget buildTextField() {
+    return WritingPlaceWidget(
+      onChanged: (value) {
+        content = value;
+      },
+      controller: content != ''
+          ? TextEditingController(text: content)
+          : TextEditingController(text: null),
+      hintText: 'What happened with you today?',
+    );
+  }
+
+  SizedBox buildAddressBox(ThemeData theme) {
+    return SizedBox(
+      width: double.infinity,
+      height: 20.h,
+      child: isGettingAddress
+          ? const Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            )
+          : Text(
+              location?.address ?? '',
+              style: theme.textTheme.subtitle2!
+                  .copyWith(color: theme.colorScheme.secondary),
+            ),
+    );
+  }
+
+  AppbarWidget buildAppbar(BuildContext context, ThemeData theme) {
+    return AppbarWidget(
+        titlePlace: Row(children: [
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_rounded,
+              size: 28,
+              color: Colors.white, //
+            ),
+            onPressed: () {
+              onBackButtonPressed();
+            },
+          ),
+          SizedBox(
+            width: 70.w,
+          ),
+          InkWell(
+            onTap: () async {
+              DateTime dateTime =
+                  await floatingCalendarWidget(context, initialDate: date);
+
+              setState(() {
+                date = dateTime;
+              });
+            },
+            child: Container(
+              height: 23.h,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2.r),
+                  color: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      DateFormat('MMMM d, y').format(date).toString(),
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 11.sp,
+                        color: theme.colorScheme.secondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.w,
+                    ),
+                    Container(
+                      height: 15.h,
+                      width: 1.w,
+                      color: Colors.grey[200],
+                    ),
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      color: theme.colorScheme.secondary,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          )
+        ]),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+                onPressed: () => onCheckPressed(journalProvider, authProvider),
+                icon: const Icon(
+                  Icons.check_rounded,
+                  size: 28,
+                  color: Colors.white, //
+                )),
+          ),
+        ]);
   }
 
   buildStatusWidget({required Widget widget, required Function() onTap}) {
@@ -398,73 +425,34 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
             child: SizedBox(width: 30.w, height: 30.h, child: widget)));
   }
 
-  onGalleryBtnPressed(JournalProvider journalProvider) async {
-    if (journalProvider.filesPicked.isEmpty) {
-      List<File> images =
-          await FirestorageHelper.firestorageHelper.selectFile();
-      // files.addAll(images);
-      journalProvider.addFile(images);
+  onGalleryBtnPressed() async {
+    if (journalProvider.pickedImages.isEmpty) {
+      List<File> files = await journalProvider
+          .selectFiles(); //THIS METHOD ADDS FILES TO pickedImages in provider
+      pickedFiles.addAll(files);
       setState(() {});
     } else {
       showDialog(
           context: context,
-          builder: (context) {
-            // List<Widget> images = journalProvider.files
-            //     .map((file) => Image.file(file, fit: BoxFit.cover))
-            //     .toList();
-
-            return PickImageWidget(
-                images: journalProvider.imagesPicked,
-                onRemovePressed: (index) {
-                  journalProvider.imagesPicked.removeAt(index);
-                  journalProvider.filesPicked.removeAt(index);
-                },
-                onAddImagePressed: (files) {
-                  journalProvider.addFile(files);
-                },
-                onDonePressed: (files) {
-                  AppRouter.router.pop();
-                  setState(() {});
-                });
+          builder: (ctx) {
+            return Consumer<JournalProvider>(
+                builder: (context, journalProviderIn, x) {
+              return PickImageWidget(
+                  images: journalProviderIn.pickedImages,
+                  onRemovePressed: (index) {
+                    journalProviderIn.removeImageAt(index);
+                    pickedFiles.removeAt(index);
+                  },
+                  onAddImagePressed: (files) {
+                    journalProviderIn.addImages(files);
+                    pickedFiles.addAll(files);
+                  },
+                  onDonePressed: (files) {
+                    AppRouter.router.pop();
+                  });
+            });
           });
-      // showDialog(
-      //     context: context,
-      //     builder: (context) {
-      //       List<Widget> images = files
-      //           .map((file) => Image.file(file, fit: BoxFit.cover))
-      //           .toList();
-
-      //       return PickImageWidget(
-      //           images: images,
-      //           onAddImagePressed: (images) {},
-      //           onRemovePressed: (index) {
-      //             images.removeAt(index);
-      //             setState(() {});
-      //           },
-      //           onDonePressed: (files) {
-      //             this.files.addAll(files);
-      //             setState(() {});
-      //             AppRouter.router.pop();
-      //           });
-      //       //  ImageViewerWidget(
-      //       //   onDoneTap: (files) {
-      //       //     if (files.isEmpty) {
-      //       //       setState(() {});
-      //       //     }
-      //       //     AppRouter.router.pop();
-      //       //   },
-      //       //   pickedImages: files,
-      //       //   // onAddTap: (files) async {
-      //       //   //   this.files = files;
-      //       //   //   setState(() {});
-      //       //   // }
-      //       // );
-      //     });
     }
-    // File file =
-    //     await FirestorageHelper.firestorageHelper.selectFile();
-    // imageUrl = await FirestorageHelper.firestorageHelper
-    //     .uploadImage(file, journalProvider.userModel!.id);
   }
 
   onMapBtnPressed() {
@@ -566,30 +554,13 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
 
   onCheckPressed(
       JournalProvider journalProvider, AuthProvider authProvider) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            backgroundColor: Colors.transparent,
-            // title: Text('Wait for the photos to be uploaded'),
-            content: SizedBox(
-                width: 50.w,
-                height: 50.h,
-                child: Center(
-                    child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ))),
-          );
-        });
-
     if (content != '') {
-      // if (journalProvider.userModel == null) {
-      //   journalProvider.getUserModel();
-      // }
-
+      isLoading = true;
+      setState(() {});
       imagesUrls = await FirestorageHelper.firestorageHelper
-          .uploadImage(journalProvider.filesPicked, authProvider.userModel!.id);
+          .uploadImage(pickedFiles, authProvider.userModel!.id);
+      isLoading = false;
+      setState(() {});
       journalProvider.addJournal(
           journal: JournalModel(
               location: location,
@@ -601,14 +572,20 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
               status: status,
               weather: formatedCelsius));
     }
-    journalProvider.imagesPicked.clear();
-    journalProvider.filesPicked.clear();
-    AppRouter.router.pop();
+    // else{
+    //  if( pickedFiles.isNotEmpty){
+    //   showDialog(context: context, builder: (context){
+    //       return AlertDialog(content: Text('if you want to add the images, write something on the note'),);
+    //   });
+    //  }
+    // }
+    journalProvider.imagesClear();
+    pickedFiles.clear();
     AppRouter.router.pushWithReplacementFunction(const JournalHomeScreen());
   }
 
   void onBackButtonPressed() {
-    if (content == '') {
+    if (content == '' && pickedFiles.isEmpty) {
       AppRouter.router.pushWithReplacementFunction(const JournalHomeScreen());
     } else {
       showDialog(
@@ -619,6 +596,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 entryType: 'journal',
                 onOkPressed: (value) {
                   AppRouter.router.pop();
+                  journalProvider.imagesClear();
                   AppRouter.router
                       .pushWithReplacementFunction(const JournalHomeScreen());
                 });

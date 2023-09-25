@@ -33,17 +33,11 @@ class ChooseCardWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 19.h),
             width: double.infinity,
-
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5.r),
                 // TODO: set an elevation to this container
-                // boxShadow: [
-                //   BoxShadow(
-                //       color: MyApp.shadowColor,
-                //       offset: Offset(0, 1.5.h),
-                //       blurRadius: 3)
-                // ],
-                color: const Color(0x1CBB86FC)), //TODO: COLOR
+
+                color: const Color(0x1CBB86FC)), //
             child: Row(
               children: [
                 textDirection == MyDirection.left

@@ -1,4 +1,6 @@
-class LocationModel {
+import 'package:equatable/equatable.dart';
+
+class LocationModel extends Equatable {
   const LocationModel(this.lat, this.lng, this.address);
   final double lat;
   final double lng;
@@ -19,4 +21,7 @@ class LocationModel {
       map['address'] ?? '',
     );
   }
+
+  @override
+  List<Object?> get props => [address];
 }

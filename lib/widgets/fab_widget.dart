@@ -29,7 +29,7 @@ class FabWidget extends StatelessWidget {
         child: FloatingActionButton(
           backgroundColor: theme.primaryColor,
           heroTag: heroTag,
-          child: Icon(icon, size: 30.r, color: Colors.white), //TODO: COLOR
+          child: Icon(icon, size: 30.r, color: Colors.white), //
           onPressed: onPressed,
         ),
       ),

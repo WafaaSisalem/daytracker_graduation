@@ -63,7 +63,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                 hintStyle: Theme.of(context)
                     .textTheme
                     .headline4!
-                    .copyWith(color: const Color(0x73C4C4C4)), //TODO: color
+                    .copyWith(color: const Color(0x73C4C4C4)), //
                 border: const OutlineInputBorder(borderSide: BorderSide.none),
                 hintText: widget.hint,
               )),

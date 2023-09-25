@@ -12,7 +12,7 @@ class ButtonWidget extends StatelessWidget {
     required this.height,
     this.bgColor = color,
   }) : super(key: key);
-  static const Color color = MyApp.primaryColor; //TODO: COLOR
+  static const Color color = MyApp.primaryColor; //
 
   final String text;
   final Color bgColor;
@@ -33,7 +33,7 @@ class ButtonWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.r),
             boxShadow: [
               BoxShadow(
-                  color: MyApp.shadowColor, //TODO: COLOR
+                  color: MyApp.shadowColor, //
                   offset: Offset(0, 1.5.h),
                   blurRadius: 3)
             ],
@@ -44,7 +44,7 @@ class ButtonWidget extends StatelessWidget {
             style: theme.textTheme.headline3!.copyWith(
               color:
                   bgColor == color ? Colors.white : theme.colorScheme.secondary,
-            ), //TODO:COLOR
+            ), //
           ),
         ),
       ),

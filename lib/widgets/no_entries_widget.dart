@@ -5,7 +5,7 @@ class NoEntriesWidget extends StatelessWidget {
   const NoEntriesWidget({Key? key, required this.image, required this.text})
       : super(key: key);
 
-  final Widget image; //TODO: prepare all svgsss and delete not important svgs
+  final Widget image;
   final String text;
   @override
   Widget build(BuildContext context) {

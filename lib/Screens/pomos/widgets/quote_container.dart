@@ -17,7 +17,7 @@ class QuoteContainer extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-              color: const Color(0x28000000), //TODO: COLOR
+              color: const Color(0x28000000), //
               offset: Offset(0, 1.h),
               blurRadius: 3),
         ],

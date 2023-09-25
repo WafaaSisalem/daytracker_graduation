@@ -38,14 +38,14 @@ class _LocationTabState extends State<LocationTab> {
               markers: journalProvider.markers,
             ),
           ),
-          if (journalProvider.seletctedLoc.isNotEmpty)
+          if (journalProvider.selectedLoc.isNotEmpty)
             Expanded(
                 child: JournalTab(
                     noEntriesWidget: NoEntriesWidget(
                       image: svgNoJournal,
                       text: 'No journal entries',
                     ),
-                    journals: journalProvider.seletctedLoc,
+                    journals: journalProvider.selectedLoc,
                     longPressActivated: false)),
         ],
       );

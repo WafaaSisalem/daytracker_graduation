@@ -87,6 +87,7 @@ class JournalWidget extends StatelessWidget {
             ),
           ),
           if (journal.imagesUrls.isNotEmpty) ...[
+            //journalImage
             SizedBox(
               width: 10.w,
             ),
@@ -102,7 +103,7 @@ class JournalWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5.r),
                         boxShadow: [
                           BoxShadow(
-                              color: const Color(0x28000000), //TODO: COLOR
+                              color: const Color(0x28000000), //
                               offset: Offset(0, 1.h),
                               blurRadius: 3),
                         ]),
@@ -147,7 +148,7 @@ class JournalWidget extends StatelessWidget {
           CircleAvatar(
             radius: 5,
 
-            backgroundColor: Colors.white, //TODO: COLORS
+            backgroundColor: Colors.white, // S
             child: StatusWidget(status: journal.status),
           ),
           SizedBox(

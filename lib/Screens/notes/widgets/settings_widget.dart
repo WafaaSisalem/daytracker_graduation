@@ -28,7 +28,7 @@ class NoteSettingsWidget extends StatelessWidget {
               color: containerColor,
               boxShadow: const [
                 BoxShadow(
-                    color: Color(0x26000000), //TODO:COLOR
+                    color: Color(0x26000000), //
                     offset: Offset(0, 1),
                     blurRadius: 3)
               ],

@@ -54,7 +54,7 @@ class _TaskEditScreenState extends State<TaskEditScreen> {
                     icon: const Icon(
                       Icons.arrow_back_ios_rounded,
                       size: 28,
-                      color: Colors.white, //TODO: COLOR
+                      color: Colors.white, //
                     ),
                     onPressed: () {
                       onBackButtonPressed();
@@ -76,7 +76,7 @@ class _TaskEditScreenState extends State<TaskEditScreen> {
                         icon: const Icon(
                           Icons.check_rounded,
                           size: 28,
-                          color: Colors.white, //TODO: COLOR
+                          color: Colors.white, //
                         )),
                   ),
                 ]),

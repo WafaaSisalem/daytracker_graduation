@@ -193,7 +193,7 @@ class NoteWidget extends StatelessWidget {
         Text(
           note.title,
           style: theme.textTheme.subtitle2!
-              .copyWith(color: const Color(0xFFC4C4C4)), //TODO: color
+              .copyWith(color: const Color(0xFFC4C4C4)), //
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

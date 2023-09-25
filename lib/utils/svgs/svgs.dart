@@ -110,6 +110,10 @@ const String noNoteSearchResult = 'assets/images/no_note_search_result.svg';
 final Widget svgNoteSearchResult = SvgPicture.asset(
   noNoteSearchResult,
 );
+const String noJournalImages = 'assets/images/no_journal_images.svg';
+final Widget svgNoJournalImages = SvgPicture.asset(
+  noJournalImages,
+);
 const String noJournalSearchResult =
     'assets/images/no_journal_search_result.svg';
 final Widget svgJournalSearchResult = SvgPicture.asset(

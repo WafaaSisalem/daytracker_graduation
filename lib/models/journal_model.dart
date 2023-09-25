@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:day_tracker_graduation/models/location_model.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/constants.dart';
 
-class JournalModel {
+class JournalModel extends Equatable {
   JournalModel(
       {required this.id,
       required this.content,
@@ -44,17 +45,17 @@ class JournalModel {
     };
   }
 
-  bool isEqual(JournalModel journal) {
-    if (content == journal.content &&
-        date == journal.date &&
-        location == journal.location &&
-        status == journal.status &&
-        listEquals(imagesUrls, journal.imagesUrls)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // bool isEqual(JournalModel journal) {
+  //   if (content == journal.content &&
+  //       date == journal.date &&
+  //       location == journal.location &&
+  //       status == journal.status &&
+  //       listEquals(imagesUrls, journal.imagesUrls)) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   JournalModel.fromMap(map)
       : id = map[Constants.idKey],
@@ -68,4 +69,7 @@ class JournalModel {
         imagesUrls = map[Constants.imageUrlKey],
         weather = map[Constants.weatherKey],
         status = map[Constants.statusKey];
+
+  @override
+  List<Object?> get props => [content, date, location, status, imagesUrls];
 }
