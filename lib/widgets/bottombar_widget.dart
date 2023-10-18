@@ -11,14 +11,6 @@ class BottomBarWidget extends StatefulWidget {
   }) : super(key: key);
   final List<String> svgs;
   final Function(int) onTap;
-  // final List<Map<String, dynamic>> tabElements;
-
-  ///   [
-  ///     {'svg': assetsImages+'allnote.svg', 'function': () {}},
-  ///     {'svg': assetsImages+'calendar.svg', 'function': () {}},
-  ///     {'svg': assetsImages+'search.svg', 'function': () {}},
-  ///     {'svg': assetsImages+'theme.svg', 'function': () {}},
-  ///   ]
 
   @override
   State<BottomBarWidget> createState() => _BottomBarWidgetState();

@@ -29,12 +29,14 @@ class AuthProvider extends ChangeNotifier {
   getUserModel() async {
     QuerySnapshot userQuery =
         await FirestoreHelper.firestoreHelper.getUserModel();
-    QueryDocumentSnapshot userMap = userQuery.docs[0];
-    userModel = UserModel(
-        email: userMap[Constants.emailKey],
-        userName: userMap[Constants.userNameKey],
-        id: userMap[Constants.idKey],
-        masterPassword: userMap[Constants.masterPassKey]);
+    if (userQuery.docs.isNotEmpty) {
+      QueryDocumentSnapshot userMap = userQuery.docs[0];
+      userModel = UserModel(
+          email: userMap[Constants.emailKey],
+          userName: userMap[Constants.userNameKey],
+          id: userMap[Constants.idKey],
+          masterPassword: userMap[Constants.masterPassKey]);
+    }
   }
 
   getCurrentUser() {

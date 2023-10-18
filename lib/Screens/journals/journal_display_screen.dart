@@ -50,167 +50,172 @@ class _JournalDisplayScreenState extends State<JournalDisplayScreen> {
         builder: (context, authProvider, journalProvider, child) {
       // content = journal!.content;
 
-      return Scaffold(
-        appBar: AppbarWidget(
-            titlePlace: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios_rounded,
-                size: 28,
-                color: Colors.white, //
-              ),
-              onPressed: () {
-                AppRouter.router
-                    .pushWithReplacementFunction(const JournalHomeScreen());
-              },
-            ),
-            actions: [
-              InkWell(
-                child: SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: svgWhiteDelete,
+      return WillPopScope(
+        onWillPop: () => AppRouter.router
+            .pushWithReplacementFunction(const JournalHomeScreen()),
+        child: Scaffold(
+          appBar: AppbarWidget(
+              titlePlace: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  size: 28,
+                  color: Colors.white, //
                 ),
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return DialogWidget(
-                            dialogType: DialogType.delete,
-                            entryType: 'journal',
-                            onOkPressed: (value) {
-                              journalProvider.deleteJournal(
-                                  journalId: widget.journal.id);
-                              AppRouter.router.pop();
-                              AppRouter.router.pushWithReplacementFunction(
-                                  JournalHomeScreen());
-                            });
-                      });
+                onPressed: () {
+                  AppRouter.router
+                      .pushWithReplacementFunction(const JournalHomeScreen());
                 },
               ),
-              SizedBox(
-                width: 15.w,
-              ),
-              InkWell(
-                // splashColor: Colors.transparent,
-                child: SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: isLocked ? svgWhiteUnlock : svgWhiteLock,
-                ),
-                onTap: () {
-                  if (authProvider.userModel!.masterPassword.isEmpty) {
-                    AppRouter.router
-                        .pushFunction(MasterPassScreen(item: widget.journal));
-                  } else {
+              actions: [
+                InkWell(
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: svgWhiteDelete,
+                  ),
+                  onTap: () {
                     showDialog(
                         context: context,
                         builder: (context) {
                           return DialogWidget(
-                              dialogType: DialogType.password,
+                              dialogType: DialogType.delete,
                               entryType: 'journal',
                               onOkPressed: (value) {
-                                if (value.isEmpty) {
-                                  showToast('Password can not be empty!',
-                                      context: context);
-                                } else {
-                                  if (authProvider.userModel!.masterPassword ==
-                                      value) {
-                                    if (isLocked) {
-                                      journalProvider
-                                          .updateJournal(JournalModel.fromMap({
-                                        ...widget.journal.toMap(),
-                                        Constants.isLockedKey: 0,
-                                      }));
-                                      isLocked = false;
-                                      setState(() {});
-                                    } else {
-                                      journalProvider
-                                          .updateJournal(JournalModel.fromMap({
-                                        ...widget.journal.toMap(),
-                                        Constants.isLockedKey: 1,
-                                      }));
-                                      isLocked = true;
-                                      setState(() {});
-                                    }
-
-                                    AppRouter.router.pop();
-                                    // AppRouter.router
-                                    //     .pushWithReplacementFunction(
-                                    //         NoteHomeScreen());
-                                  } else {
-                                    showToast('Wrong Password!',
-                                        context: context,
-                                        position: StyledToastPosition.top);
-                                  }
-                                }
+                                journalProvider.deleteJournal(
+                                    journalId: widget.journal.id);
+                                AppRouter.router.pop();
+                                AppRouter.router.pushWithReplacementFunction(
+                                    JournalHomeScreen());
                               });
                         });
-                  }
-                },
-              ),
-              SizedBox(
-                width: 15.w,
-              ),
-              InkWell(
-                // splashColor: Colors.transparent,
-                child: SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: svgEditIcon,
+                  },
                 ),
-                onTap: () {
-                  AppRouter.router
-                      .pushWithReplacementFunction(JournalEditScreen(
-                    journal: widget.journal,
-                  ));
-                },
-              ),
-              SizedBox(
-                width: 30.w,
-              ),
-            ]),
-        body: Padding(
-          padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
-          child: Column(
-            children: [
-              if (widget.journal.imagesUrls.isNotEmpty) ...[
-                imageSlider(),
-                SizedBox(height: 7.h)
-              ],
-              dateStack(context),
-              SizedBox(
-                height: 20.h,
-              ),
-              Expanded(
-                child: WritingPlaceWidget(
-                  enabled: false,
-                  onChanged: (value) {},
-                  controller:
-                      TextEditingController(text: widget.journal.content),
-                  hintText: 'What happened with you today?',
+                SizedBox(
+                  width: 15.w,
                 ),
-              ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     IconButton(
-              //       icon: const Icon(Icons.arrow_back_ios_rounded),
-              //       onPressed: () {},
-              //       iconSize: 25.r,
-              //       color: Colors.grey, //
-              //     ),
-              //     IconButton(
-              //       icon: const Icon(Icons.arrow_forward_ios),
-              //       onPressed: () {
+                InkWell(
+                  // splashColor: Colors.transparent,
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: isLocked ? svgWhiteUnlock : svgWhiteLock,
+                  ),
+                  onTap: () {
+                    if (authProvider.userModel!.masterPassword.isEmpty) {
+                      AppRouter.router
+                          .pushFunction(MasterPassScreen(item: widget.journal));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DialogWidget(
+                                dialogType: DialogType.password,
+                                entryType: 'journal',
+                                onOkPressed: (value) {
+                                  if (value.isEmpty) {
+                                    showToast('Password can not be empty!',
+                                        context: context);
+                                  } else {
+                                    if (authProvider
+                                            .userModel!.masterPassword ==
+                                        value) {
+                                      if (isLocked) {
+                                        journalProvider.updateJournal(
+                                            JournalModel.fromMap({
+                                          ...widget.journal.toMap(),
+                                          Constants.isLockedKey: 0,
+                                        }));
+                                        isLocked = false;
+                                        setState(() {});
+                                      } else {
+                                        journalProvider.updateJournal(
+                                            JournalModel.fromMap({
+                                          ...widget.journal.toMap(),
+                                          Constants.isLockedKey: 1,
+                                        }));
+                                        isLocked = true;
+                                        setState(() {});
+                                      }
 
-              //       },
-              //       iconSize: 25.r,
-              //       color:
-              //           Theme.of(context).colorScheme.secondary, //
-              //     ),
-              //   ],
-              // ),
-            ],
+                                      AppRouter.router.pop();
+                                      // AppRouter.router
+                                      //     .pushWithReplacementFunction(
+                                      //         NoteHomeScreen());
+                                    } else {
+                                      showToast('Wrong Password!',
+                                          context: context,
+                                          position: StyledToastPosition.top);
+                                    }
+                                  }
+                                });
+                          });
+                    }
+                  },
+                ),
+                SizedBox(
+                  width: 15.w,
+                ),
+                InkWell(
+                  // splashColor: Colors.transparent,
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: svgEditIcon,
+                  ),
+                  onTap: () {
+                    AppRouter.router
+                        .pushWithReplacementFunction(JournalEditScreen(
+                      journal: widget.journal,
+                    ));
+                  },
+                ),
+                SizedBox(
+                  width: 30.w,
+                ),
+              ]),
+          body: Padding(
+            padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
+            child: Column(
+              children: [
+                if (widget.journal.imagesUrls.isNotEmpty) ...[
+                  imageSlider(),
+                  SizedBox(height: 7.h)
+                ],
+                dateStack(context),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Expanded(
+                  child: WritingPlaceWidget(
+                    enabled: false,
+                    onChanged: (value) {},
+                    controller:
+                        TextEditingController(text: widget.journal.content),
+                    hintText: 'What happened with you today?',
+                  ),
+                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     IconButton(
+                //       icon: const Icon(Icons.arrow_back_ios_rounded),
+                //       onPressed: () {},
+                //       iconSize: 25.r,
+                //       color: Colors.grey, //
+                //     ),
+                //     IconButton(
+                //       icon: const Icon(Icons.arrow_forward_ios),
+                //       onPressed: () {
+
+                //       },
+                //       iconSize: 25.r,
+                //       color:
+                //           Theme.of(context).colorScheme.secondary, //
+                //     ),
+                //   ],
+                // ),
+              ],
+            ),
           ),
         ),
       );

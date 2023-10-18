@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/journal_search_screen.dart.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/gallery_tab.dart';
 import 'package:day_tracker_graduation/Screens/journals/tabs/journal_calendar_tab.dart';
@@ -92,147 +93,163 @@ class _JournalHomeScreenState extends State<JournalHomeScreen> {
             iconPath: 'assets/images/map.svg')
       ];
 
-      return Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppbarWidget(
-            actions: [
-              journalProvider.isSelectionMode
-                  ? IconButton(
-                      icon: SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: svgWhiteDelete,
-                      ),
-                      onPressed: () {
-                        bool isLockedExist = false;
+      return WillPopScope(
+        onWillPop: () async {
+          if (currentIndex == 4) {
+            AppRouter.router
+                .pushWithReplacementFunction(const JournalHomeScreen());
+          } else {
+            AppRouter.router
+                .pushWithReplacementFunction(const ChooseCardScreen());
+          }
+          return false;
+        },
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppbarWidget(
+              actions: [
+                journalProvider.isSelectionMode
+                    ? IconButton(
+                        icon: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: svgWhiteDelete,
+                        ),
+                        onPressed: () {
+                          bool isLockedExist = false;
 
-                        Iterable<int> keys = journalProvider.selectedFlag.keys;
+                          Iterable<int> keys =
+                              journalProvider.selectedFlag.keys;
 
-                        for (int key in keys) {
-                          if (journalProvider.selectedFlag[key] == true) {
-                            if (journalProvider.allJournals[key].isLocked) {
-                              isLockedExist = true;
+                          for (int key in keys) {
+                            if (journalProvider.selectedFlag[key] == true) {
+                              if (journalProvider.allJournals[key].isLocked) {
+                                isLockedExist = true;
+                              }
                             }
                           }
-                        }
-                        if (isLockedExist) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => DialogWidget(
-                                  dialogType: DialogType.password,
-                                  entryType: 'journal',
-                                  onOkPressed: (value) {
-                                    if (value.isEmpty) {
-                                      showToast('Password can not be empty!',
-                                          context: context);
-                                    } else {
-                                      if (authProvider
-                                              .userModel!.masterPassword ==
-                                          value) {
-                                        AppRouter.router.pop();
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return DialogWidget(
-                                                  dialogType: DialogType.delete,
-                                                  entryType: 'journal',
-                                                  onOkPressed: (value) {
-                                                    journalProvider
-                                                        .deleteSelectedJournals();
-                                                    AppRouter.router.pop();
-                                                  });
-                                            });
-                                      } else {
-                                        showToast('Wrong Password!',
-                                            context: context,
-                                            position: StyledToastPosition.top);
-                                      }
-                                    }
-                                  }));
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DialogWidget(
-                                    dialogType: DialogType.delete,
+                          if (isLockedExist) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => DialogWidget(
+                                    dialogType: DialogType.password,
                                     entryType: 'journal',
                                     onOkPressed: (value) {
-                                      journalProvider.deleteSelectedJournals();
-                                      AppRouter.router.pop();
-                                    });
-                              });
-                        }
-                      },
-                    )
-                  : currentIndex != 4
-                      ? const BackHomeMenuWidget()
-                      : SizedBox(),
-              if (currentIndex !=
-                  4) //if current index = 4 then we are on search page if not 4
-                //then we are not in search page so when its not 4 we have to show the search icon
-                // when we press this icon we should set the current index to 4 to be able to hide
-                //search icon
-                IconButton(
-                    onPressed: () {
-                      journalProvider.searchResult.clear();
-                      setState(() {
-                        currentIndex = 4;
-                      });
-                    },
-                    icon: const Icon(Icons.search)),
-              SizedBox(width: 20.w)
-            ],
-            titlePlace: Row(
-              children: [
-                if (currentIndex != 4)
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                if (currentIndex == 4)
+                                      if (value.isEmpty) {
+                                        showToast('Password can not be empty!',
+                                            context: context);
+                                      } else {
+                                        if (authProvider
+                                                .userModel!.masterPassword ==
+                                            value) {
+                                          AppRouter.router.pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return DialogWidget(
+                                                    dialogType:
+                                                        DialogType.delete,
+                                                    entryType: 'journal',
+                                                    onOkPressed: (value) {
+                                                      journalProvider
+                                                          .deleteSelectedJournals();
+                                                      AppRouter.router.pop();
+                                                    });
+                                              });
+                                        } else {
+                                          showToast('Wrong Password!',
+                                              context: context,
+                                              position:
+                                                  StyledToastPosition.top);
+                                        }
+                                      }
+                                    }));
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return DialogWidget(
+                                      dialogType: DialogType.delete,
+                                      entryType: 'journal',
+                                      onOkPressed: (value) {
+                                        journalProvider
+                                            .deleteSelectedJournals();
+                                        AppRouter.router.pop();
+                                      });
+                                });
+                          }
+                        },
+                      )
+                    : currentIndex != 4
+                        ? const BackHomeMenuWidget()
+                        : SizedBox(),
+                if (currentIndex !=
+                    4) //if current index = 4 then we are on search page if not 4
+                  //then we are not in search page so when its not 4 we have to show the search icon
+                  // when we press this icon we should set the current index to 4 to be able to hide
+                  //search icon
                   IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      size: 28,
-                      color: Colors.white, //
+                      onPressed: () {
+                        journalProvider.searchResult.clear();
+                        setState(() {
+                          currentIndex = 4;
+                        });
+                      },
+                      icon: const Icon(Icons.search)),
+                SizedBox(width: 20.w)
+              ],
+              titlePlace: Row(
+                children: [
+                  if (currentIndex != 4)
+                    SizedBox(
+                      width: 20.w,
                     ),
-                    onPressed: () {
-                      AppRouter.router.pushWithReplacementFunction(
-                        const JournalHomeScreen(),
-                      );
+                  if (currentIndex == 4)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_ios_rounded,
+                        size: 28,
+                        color: Colors.white, //
+                      ),
+                      onPressed: () {
+                        AppRouter.router.pushWithReplacementFunction(
+                          const JournalHomeScreen(),
+                        );
+                      },
+                    ),
+                  currentIndex == 4
+                      ? Expanded(child: tabs[currentIndex].title)
+                      : Text(
+                          tabs[currentIndex].title,
+                          style: theme.textTheme.headline2,
+                        ),
+                ],
+              ),
+            ),
+            body: tabs[currentIndex].content,
+            bottomNavigationBar: currentIndex == 4
+                ? null
+                : BottomBarWidget(
+                    svgs: [
+                      tabs[0].iconPath,
+                      tabs[1].iconPath,
+                      tabs[2].iconPath,
+                      tabs[3].iconPath,
+                    ],
+                    onTap: (index) {
+                      currentIndex = index;
+                      setState(() {});
                     },
                   ),
-                currentIndex == 4
-                    ? Expanded(child: tabs[currentIndex].title)
-                    : Text(
-                        tabs[currentIndex].title,
-                        style: theme.textTheme.headline2,
-                      ),
-              ],
-            ),
-          ),
-          body: tabs[currentIndex].content,
-          bottomNavigationBar: currentIndex == 4
-              ? null
-              : BottomBarWidget(
-                  svgs: [
-                    tabs[0].iconPath,
-                    tabs[1].iconPath,
-                    tabs[2].iconPath,
-                    tabs[3].iconPath,
-                  ],
-                  onTap: (index) {
-                    currentIndex = index;
-                    setState(() {});
-                  },
-                ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: currentIndex == 4
-              ? null
-              : FabWidget(onPressed: () {
-                  AppRouter.router
-                      .pushWithReplacementFunction(JournalAddScreen());
-                }));
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: currentIndex == 4
+                ? null
+                : FabWidget(onPressed: () {
+                    AppRouter.router
+                        .pushWithReplacementFunction(const JournalAddScreen());
+                  })),
+      );
     });
   }
 }

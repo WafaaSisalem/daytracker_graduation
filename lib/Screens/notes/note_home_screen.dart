@@ -16,6 +16,7 @@ import '../../widgets/fab_widget.dart';
 import '../../widgets/no_entries_widget.dart';
 import '../../utils/svgs/svgs.dart';
 
+import '../choose_screen.dart';
 import 'note_handling_screen.dart';
 import 'tabs/note_calendar_tab.dart';
 import 'tabs/notes_tab.dart';
@@ -53,50 +54,57 @@ class _NoteHomeScreenState extends State<NoteHomeScreen> {
         buildTabThree(),
         buildTabFour()
       ];
-      return Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppbarWidget(
-            actions: [
-              noteProvider.isSelectionMode
-                  ? onSelectionModeWidget()
-                  : const BackHomeMenuWidget(),
-            ],
-            titlePlace: Row(
-              children: [
-                SizedBox(
-                  width: 20.w,
-                ),
-                currentIndex == 2
-                    ? tabs[2].title
-                    : Text(
-                        tabs[currentIndex].title,
-                        style: theme.textTheme.headline2,
-                      ),
+      return WillPopScope(
+        onWillPop: () async {
+          AppRouter.router
+              .pushWithReplacementFunction(const ChooseCardScreen());
+          return false;
+        },
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppbarWidget(
+              actions: [
+                noteProvider.isSelectionMode
+                    ? onSelectionModeWidget()
+                    : const BackHomeMenuWidget(),
               ],
+              titlePlace: Row(
+                children: [
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  currentIndex == 2
+                      ? tabs[2].title
+                      : Text(
+                          tabs[currentIndex].title,
+                          style: theme.textTheme.headline2,
+                        ),
+                ],
+              ),
             ),
-          ),
-          body: tabs[currentIndex].content,
-          bottomNavigationBar: BottomBarWidget(
-            svgs: [
-              tabs[0].iconPath,
-              tabs[1].iconPath,
-              tabs[2].iconPath,
-              tabs[3].iconPath,
-            ],
-            onTap: (index) {
-              currentIndex = index;
-              if (currentIndex == 2) {
-                noteProvider.searchResult.clear();
-              }
-              setState(() {});
-            },
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: FabWidget(onPressed: () {
-            AppRouter.router.pushWithReplacementFunction(
-                NoteHandlingScreen(type: NoteHandlingType.add));
-          }));
+            body: tabs[currentIndex].content,
+            bottomNavigationBar: BottomBarWidget(
+              svgs: [
+                tabs[0].iconPath,
+                tabs[1].iconPath,
+                tabs[2].iconPath,
+                tabs[3].iconPath,
+              ],
+              onTap: (index) {
+                currentIndex = index;
+                if (currentIndex == 2) {
+                  noteProvider.searchResult.clear();
+                }
+                setState(() {});
+              },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            floatingActionButton: FabWidget(onPressed: () {
+              AppRouter.router.pushWithReplacementFunction(
+                  NoteHandlingScreen(type: NoteHandlingType.add));
+            })),
+      );
     });
   }
 

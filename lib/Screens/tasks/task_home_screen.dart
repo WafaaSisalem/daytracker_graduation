@@ -1,3 +1,4 @@
+import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/models/task_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/task_provider.dart';
@@ -34,33 +35,41 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
     return Consumer<TaskProvider>(builder: (context, taskProvider, x) {
       this.taskProvider = taskProvider;
       tasks = taskProvider.allTasks;
-      return Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppbarWidget(
-            actions: [
-              taskProvider.isSelectionMode
-                  ? onSelectionModeWidget()
-                  : const BackHomeMenuWidget()
-            ],
-            titlePlace: Row(
-              children: [
-                SizedBox(
-                  width: 20.w,
-                ),
-                Text(
-                  'Home Page',
-                  style: theme.textTheme.headline2,
-                ),
+      return WillPopScope(
+        onWillPop: () async {
+          AppRouter.router
+              .pushWithReplacementFunction(const ChooseCardScreen());
+          return false;
+        },
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppbarWidget(
+              actions: [
+                taskProvider.isSelectionMode
+                    ? onSelectionModeWidget()
+                    : const BackHomeMenuWidget()
               ],
+              titlePlace: Row(
+                children: [
+                  SizedBox(
+                    width: 20.w,
+                  ),
+                  Text(
+                    'Home Page',
+                    style: theme.textTheme.headline2,
+                  ),
+                ],
+              ),
             ),
-          ),
-          body: const TaskTab(),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FabWidget(onPressed: () {
-            taskProvider.currentTodos.clear();
-            AppRouter.router.pushWithReplacementFunction(const TaskAddScreen());
-          }));
+            body: const TaskTab(),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: FabWidget(onPressed: () {
+              taskProvider.currentTodos.clear();
+              AppRouter.router
+                  .pushWithReplacementFunction(const TaskAddScreen());
+            })),
+      );
     });
   }
 

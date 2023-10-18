@@ -6,7 +6,16 @@ import '../provider/pomo_provider.dart';
 import '../utils/constants.dart';
 import 'dialog_textfield.dart';
 
-enum DialogType { discard, delete, password, quote, end, addTask, editTask }
+enum DialogType {
+  discard,
+  delete,
+  password,
+  quote,
+  end,
+  addTask,
+  editTask,
+  quit
+}
 
 class DialogWidget extends StatefulWidget {
   DialogWidget(
@@ -90,6 +99,10 @@ class _DialogWidgetState extends State<DialogWidget> {
             onChanged: (value) {
               this.value = value;
             });
+        break;
+      case DialogType.quit:
+        dialogTitle = 'Quit';
+        dialogContent = const Text('Do you want to quit?');
     }
   }
 

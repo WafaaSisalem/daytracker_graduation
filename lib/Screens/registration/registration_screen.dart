@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:day_tracker_graduation/Screens/choose_screen.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
 import 'package:day_tracker_graduation/provider/journal_provider.dart';
 import 'package:day_tracker_graduation/provider/note_provider.dart';
+import 'package:day_tracker_graduation/provider/task_provider.dart';
+import 'package:day_tracker_graduation/widgets/dialog_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -93,6 +97,7 @@ class RegistrationScreen extends StatelessWidget {
         if (isSigned) {
           await noteProvider.getAllNote();
           await journalProvider.getAllJournals();
+          await Provider.of<TaskProvider>(context, listen: false).getAllTasks();
           await AppRouter.router
               .pushWithReplacementFunction(ChooseCardScreen());
         }
@@ -122,50 +127,66 @@ class RegistrationScreen extends StatelessWidget {
 
     return Consumer3<AuthProvider, NoteProvider, JournalProvider>(
         builder: (context, authProvider, noteProvider, journalProvider, x) {
-      return Scaffold(
-        body: SafeArea(
-          child: Container(
-            height: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 48.w),
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: 30.h),
-                    myHeadtitle(),
-                    SizedBox(height: 5.h),
-                    mySubtitle(theme),
-                    SizedBox(height: 30.h),
-                    image,
-                    SizedBox(height: 25.h),
-                    myForm(context),
-                    type == RegistrationType.forgetPassword
-                        ? const SizedBox()
-                        : myButtonTextUnderForm(theme),
-                    SizedBox(height: 30.h),
-                    myButton(
-                        context, authProvider, noteProvider, journalProvider),
-                    SizedBox(
-                      height: 30.h,
-                    ),
-                    type == RegistrationType.forgetPassword
-                        ? const SizedBox()
-                        : Column(
-                            children: [
-                              myDevider(theme),
-                              SizedBox(height: 17.h),
-                              registerWithFaceOrGoogle(),
-                              type == RegistrationType.signIn
-                                  ? SizedBox(
-                                      height: 20.h,
-                                    )
-                                  : const SizedBox(),
-                              type == RegistrationType.signIn
-                                  ? createAccount(theme)
-                                  : const SizedBox()
-                            ],
-                          ),
-                  ],
+      return WillPopScope(
+        onWillPop: () async {
+          showDialog(
+              context: context,
+              builder: (ctx) {
+                return DialogWidget(
+                    dialogType: DialogType.quit,
+                    entryType: 'entryType',
+                    onOkPressed: (d) {
+                      AppRouter.router.pop();
+                      exit(0);
+                    });
+              });
+          return false;
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: Container(
+              height: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 48.w),
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 30.h),
+                      myHeadtitle(),
+                      SizedBox(height: 5.h),
+                      mySubtitle(theme),
+                      SizedBox(height: 30.h),
+                      image,
+                      SizedBox(height: 25.h),
+                      myForm(context),
+                      type == RegistrationType.forgetPassword
+                          ? const SizedBox()
+                          : myButtonTextUnderForm(theme),
+                      SizedBox(height: 30.h),
+                      myButton(
+                          context, authProvider, noteProvider, journalProvider),
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      type == RegistrationType.forgetPassword
+                          ? const SizedBox()
+                          : Column(
+                              children: [
+                                myDevider(theme),
+                                SizedBox(height: 17.h),
+                                registerWithFaceOrGoogle(),
+                                type == RegistrationType.signIn
+                                    ? SizedBox(
+                                        height: 20.h,
+                                      )
+                                    : const SizedBox(),
+                                type == RegistrationType.signIn
+                                    ? createAccount(theme)
+                                    : const SizedBox()
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ),

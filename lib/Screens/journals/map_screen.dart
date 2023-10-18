@@ -16,6 +16,12 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  @override
+  void dispose() {
+    mapController?.dispose();
+    super.dispose();
+  }
+
   GoogleMapController? mapController;
   CameraPosition cameraPosition =
       const CameraPosition(target: LatLng(27.6602292, 85.308027));

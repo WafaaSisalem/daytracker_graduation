@@ -75,10 +75,15 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
                     },
                   ),
                   Expanded(
-                    child: Text(
-                      widget.task.title,
-                      style: Theme.of(context).textTheme.headline2,
-                      overflow: TextOverflow.ellipsis,
+                    child: GestureDetector(
+                      onTap: () {
+                        onEditIconTapped();
+                      },
+                      child: Text(
+                        widget.task.title,
+                        style: Theme.of(context).textTheme.headline2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                 ],
@@ -129,10 +134,7 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
         child: svgEditIcon,
       ),
       onTap: () {
-        taskProvider.setCurrentTodos(items);
-        AppRouter.router.pushWithReplacementFunction(TaskEditScreen(
-          task: widget.task,
-        ));
+        onEditIconTapped();
       },
     );
   }
@@ -155,11 +157,15 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
                 ...widget.task.toMap(),
                 Constants.isLockedKey: 0,
               }));
+              AppRouter.router
+                  .pushWithReplacementFunction(const TaskHomeScreen());
             } else {
               taskProvider.updateTask(TaskModel.fromMap({
                 ...widget.task.toMap(),
                 Constants.isLockedKey: 1,
               }));
+              AppRouter.router
+                  .pushWithReplacementFunction(const TaskHomeScreen());
             }
           });
         }
@@ -280,5 +286,12 @@ class _TaskDisplayScreenState extends State<TaskDisplayScreen> {
                 }
               });
         });
+  }
+
+  void onEditIconTapped() {
+    taskProvider.setCurrentTodos(items);
+    AppRouter.router.pushWithReplacementFunction(TaskEditScreen(
+      task: widget.task,
+    ));
   }
 }

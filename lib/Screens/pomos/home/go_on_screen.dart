@@ -1,4 +1,5 @@
 import 'package:day_tracker_graduation/main.dart';
+import 'package:day_tracker_graduation/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -14,14 +15,14 @@ import '../widgets/timer_stop_widget..dart';
 import '../widgets/timer_widget.dart';
 import 'time_home_screen.dart';
 
-class GgOnScreen extends StatefulWidget {
-  const GgOnScreen({Key? key}) : super(key: key);
+class GoOnScreen extends StatefulWidget {
+  const GoOnScreen({Key? key}) : super(key: key);
 
   @override
-  State<GgOnScreen> createState() => _GgOnScreenState();
+  State<GoOnScreen> createState() => _GoOnScreenState();
 }
 
-class _GgOnScreenState extends State<GgOnScreen>
+class _GoOnScreenState extends State<GoOnScreen>
     with SingleTickerProviderStateMixin {
   TimerController? _timerController;
 
@@ -37,55 +38,59 @@ class _GgOnScreenState extends State<GgOnScreen>
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     return Consumer<PomoProvider>(
-      builder: (context, provider, x) => Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: const PomoAppBar(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 30.h,
-              ),
-              _buildTitle(theme),
-              SizedBox(
-                height: 20.h,
-              ),
-              const QuoteContainer(),
-              const SizedBox(
-                height: 30,
-              ),
-              TimerWidget(
-                timerController: _timerController,
-              ),
-              SizedBox(
-                height: 30.h,
-              ),
-              _buildFirstText(Constants.goOnMess, context),
-              SizedBox(
-                height: 30.h,
-              ),
-              if (provider.currentStatus == TimerStatuss.stopped)
-                Expanded(
-                  child: TimerStopWidget(
-                    timerController: _timerController,
-                    isFromGoOn: true,
-                  ),
+      builder: (context, provider, x) => WillPopScope(
+        onWillPop: () => AppRouter.router
+            .pushWithReplacementFunction(const TimerHomeScreen()),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: const PomoAppBar(),
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 30.h,
                 ),
-              if (provider.currentStatus == TimerStatuss.started)
-                Expanded(
-                  child: TimerStartWidget(
-                    timerController: _timerController,
-                  ),
+                _buildTitle(theme),
+                SizedBox(
+                  height: 20.h,
                 ),
-              if (provider.currentStatus == TimerStatuss.paused ||
-                  provider.currentStatus == TimerStatuss.resume)
-                Expanded(
-                  child: TimerResumeWidget(
-                    timerController: _timerController,
-                  ),
+                const QuoteContainer(),
+                const SizedBox(
+                  height: 30,
                 ),
-            ],
+                TimerWidget(
+                  timerController: _timerController,
+                ),
+                SizedBox(
+                  height: 30.h,
+                ),
+                _buildFirstText(Constants.goOnMess, context),
+                SizedBox(
+                  height: 30.h,
+                ),
+                if (provider.currentStatus == TimerStatuss.stopped)
+                  Expanded(
+                    child: TimerStopWidget(
+                      timerController: _timerController,
+                      isFromGoOn: true,
+                    ),
+                  ),
+                if (provider.currentStatus == TimerStatuss.started)
+                  Expanded(
+                    child: TimerStartWidget(
+                      timerController: _timerController,
+                    ),
+                  ),
+                if (provider.currentStatus == TimerStatuss.paused ||
+                    provider.currentStatus == TimerStatuss.resume)
+                  Expanded(
+                    child: TimerResumeWidget(
+                      timerController: _timerController,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

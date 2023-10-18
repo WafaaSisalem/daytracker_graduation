@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         Constants.gotPomoScreen: (context) => const GotPomoScreen(),
         Constants.breakScreen: (context) => BreakScreen(),
-        Constants.goOn: (context) => const GgOnScreen(),
+        Constants.goOn: (context) => const GoOnScreen(),
         Constants.homeScreen: (context) => const TimerHomeScreen(),
       },
       onGenerateRoute: (routeSettings) {

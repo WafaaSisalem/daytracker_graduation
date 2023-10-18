@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_timer/simple_timer.dart';
 
+import '../../../router/app_router.dart';
+import '../../choose_screen.dart';
 import '../widgets/quote_container.dart';
 import '../widgets/timer_start_widget.dart';
 import '../widgets/timer_stop_widget..dart';
@@ -34,13 +36,6 @@ class _TimerHomeScreenState extends State<TimerHomeScreen>
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   if (status == TimerStatus.stoped) _timerController!.stop();
-  //   _timerController!.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -48,51 +43,58 @@ class _TimerHomeScreenState extends State<TimerHomeScreen>
       builder: (context, provider, x) => Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: const PomoAppBar(),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 30.h,
-              ),
-              _buildTitle(
-                  theme,
-                  provider.currentStatus == TimerStatuss.paused
-                      ? 'PAUSE'
-                      : 'FOCUS!!'),
-              SizedBox(
-                height: 20.h,
-              ),
-              const QuoteContainer(),
-              const SizedBox(
-                height: 30,
-              ),
-              TimerWidget(
-                timerController: _timerController,
-              ),
-              SizedBox(
-                height: 30.h,
-              ),
-              if (provider.currentStatus == TimerStatuss.stopped)
-                Expanded(
-                  child: TimerStopWidget(
-                    timerController: _timerController,
-                  ),
+        body: WillPopScope(
+          onWillPop: () async {
+            AppRouter.router
+                .pushWithReplacementFunction(const ChooseCardScreen());
+            return false;
+          },
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 30.h,
                 ),
-              if (provider.currentStatus == TimerStatuss.started)
-                Expanded(
-                  child: TimerStartWidget(
-                    timerController: _timerController,
-                  ),
+                _buildTitle(
+                    theme,
+                    provider.currentStatus == TimerStatuss.paused
+                        ? 'PAUSE'
+                        : 'FOCUS!!'),
+                SizedBox(
+                  height: 20.h,
                 ),
-              if (provider.currentStatus == TimerStatuss.paused ||
-                  provider.currentStatus == TimerStatuss.resume)
-                Expanded(
-                  child: TimerResumeWidget(
-                    timerController: _timerController,
-                  ),
+                const QuoteContainer(),
+                const SizedBox(
+                  height: 30,
                 ),
-            ],
+                TimerWidget(
+                  timerController: _timerController,
+                ),
+                SizedBox(
+                  height: 30.h,
+                ),
+                if (provider.currentStatus == TimerStatuss.stopped)
+                  Expanded(
+                    child: TimerStopWidget(
+                      timerController: _timerController,
+                    ),
+                  ),
+                if (provider.currentStatus == TimerStatuss.started)
+                  Expanded(
+                    child: TimerStartWidget(
+                      timerController: _timerController,
+                    ),
+                  ),
+                if (provider.currentStatus == TimerStatuss.paused ||
+                    provider.currentStatus == TimerStatuss.resume)
+                  Expanded(
+                    child: TimerResumeWidget(
+                      timerController: _timerController,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

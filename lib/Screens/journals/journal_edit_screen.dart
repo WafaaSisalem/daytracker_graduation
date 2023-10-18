@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:day_tracker_graduation/Screens/journals/journal_display_screen.dart';
+import 'package:day_tracker_graduation/Screens/journals/map_screen.dart';
 import 'package:day_tracker_graduation/Screens/journals/widgets/pick_image_widget.dart';
 import 'package:day_tracker_graduation/models/journal_model.dart';
 import 'package:day_tracker_graduation/provider/auth_provider.dart';
@@ -13,11 +14,13 @@ import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../models/location_model.dart';
 import '../../router/app_router.dart';
 import '../../utils/constants.dart';
 import '../../utils/svgs/svgs.dart';
 import '../../widgets/appbar_widget.dart';
 import '../../widgets/dialog_widget.dart';
+import '../../widgets/fab_widget.dart';
 import '../../widgets/floating_calendar.dart';
 import '../notes/widgets/writing_place.dart';
 import 'journal_home_screen.dart';
@@ -37,14 +40,17 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
   DateTime date = DateTime.now();
   String status = Constants.normal;
   List<File> pickedFiles = [];
+  LocationModel? location;
+
   get newJournal {
     return JournalModel(
         id: widget.journal.id,
         content: content,
         date: date,
         isLocked: widget.journal.isLocked,
-        location: widget.journal.location, //Todo
+        location: location, //Todo
         imagesUrls: imagesUrls,
+        weather: journalProvider.formatedCelsius,
         status: status);
   }
 
@@ -55,6 +61,13 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
     status = widget.journal.status;
     imagesUrls = widget.journal.imagesUrls;
     date = widget.journal.date;
+    if (widget.journal.location!.address == '' &&
+        widget.journal.location!.lng == 0.0 &&
+        widget.journal.location!.lat == 0.0) {
+      location = null;
+    } else {
+      location = widget.journal.location;
+    }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<JournalProvider>(context, listen: false)
           .setUrlImages(imagesUrls);
@@ -73,14 +86,20 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
 
       return Stack(
         children: [
-          Scaffold(
-            appBar: buildAppbar(context, theme),
-            body: Container(
-              padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
-              child: buildTextfield(),
+          WillPopScope(
+            onWillPop: () async {
+              onBackButtonPressed();
+              return false;
+            },
+            child: Scaffold(
+              appBar: buildAppbar(context, theme),
+              body: Container(
+                padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
+                child: buildTextfield(),
+              ),
+              floatingActionButtonLocation: ExpandableFab.location,
+              floatingActionButton: buildExpandableFAB(context),
             ),
-            floatingActionButtonLocation: ExpandableFab.location,
-            floatingActionButton: buildExpandableFAB(context),
           ),
           if (isLoading)
             Container(
@@ -94,8 +113,29 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
     });
   }
 
+  FloatingActionButtonBuilder buildCloseBtn() {
+    return FloatingActionButtonBuilder(
+        builder: (context, onPressed, progress) => FabWidget(
+              heroTag: 'edit close btn',
+              onPressed: onPressed!,
+              icon: Icons.close_rounded,
+            ),
+        size: 20); //size does not matter,
+  }
+
+  FloatingActionButtonBuilder buildOpenBtn() {
+    return FloatingActionButtonBuilder(
+        builder: (context, onPressed, progress) => FabWidget(
+              onPressed: onPressed!,
+              heroTag: 'edit open btn ',
+            ),
+        size: 20);
+  }
+
   ExpandableFab buildExpandableFAB(BuildContext context) {
     return ExpandableFab(
+      openButtonBuilder: buildOpenBtn(),
+      closeButtonBuilder: buildCloseBtn(),
       initialOpen: true,
       children: [
         buildGalleryBtn(context),
@@ -158,9 +198,72 @@ class _JournalEditScreenState extends State<JournalEditScreen> {
     return FloatingActionButton(
       heroTag: 'btn2',
       backgroundColor: Colors.white,
-      child: svgMap,
-      onPressed: () {},
+      child: location == null ? svgMap : svgMapDone,
+      onPressed: () => onMapBtnPressed(),
     );
+  }
+
+  onMapBtnPressed() {
+    ThemeData theme = Theme.of(context);
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text(
+              'No Location Detected...',
+            ),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton.icon(
+                    onPressed: () async {
+                      AppRouter.router.pop();
+                      location = await AppRouter.router
+                          .pushFunction(const MapScreen());
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      Icons.add_location_alt_rounded,
+                      color: theme.primaryColor,
+                    ),
+                    label: Text(
+                      'Pick a Place',
+                      style: theme.textTheme.headline4,
+                    )),
+                TextButton.icon(
+                    onPressed: () async {
+                      await journalProvider.getLocation();
+                      location = journalProvider.location;
+                      AppRouter.router.pop();
+                    },
+                    icon: Icon(
+                      Icons.gps_fixed,
+                      color: theme.primaryColor,
+                    ),
+                    label: Text(
+                      'Setup GPS',
+                      style: theme.textTheme.headline4,
+                    )),
+                if (location != null)
+                  TextButton.icon(
+                      onPressed: () {
+                        location = null;
+                        setState(() {});
+                        AppRouter.router.pop();
+                      },
+                      icon: Icon(
+                        Icons.location_off,
+                        color: theme.primaryColor,
+                      ),
+                      label: Text(
+                        'Remove Location',
+                        style: theme.textTheme.headline4,
+                      )),
+              ],
+            ),
+          );
+        });
   }
 
   FloatingActionButton buildGalleryBtn(BuildContext context) {

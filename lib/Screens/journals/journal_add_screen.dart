@@ -41,133 +41,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
   String content = '';
   String status = '';
   List<String> imagesUrls = [];
-  LocationModel? location;
-  loc.LocationData? currentLocation;
-  double? celsius;
-  String formatedCelsius = '';
   List<File> pickedFiles = [];
-  getCurrentWeather() async {
-    WeatherFactory wf = WeatherFactory("3117871fcf5c5c7027946e61b433701e");
-    if (currentLocation != null ||
-        (currentLocation?.latitude != 0.0 &&
-            currentLocation?.longitude != 0.0)) {
-      double lat = currentLocation!.latitude!;
-      double lng = currentLocation!.longitude!;
-      Weather w = await wf.currentWeatherByLocation(lat, lng);
-      celsius = w.temperature?.celsius;
-      formatedCelsius = '${w.temperature?.celsius?.round()}\u2103';
-      setState(() {});
-      print(formatedCelsius);
-    }
-  }
-
-  bool isLocationServiceEnabled = false;
-
-  Future<void> checkLocationService() async {
-    var location = loc.Location();
-    isLocationServiceEnabled = await location.serviceEnabled();
-    if (!isLocationServiceEnabled) {
-      isLocationServiceEnabled = await location.requestService();
-      if (!isLocationServiceEnabled) {
-        // Location service is still not enabled, handle accordingly
-        isGettingAddress = false;
-        setState(() {});
-      }
-    }
-  }
-
-  Future<String> getAddress(lat, lng) async {
-    try {
-      final placemarks = await placemarkFromCoordinates(lat, lng);
-      if (placemarks.isNotEmpty) {
-        final placemark = placemarks[0];
-        String? subLocality =
-            placemark.subLocality == '' ? '' : "${placemark.subLocality},";
-        String? thoroughfare =
-            placemark.thoroughfare == '' ? '' : "${placemark.thoroughfare},";
-        String? subThoroughfare = placemark.subThoroughfare == ''
-            ? ''
-            : "${placemark.subThoroughfare},";
-        String? postalCode =
-            placemark.postalCode == '' ? '' : "${placemark.postalCode},";
-        String? subAdministrativeArea = placemark.subAdministrativeArea == ''
-            ? ''
-            : "${placemark.subAdministrativeArea},";
-        String? administrativeArea = placemark.administrativeArea == ''
-            ? ''
-            : "${placemark.administrativeArea},";
-        String? country = placemark.country == '' ? '' : "${placemark.country}";
-
-        final address =
-            '$subLocality $thoroughfare $subThoroughfare $postalCode $subAdministrativeArea $administrativeArea $country';
-
-        return address;
-      } else {
-        return Constants.addressNotFound;
-      }
-    } catch (e) {
-      print("Error: $e");
-      return Constants.errorGettingAddress;
-    }
-  }
-
-  bool isGettingAddress = false;
-  Future<void> getLocation() async {
-    var location1 = loc.Location();
-
-    bool serviceEnabled = await location1.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location1.requestService();
-      if (!serviceEnabled) {
-        return;
-      } else {
-        await location1.serviceEnabled();
-      }
-    }
-
-    var status = await Permission.location.status;
-    if (status.isGranted) {
-      try {
-        setState(() {
-          isGettingAddress = true;
-        });
-        currentLocation = await location1.getLocation().timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            isGettingAddress = false;
-
-            setState(() {});
-            showToast('Can\'t catch any location,try Again!',
-                context: context, position: StyledToastPosition.top);
-            return loc.LocationData.fromMap(
-                {'longitude': 0.0, 'latitude': 0.0});
-          },
-        );
-
-        double lat = currentLocation?.latitude ?? 0.0;
-        double lng = currentLocation?.longitude ?? 0.0;
-        String address = await getAddress(lat, lng);
-        if (address == Constants.addressNotFound ||
-            address == Constants.errorGettingAddress) {
-        } else {
-          location = LocationModel(lat, lng, await getAddress(lat, lng));
-        }
-        isGettingAddress = false;
-        setState(() {});
-        if (currentLocation != null) {
-          setState(() {});
-        }
-      } catch (e) {
-        print("Error: $e");
-      }
-    } else if (status.isDenied || status.isRestricted) {
-      var result = await Permission.location.request();
-      if (result.isGranted) {
-        getLocation();
-      }
-    }
-    getCurrentWeather();
-  }
 
   late AuthProvider authProvider;
   late JournalProvider journalProvider;
@@ -180,21 +54,27 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
       this.journalProvider = journalProvider;
       return Stack(
         children: [
-          Scaffold(
-            appBar: buildAppbar(context, theme),
-            body: Container(
-              padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
-              child: Column(
-                children: [
-                  buildAddressBox(theme),
-                  Expanded(
-                    child: buildTextField(),
-                  ),
-                ],
+          WillPopScope(
+            onWillPop: () async {
+              onBackButtonPressed();
+              return false;
+            },
+            child: Scaffold(
+              appBar: buildAppbar(context, theme),
+              body: Container(
+                padding: const EdgeInsets.only(left: 30, right: 30, top: 20),
+                child: Column(
+                  children: [
+                    buildAddressBox(theme),
+                    Expanded(
+                      child: buildTextField(),
+                    ),
+                  ],
+                ),
               ),
+              floatingActionButtonLocation: ExpandableFab.location,
+              floatingActionButton: buildExpandFAB(theme),
             ),
-            floatingActionButtonLocation: ExpandableFab.location,
-            floatingActionButton: buildExpandFAB(theme),
           ),
           if (isLoading)
             Container(
@@ -236,16 +116,16 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
     return FloatingActionButton(
       heroTag: 'btn3',
       backgroundColor: Colors.white,
-      child: formatedCelsius == ''
+      child: journalProvider.formatedCelsius == ''
           ? ColorFiltered(
-              child: svgWeather,
               colorFilter: const ColorFilter.mode(
                 Colors.grey,
                 BlendMode.srcIn,
               ),
+              child: svgWeather,
             )
           : Text(
-              formatedCelsius,
+              journalProvider.formatedCelsius,
               style: theme.textTheme.headline3!
                   .copyWith(color: theme.primaryColor),
             ),
@@ -257,7 +137,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
     return FloatingActionButton(
       heroTag: 'btn2',
       backgroundColor: Colors.white,
-      child: location == null ? svgMap : svgMapDone,
+      child: journalProvider.location == null ? svgMap : svgMapDone,
       onPressed: () => onMapBtnPressed(),
     );
   }
@@ -320,7 +200,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
     return SizedBox(
       width: double.infinity,
       height: 20.h,
-      child: isGettingAddress
+      child: journalProvider.isGettingAddress
           ? const Align(
               alignment: Alignment.centerLeft,
               child: SizedBox(
@@ -332,7 +212,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
               ),
             )
           : Text(
-              location?.address ?? '',
+              journalProvider.location?.address ?? '',
               style: theme.textTheme.subtitle2!
                   .copyWith(color: theme.colorScheme.secondary),
             ),
@@ -471,7 +351,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                 TextButton.icon(
                     onPressed: () async {
                       AppRouter.router.pop();
-                      location = await AppRouter.router
+                      journalProvider.location = await AppRouter.router
                           .pushFunction(const MapScreen());
                       setState(() {});
                     },
@@ -485,7 +365,7 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                     )),
                 TextButton.icon(
                     onPressed: () {
-                      getLocation();
+                      journalProvider.getLocation();
                       AppRouter.router.pop();
                     },
                     icon: Icon(
@@ -496,10 +376,10 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
                       'Setup GPS',
                       style: theme.textTheme.headline4,
                     )),
-                if (location != null)
+                if (journalProvider.location != null)
                   TextButton.icon(
                       onPressed: () {
-                        location = null;
+                        journalProvider.location = null;
                         setState(() {});
                         AppRouter.router.pop();
                       },
@@ -563,24 +443,18 @@ class _JournalAddScreenState extends State<JournalAddScreen> {
       setState(() {});
       journalProvider.addJournal(
           journal: JournalModel(
-              location: location,
+              location: journalProvider.location,
               id: DateTime.now().toString(),
               content: content,
               date: date,
               imagesUrls: imagesUrls,
               isLocked: false,
               status: status,
-              weather: formatedCelsius));
+              weather: journalProvider.formatedCelsius));
     }
-    // else{
-    //  if( pickedFiles.isNotEmpty){
-    //   showDialog(context: context, builder: (context){
-    //       return AlertDialog(content: Text('if you want to add the images, write something on the note'),);
-    //   });
-    //  }
-    // }
     journalProvider.imagesClear();
     pickedFiles.clear();
+    journalProvider.mapClear();
     AppRouter.router.pushWithReplacementFunction(const JournalHomeScreen());
   }
 

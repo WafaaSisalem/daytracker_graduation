@@ -9,9 +9,15 @@ import 'package:day_tracker_graduation/services/firestore_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/classes/event_list.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart' as loc;
+import 'package:permission_handler/permission_handler.dart';
+import 'package:weather/weather.dart';
 import '../models/journal_model.dart';
 import '../models/location_model.dart';
+import '../utils/constants.dart';
 
 class JournalProvider extends ChangeNotifier {
   List<JournalModel> allJournals = [];
@@ -31,25 +37,19 @@ class JournalProvider extends ChangeNotifier {
   List<dynamic> urlImagesPicker = []; // the urls for an journal
   List<String> deletedUrl = [];
   bool urlIsSet = false;
+//location part
 
+  LocationModel? location;
+  loc.LocationData? currentLocation;
+  double? celsius;
+  String formatedCelsius = '';
+
+  bool isLocationServiceEnabled = false;
   JournalProvider() {
     if (AuthHelper.authHelper.getCurrentUser() != null) {
       getAllJournals();
-      // getUserModel();
     }
   }
-
-  // getUserModel() async {
-  //   QuerySnapshot noteQuery =
-  //       await FirestoreHelper.firestoreHelper.getUserModel();
-  //   QueryDocumentSnapshot userMap = noteQuery.docs[0];
-  //   userModel = UserModel(
-  //       email: userMap[Constants.emailKey],
-  //       userName: userMap[Constants.userNameKey],
-  //       id: userMap[Constants.idKey],
-  //       masterPassword: userMap[Constants.masterPassKey]);
-  //   notifyListeners();
-  // }
 
   addJournal({
     required JournalModel journal,
@@ -298,5 +298,134 @@ class JournalProvider extends ChangeNotifier {
     if (deletedUrl.isNotEmpty) {
       await FirestorageHelper.firestorageHelper.deleteImages(deletedUrl);
     }
+  }
+
+//Location part
+  getCurrentWeather() async {
+    WeatherFactory wf = WeatherFactory("3117871fcf5c5c7027946e61b433701e");
+    if (currentLocation != null ||
+        (currentLocation?.latitude != 0.0 &&
+            currentLocation?.longitude != 0.0)) {
+      double lat = currentLocation!.latitude!;
+      double lng = currentLocation!.longitude!;
+      Weather w = await wf.currentWeatherByLocation(lat, lng);
+      celsius = w.temperature?.celsius;
+      formatedCelsius = '${w.temperature?.celsius?.round()}\u2103';
+      notifyListeners();
+      print(formatedCelsius);
+    }
+  }
+
+  Future<void> checkLocationService() async {
+    var location = loc.Location();
+    isLocationServiceEnabled = await location.serviceEnabled();
+    if (!isLocationServiceEnabled) {
+      isLocationServiceEnabled = await location.requestService();
+      if (!isLocationServiceEnabled) {
+        // Location service is still not enabled, handle accordingly
+        isGettingAddress = false;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<String> getAddress(lat, lng) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        final placemark = placemarks[0];
+        String? subLocality =
+            placemark.subLocality == '' ? '' : "${placemark.subLocality},";
+        String? thoroughfare =
+            placemark.thoroughfare == '' ? '' : "${placemark.thoroughfare},";
+        String? subThoroughfare = placemark.subThoroughfare == ''
+            ? ''
+            : "${placemark.subThoroughfare},";
+        String? postalCode =
+            placemark.postalCode == '' ? '' : "${placemark.postalCode},";
+        String? subAdministrativeArea = placemark.subAdministrativeArea == ''
+            ? ''
+            : "${placemark.subAdministrativeArea},";
+        String? administrativeArea = placemark.administrativeArea == ''
+            ? ''
+            : "${placemark.administrativeArea},";
+        String? country = placemark.country == '' ? '' : "${placemark.country}";
+
+        final address =
+            '$subLocality $thoroughfare $subThoroughfare $postalCode $subAdministrativeArea $administrativeArea $country';
+
+        return address;
+      } else {
+        return Constants.addressNotFound;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return Constants.errorGettingAddress;
+    }
+  }
+
+  bool isGettingAddress = false;
+  Future<void> getLocation() async {
+    var location1 = loc.Location();
+
+    bool serviceEnabled = await location1.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location1.requestService();
+      if (!serviceEnabled) {
+        return;
+      } else {
+        await location1.serviceEnabled();
+      }
+    }
+
+    var status = await Permission.location.status;
+    if (status.isGranted) {
+      try {
+        isGettingAddress = true;
+        notifyListeners();
+        currentLocation = await location1.getLocation().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            isGettingAddress = false;
+
+            notifyListeners();
+            // showToast('Can\'t catch any location,try Again!',
+            //     context: context, position: StyledToastPosition.top);
+            return loc.LocationData.fromMap(
+                {'longitude': 0.0, 'latitude': 0.0});
+          },
+        );
+
+        double lat = currentLocation?.latitude ?? 0.0;
+        double lng = currentLocation?.longitude ?? 0.0;
+        String address = await getAddress(lat, lng);
+        if (address == Constants.addressNotFound ||
+            address == Constants.errorGettingAddress) {
+        } else {
+          location = LocationModel(lat, lng, await getAddress(lat, lng));
+        }
+        isGettingAddress = false;
+        notifyListeners();
+        if (currentLocation != null) {
+          notifyListeners();
+        }
+      } catch (e) {
+        print("Error: $e");
+      }
+    } else if (status.isDenied || status.isRestricted) {
+      var result = await Permission.location.request();
+      if (result.isGranted) {
+        getLocation();
+      }
+    }
+    // getCurrentWeather();
+    getCurrentWeather();
+  }
+
+  void mapClear() {
+    formatedCelsius = '';
+    celsius = null;
+    location = null;
+    currentLocation = null;
   }
 }
