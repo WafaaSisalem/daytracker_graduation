@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB3zuP5xeNt4M8mscWGwZLuOuN0t-4lRBs',
+    apiKey: 'your api key',
     appId: '1:801406978291:ios:c77db081456c2c67eacf86',
     messagingSenderId: '801406978291',
     projectId: 'graduation-project-adedc',
@@ -71,7 +71,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB3zuP5xeNt4M8mscWGwZLuOuN0t-4lRBs',
+    apiKey: 'your api key',
     appId: '1:801406978291:ios:c77db081456c2c67eacf86',
     messagingSenderId: '801406978291',
     projectId: 'graduation-project-adedc',
